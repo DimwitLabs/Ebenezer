@@ -1,0 +1,128 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_call:
+
+permissions:
+  contents: read
+
+jobs:
+  web:
+    name: Web
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: web
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: 26
+          cache: npm
+          cache-dependency-path: web/package-lock.json
+      - run: npm ci
+      - run: npm audit --audit-level=high
+      - run: npm test
+      - run: npm run build
+
+  go:
+    name: Go
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:18-alpine
+        env:
+          POSTGRES_USER: ebenezer
+          POSTGRES_PASSWORD: ebenezer
+          POSTGRES_DB: ebenezer
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U ebenezer"
+          --health-interval 2s
+          --health-timeout 5s
+          --health-retries 20
+    env:
+      EBENEZER_TEST_DATABASE_URL: postgres://ebenezer:ebenezer@localhost:5432/ebenezer?sslmode=disable
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7.0.0
+        with:
+          go-version-file: go.mod
+      - run: test -z "$(gofmt -l .)"
+      - run: go vet ./...
+      - run: go run golang.org/x/vuln/cmd/govulncheck@v1.8.0 ./...
+      - run: go test -race ./... -coverpkg=./internal/... -coverprofile=cover.out
+      - run: go tool cover -func=cover.out | tail -1
+
+  image: postgres:18-alpine
+        env:
+          POSTGRES_USER: ebenezer
+          POSTGRES_PASSWORD: ebenezer
+          POSTGRES_DB: ebenezer
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U ebenezer"
+          --health-interval 2s
+          --health-timeout 5s
+          --health-retries 20
+    env:
+      EBENEZER_TEST_DATABASE_URL: postgres://ebenezer:ebenezer@localhost:5432/ebenezer?sslmode=disable
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7.0.0
+        with:
+          go-version-file: go.mod
+      - run: test -z "$(gofmt -l .)"
+      - run: go vet ./...
+      - run: go run golang.org/x/vuln/cmd/govulncheck@v1.8.0 ./...
+      - run: go test -race ./... -coverpkg=./internal/... -coverprofile=cover.out
+      - name: Check Coverage
+        run: |
+          go tool cover -func=cover.out | tail -1
+          total=$(go tool cover -func=cover.out | awk 'END { gsub("%", "", $3); print $3 }')
+          badge=$(grep -o 'coverage-[0-9]*%25' README.md | head -1 | sed 's/coverage-//; s/%25//')
+          awk -v total="$total" -v floor="$COVERAGE_FLOOR" -v badge="$badge" 'BEGIN {
+            if (badge + 0 != floor + 0) { printf "the readme badge says %s%% but the floor is %s%%\n", badge, floor; exit 1 }
+            if (total + 0 < floor + 0) { printf "coverage %s%% is below the %s%% floor\n", total, floor; exit 1 }
+            printf "coverage %s%% clears the %s%% floor\n", total, floor
+          }'
+        env:
+          COVERAGE_FLOOR: 85
+      - name: Check Version Pill
+        run: |
+          changelog=$(grep -o '^## \[[0-9]*\.[0-9]*\.[0-9]*\]' CHANGELOG.md | head -1 | tr -d '#[] ')
+          link=$(grep -o 'releases/tag/v[0-9.]*' landing/index.html | head -1 | sed 's|releases/tag/v||')
+          text=$(grep -o '>v[0-9.]*<' landing/index.html | head -1 | tr -d '><v')
+          for found in "$link" "$text"; do
+            if [ "$found" != "$changelog" ]; then
+              echo "the landing pill says $found but the changelog says $changelog"
+              exit 1
+            fi
+          done
+          echo "the landing pill matches the changelog at $changelog"
+
+  image:
+    name: Image
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: docker/setup-buildx-action@f87e5991a6d7451dcb8d9637bfbc97413f497069 # v4.4.1
+      - uses: docker/build-push-action@c3c9e263c25d99ce0380d002d59b67737d91b0dc # v7.4.0
+        with:
+          context: .
+          push: false
+          cache-from: type=gha
+          cache-to: type=gha,mode=max

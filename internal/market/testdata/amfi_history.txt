@@ -1,0 +1,14 @@
+Scheme Code;NAV Name;Plan;Option;ISIN Div Payout/ISIN Growth;ISIN Div Reinvestment;Net Asset Value;Date
+
+Open Ended Schemes ( Money Market )
+
+
+Taurus Mutual Fund
+139619;Taurus Investor Education Pool - Unclaimed Dividend - Growth;;;;;10.0000;01-Oct-2026
+139618;Taurus Investor Education Pool - Unclaimed Redemption - Growth;;Growth;;;10.0000;01-Oct-2026
+139617;Taurus Unclaimed Redemption - Growth;;Growth;;;17.7626;01-Oct-2026
+150685;ICICI PRUDENTIAL TRANSPORTATION AND LOGISTICS FUND - Direct Plan - Growth;Direct Plan;Growth;INF109KC12K1;;22.05;01-Oct-2026
+150687;ICICI PRUDENTIAL TRANSPORTATION AND LOGISTICS FUND - Direct Plan - IDCW;Direct Plan;IDCW;INF109KC13K9;INF109KC14K7;18.81;01-Oct-2026
+150684;ICICI PRUDENTIAL TRANSPORTATION AND LOGISTICS FUND - Growth;Regular Plan;Growth;INF109KC19J8;;21.02;01-Oct-2026
+999999;Wound Up Fund - Growth;;Growth;INF000000001;;N.A.;01-Oct-2026
+122639;Parag Parikh Flexi Cap Fund - Direct Plan - Growth;Direct Plan;Growth;INF879O01027;;88.7620;05-Oct-2026

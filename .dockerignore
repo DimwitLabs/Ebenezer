@@ -1,0 +1,6 @@
+.git
+.env
+web/node_modules
+web/dist
+brand
+.DS_Store

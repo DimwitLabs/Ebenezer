@@ -1,0 +1,9 @@
+.env
+/ebenezer
+web/node_modules/
+web/dist/*
+!web/dist/.gitkeep
+.claude/
+cover.out
+.DS_Store
+web/tsconfig.tsbuildinfo

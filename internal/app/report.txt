@@ -1,0 +1,25 @@
+{{.Portfolio}}, {{.Day}}
+{{if .Show.summary}}
+Net worth {{.NetWorth}}{{if .Change}} ({{.Change}}){{end}}
+{{range .Figures}}{{.Label}}: {{.Value}}
+{{end}}{{end}}{{if .Show.note}}
+{{.Note.Lead}}
+{{range .Note.Lines}}- {{.Text}}
+{{end}}{{end}}{{if and .Show.sections .Sections}}
+By section
+{{range .Sections}}- {{.Name}}: {{.Value}}{{if .Gain}}, gain {{.Gain}}{{end}}, XIRR {{.XIRR}}
+{{end}}{{end}}{{if and .Show.movers (or .Gainers .Losers)}}
+Last trading day
+{{range .Gainers}}- {{.Name}} {{.Change}} ({{.Detail}})
+{{end}}{{range .Losers}}- {{.Name}} {{.Change}} ({{.Detail}})
+{{end}}{{end}}{{if and .Show.news .News}}
+Top stories
+{{range .News}}- {{if .Scrips}}[{{.Scrips}}] {{end}}{{.Title}}{{if not .Judged}} (not judged){{end}}
+{{if .Reason}}  {{.Reason}}
+{{end}}  Open: {{.Link}}
+{{end}}{{if .NewsURL}}View all news: {{.NewsURL}}
+{{end}}{{end}}{{if and .Show.health .Health}}
+Some sources did not answer
+{{range .Health}}- {{.}}
+{{end}}{{end}}
+{{.Note.Signoff}}

@@ -1,0 +1,140 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light">
+<title>{{.Portfolio}}</title>
+<style>
+  .up { color: {{$.C.primary}}; }
+  .down { color: {{$.C.error}}; }
+  a { color: {{$.C.primary}}; }
+  @media (max-width: 520px) { .fig { display: block !important; width: 100% !important; } }
+</style>
+</head>
+<body style="margin:0;padding:0;background:{{$.C.page}};font-family:Roboto,'Segoe UI',Helvetica,Arial,sans-serif;color:{{$.C.ink}};-webkit-font-smoothing:antialiased;">
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:{{$.C.page}};">
+<tr><td align="center" style="padding:24px 12px;">
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:600px;">
+
+  <tr><td style="padding:0 8px 20px;">
+    <table role="presentation" cellpadding="0" cellspacing="0"><tr>
+      <td style="width:40px;height:40px;border-radius:20px;background:#0a7c5c;color:{{$.C.onPrimary}};font-weight:700;font-size:20px;text-align:center;vertical-align:middle;">E</td>
+      <td style="padding-left:12px;">
+        <div style="font-size:18px;font-weight:600;">{{.Portfolio}}</div>
+        <div style="font-size:13px;color:{{$.C.ink2}};">{{.Day}}{{if .PricedOn}} · prices from {{.PricedOn}}{{end}}</div>
+      </td>
+    </tr></table>
+  </td></tr>
+
+  {{if .Show.summary}}
+  <tr><td style="background:{{$.C.hero}};color:{{$.C.onHero}};border-radius:28px;padding:28px;">
+    <div style="font-size:13px;color:{{$.C.heroInk2}};">Net worth</div>
+    <div style="font-size:44px;line-height:1.1;font-weight:400;letter-spacing:-0.5px;margin:4px 0 6px;">{{.NetWorth}}</div>
+    {{if .Change}}<div class="{{.ChangeTone}}" style="font-size:15px;font-weight:500;">{{.Change}}</div>{{end}}
+    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin-top:20px;"><tr>
+      {{range .Figures}}
+      <td class="fig" style="padding:10px 8px 0 0;vertical-align:top;width:20%;">
+        <div style="font-size:12px;color:{{$.C.heroInk2}};">{{.Label}}</div>
+        <div class="{{.Tone}}" style="font-size:16px;font-weight:500;margin-top:2px;">{{.Value}}</div>
+      </td>
+      {{end}}
+    </tr></table>
+  </td></tr>
+  <tr><td style="height:16px;"></td></tr>
+  {{end}}
+
+  {{if .Show.note}}
+  <tr><td style="background:{{$.C.note}};color:{{$.C.onNote}};border-radius:28px;padding:24px 28px;">
+    <div style="font-size:13px;font-weight:600;margin-bottom:8px;">Ebenezer's note</div>
+    <div style="font-size:17px;line-height:1.45;margin-bottom:12px;">{{.Note.Lead}}</div>
+    {{range .Note.Lines}}<div style="font-size:14px;line-height:1.5;padding:4px 0;">• {{.Text}}</div>{{end}}
+    <div style="font-size:12px;opacity:0.75;margin-top:14px;">{{.Note.Signoff}}</div>
+  </td></tr>
+  <tr><td style="height:16px;"></td></tr>
+  {{end}}
+
+  {{if and .Show.sections .Sections}}
+  <tr><td style="background:{{$.C.card}};border-radius:28px;padding:24px 28px;">
+    <div style="font-size:16px;font-weight:600;margin-bottom:12px;">By section</div>
+    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="font-size:14px;">
+      <tr style="color:{{$.C.ink2}};font-size:12px;">
+        <td style="padding:6px 0;">Section</td><td align="right">Value</td><td align="right">Gain</td><td align="right">XIRR</td><td align="right">Share</td>
+      </tr>
+      {{range .Sections}}
+      <tr>
+        <td style="padding:10px 0;border-top:1px solid {{$.C.line}};">{{.Name}}</td>
+        <td align="right" style="border-top:1px solid {{$.C.line}};">{{.Value}}</td>
+        <td align="right" class="{{.GainTone}}" style="border-top:1px solid {{$.C.line}};">{{.Gain}}</td>
+        <td align="right" class="{{.XIRRTone}}" style="border-top:1px solid {{$.C.line}};">{{.XIRR}}</td>
+        <td align="right" style="border-top:1px solid {{$.C.line}};color:{{$.C.ink2}};">{{.Share}}</td>
+      </tr>
+      {{end}}
+    </table>
+  </td></tr>
+  <tr><td style="height:16px;"></td></tr>
+  {{end}}
+
+  {{if and .Show.movers (or .Gainers .Losers)}}
+  <tr><td style="background:{{$.C.card}};border-radius:28px;padding:24px 28px;">
+    <div style="font-size:16px;font-weight:600;margin-bottom:12px;">Last trading day</div>
+    {{range .Gainers}}
+    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="font-size:14px;"><tr>
+      <td style="padding:8px 0;">{{.Name}}<div style="font-size:12px;color:{{$.C.ink2}};">{{.Detail}}</div></td>
+      <td align="right" class="up" style="font-weight:500;">{{.Change}}</td>
+    </tr></table>
+    {{end}}
+    {{range .Losers}}
+    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="font-size:14px;"><tr>
+      <td style="padding:8px 0;">{{.Name}}<div style="font-size:12px;color:{{$.C.ink2}};">{{.Detail}}</div></td>
+      <td align="right" class="down" style="font-weight:500;">{{.Change}}</td>
+    </tr></table>
+    {{end}}
+  </td></tr>
+  <tr><td style="height:16px;"></td></tr>
+  {{end}}
+
+  {{if and .Show.news .News}}
+  <tr><td style="background:{{$.C.page}};border-radius:28px;padding:24px 28px;">
+    <div style="font-size:18px;font-weight:650;margin-bottom:4px;">Top stories</div>
+    <div style="font-size:13px;color:{{$.C.ink2}};margin-bottom:10px;">What changed for the companies you hold.</div>
+    {{range .News}}
+    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="border-top:1px solid {{$.C.rule}};">
+      <tr>
+        <td style="padding:14px 12px 14px 0;vertical-align:top;">
+          {{if .Scrips}}<div style="margin-bottom:6px;"><span style="display:inline-block;font-size:11px;font-weight:600;letter-spacing:0.2px;padding:2px 8px;border-radius:6px;background:{{$.C.chip}};color:{{$.C.onChip}};">{{.Scrips}}</span>{{if not .Judged}} <span style="display:inline-block;font-size:11px;font-weight:500;padding:2px 8px;border-radius:6px;background:{{$.C.tag}};color:{{$.C.ink2}};">not judged</span>{{end}}</div>{{end}}
+          <div style="font-size:15px;line-height:1.4;font-weight:600;color:{{$.C.ink}};">{{.Title}}</div>
+          {{if .Reason}}<div style="font-size:13px;line-height:1.5;color:{{$.C.ink}};margin-top:4px;">{{.Reason}}</div>{{end}}
+          <div style="font-size:12px;color:{{$.C.ink3}};margin-top:4px;">{{.Source}}{{if and .Source .Age}} · {{end}}{{.Age}}</div>
+        </td>
+        <td width="76" style="padding:14px 0;vertical-align:middle;text-align:right;">
+          <a href="{{.Link}}" style="display:inline-block;padding:8px 16px;border-radius:20px;background:{{$.C.primary}};color:{{$.C.onPrimary}};font-size:13px;font-weight:600;text-decoration:none;white-space:nowrap;">Open</a>
+        </td>
+      </tr>
+    </table>
+    {{end}}
+    {{if .NewsURL}}
+    <div style="border-top:1px solid {{$.C.rule}};padding-top:16px;text-align:center;">
+      <a href="{{.NewsURL}}" style="display:inline-block;padding:10px 20px;border-radius:20px;background:{{$.C.chip}};color:{{$.C.onChip}};font-size:14px;font-weight:600;text-decoration:none;">View all news</a>
+    </div>
+    {{end}}
+  </td></tr>
+  <tr><td style="height:16px;"></td></tr>
+  {{end}}
+
+  {{if and .Show.health .Health}}
+  <tr><td style="background:{{$.C.alert}};color:{{$.C.onAlert}};border-radius:28px;padding:20px 28px;">
+    <div style="font-size:14px;font-weight:600;margin-bottom:6px;">Some sources did not answer</div>
+    {{range .Health}}<div style="font-size:13px;line-height:1.5;">{{.}}</div>{{end}}
+  </td></tr>
+  <tr><td style="height:16px;"></td></tr>
+  {{end}}
+
+  <tr><td style="padding:8px;font-size:12px;color:{{$.C.ink3}};line-height:1.5;">
+    {{if .URL}}<a href="{{.URL}}">Open Ebenezer</a> · {{end}}Change what this report holds, and when it comes, in Settings.
+  </td></tr>
+</table>
+</td></tr>
+</table>
+</body>
+</html>

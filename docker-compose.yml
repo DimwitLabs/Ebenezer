@@ -1,0 +1,54 @@
+services:
+  db:
+    image: postgres:18-alpine
+    restart: unless-stopped
+    cap_drop: [ALL]
+    cap_add: [CHOWN, DAC_OVERRIDE, FOWNER, SETGID, SETUID]
+    security_opt: [no-new-privileges:true]
+    command: ["postgres", "-c", "listen_addresses="]
+    network_mode: none
+    environment:
+      POSTGRES_DB: ebenezer
+      POSTGRES_USER: ebenezer
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?set POSTGRES_PASSWORD, see .env.example}
+      POSTGRES_INITDB_ARGS: --auth-local=scram-sha-256 --auth-host=scram-sha-256
+    volumes:
+      - postgres_data:/var/lib/postgresql
+      - postgres_socket:/var/run/postgresql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ebenezer"]
+      interval: 5s
+      retries: 10
+
+  ebenezer:
+    image: ghcr.io/dimwitlabs/ebenezer:${EBENEZER_VERSION:-latest}
+    build: .
+    restart: unless-stopped
+    read_only: true
+    cap_drop: [ALL]
+    security_opt: [no-new-privileges:true]
+    depends_on:
+      db:
+        condition: service_healthy
+    volumes:
+      - postgres_socket:/var/run/postgresql
+    ports:
+      - "${EBENEZER_BIND:-127.0.0.1}:${EBENEZER_PORT:-8080}:8080"
+    environment:
+      EBENEZER_DATABASE_URL: postgres://ebenezer:${POSTGRES_PASSWORD}@/ebenezer?host=/var/run/postgresql
+      EBENEZER_ENCRYPTION_KEY: ${EBENEZER_ENCRYPTION_KEY:?set EBENEZER_ENCRYPTION_KEY, see .env.example}
+      EBENEZER_DB_SCHEMA: ${EBENEZER_DB_SCHEMA:-ebenezer}
+      EBENEZER_SECURE_COOKIES: ${EBENEZER_SECURE_COOKIES:-true}
+      EBENEZER_SESSION_HOURS: ${EBENEZER_SESSION_HOURS:-336}
+      EBENEZER_SCHEDULER: ${EBENEZER_SCHEDULER:-true}
+      TZ: ${TZ:-Asia/Kolkata}
+      EBENEZER_OPENROUTER_KEY: ${EBENEZER_OPENROUTER_KEY:-}
+      EBENEZER_NTFY_URL: ${EBENEZER_NTFY_URL:-}
+      EBENEZER_NTFY_TOKEN: ${EBENEZER_NTFY_TOKEN:-}
+      EBENEZER_NTFY_PASSWORD: ${EBENEZER_NTFY_PASSWORD:-}
+      EBENEZER_SMTP_PASSWORD: ${EBENEZER_SMTP_PASSWORD:-}
+      EBENEZER_PUBLIC_URL: ${EBENEZER_PUBLIC_URL:-}
+
+volumes:
+  postgres_data:
+  postgres_socket:

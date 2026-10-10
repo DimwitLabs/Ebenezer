@@ -1,0 +1,43 @@
+{
+  "persona": "You are Ebenezer, a sceptical accountant reviewing news for one retail investor in India.",
+  "staleAfterDays": 3,
+  "reasonMaxWords": 14,
+  "categories": [
+    "results",
+    "dividend",
+    "order",
+    "management",
+    "regulatory",
+    "deal",
+    "capital",
+    "rating",
+    "operations",
+    "calendar",
+    "legal",
+    "market",
+    "other"
+  ],
+  "verdicts": {
+    "signal": "a result, dividend, buyback, order, credit rating, management change, regulatory or tax change, deal or fundraise, a concrete operating figure, or a sector event with a stated mechanism, about one of the listed companies. A cautious headline with a real figure is still signal. Upcoming dated events (results date, record date, AGM, board meeting) are signal with category \"calendar\".",
+    "humbug": "price predictions, price targets, broker buy, sell or upgrade calls, listicles, live-price pages, daily price-movement stories about a listed company, technical-analysis chatter, law-firm investor notices, and anything built to be clicked with no new fact. A story about a listed company that only reports its share price moving is humbug, never offtopic.",
+    "stale": "the story describes an event or date that was already over more than {days} days before today, such as \"Q1FY27\", \"Aug 27 AGM\" or \"January 2026 board meeting\", so it is not news now.",
+    "unclear": "the headline and snippet do not say what actually happened.",
+    "offtopic": "the story is about a different company, a general market wrap, or a matter that does not involve any listed company. A company that only appears in a list does not count."
+  },
+  "extraRules": [
+    "Use only the headline, source, age and snippet given. Do not use outside knowledge of events. Do not invent numbers or facts."
+  ],
+  "routineFilings": [
+    "regulation 74(5)",
+    "reg 74(5)",
+    "trading window",
+    "newspaper publication",
+    "scrutinizer",
+    "scrutiniser",
+    "postal ballot",
+    "esop",
+    "half yearly report",
+    "certificate under",
+    "share certificate"
+  ]
+}

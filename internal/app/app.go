@@ -34,7 +34,6 @@ func zone(name string) *time.Location {
 
 type Config struct {
 	Seal      *seal.Box
-	Secrets   map[string]string
 	NtfyURL   string
 	PublicURL string
 }

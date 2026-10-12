@@ -20,12 +20,8 @@ var SecretNames = []string{OpenRouterKey, NtfyToken, NtfyPassword, SMTPPassword}
 
 func IsSecret(name string) bool { return slices.Contains(SecretNames, name) }
 
-// Secret returns a secret; one set in the environment wins, so an operator can keep it out of the database entirely.
-// One sealed under another key reads as unset, so Settings asks for it again.
+// Secret returns a secret saved in Settings; one sealed under another key reads as unset, so Settings asks for it again.
 func (a *App) Secret(ctx context.Context, name string) string {
-	if v := a.cfg.Secrets[name]; v != "" {
-		return v
-	}
 	stored := a.storedSecret(ctx, name)
 	if stored == "" {
 		return ""
@@ -46,8 +42,6 @@ func (a *App) storedSecret(ctx context.Context, name string) string {
 	}
 	return v
 }
-
-func (a *App) SecretFromEnv(name string) bool { return a.cfg.Secrets[name] != "" }
 
 func (a *App) SetSecret(ctx context.Context, name, value string) error {
 	v := strings.TrimSpace(value)

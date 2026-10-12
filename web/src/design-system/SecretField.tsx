@@ -5,7 +5,6 @@ import { TextField } from "./Fields";
 
 export interface SecretState {
   set: boolean;
-  fromEnv: boolean;
 }
 
 interface Props {
@@ -23,14 +22,14 @@ export default function SecretField({ label, state, value, onChange, onRemove, d
   const [replacing, setReplacing] = useState(false);
   const [confirm, confirmDialog] = useConfirm();
 
-  if (state.fromEnv || (state.set && !replacing)) {
+  if (state.set && !replacing) {
     return (
       <div className="fld">
         <span className="flabel">{label}</span>
         <div className="secret">
-          <span className="ms">{state.fromEnv ? "lock" : "key"}</span>
-          <span className="v">{state.fromEnv ? "Set in the server's environment" : "Saved, hidden"}</span>
-          {!state.fromEnv && !disabled && (
+          <span className="ms">key</span>
+          <span className="v">Saved, hidden</span>
+          {!disabled && (
             <>
               <md-icon-button onClick={() => setReplacing(true)} aria-label={`Replace the ${label.toLowerCase()}`} title="Replace">
                 <md-icon>edit</md-icon>

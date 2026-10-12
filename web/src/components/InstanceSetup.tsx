@@ -63,7 +63,7 @@ export function TestButton({ pending, onClick, disabled, children }: { pending: 
   );
 }
 
-export const aiReady = (v: InstanceView) => v.secrets.openrouter_key.set || v.secrets.openrouter_key.fromEnv;
+export const aiReady = (v: InstanceView) => v.secrets.openrouter_key.set;
 export const mailReady = (v: InstanceView) => !!v.settings.smtpHost;
 
 export async function saveInstance(picked: Partial<InstanceSettings>, secrets: Partial<Record<SecretName, string>> = {}) {

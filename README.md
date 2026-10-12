@@ -56,15 +56,11 @@ Ebenezer keeps its tables in their own schema, `ebenezer` by default, so it can 
 | `EBENEZER_SESSION_HOURS` | `336` | How long a sign-in lasts. |
 | `EBENEZER_SCHEDULER` | `true` | Run prices, news and health on schedule. Turn off on all but one copy. |
 | `TZ` | `Asia/Kolkata` | The clock every schedule time is written in. Settings show it next to each time. |
-| `EBENEZER_OPENROUTER_KEY` | | Keeps the key out of the database. Otherwise the owner sets it in Settings. |
 | `EBENEZER_NTFY_URL` | | Where source alerts go. Also settable in Settings. |
 | `EBENEZER_PUBLIC_URL` | | Where people reach this Ebenezer, such as `https://ebenezer.example.com`, for links in emails. |
-| `EBENEZER_NTFY_TOKEN` | | Access token for a protected ntfy topic. |
-| `EBENEZER_NTFY_PASSWORD` | | Password for the ntfy username set in Settings, if you use one instead of a token. |
-| `EBENEZER_SMTP_PASSWORD` | | Password for the SMTP server that sends reports. |
 | `EBENEZER_ADDR` | `:8080` | Listen address. |
 
-Everything else, price time, model, news and report schedules, SMTP server, lives in Settings. Secrets typed into Settings are sealed with `EBENEZER_ENCRYPTION_KEY` and never shown again; set them in the environment to keep them out of the database.
+Everything else lives in Settings: price time, model, news and report schedules, the SMTP server, and every key and password. The OpenRouter key, the ntfy token or password and the SMTP password are sealed with `EBENEZER_ENCRYPTION_KEY` before they reach the database and are never shown again.
 
 ## Develop
 

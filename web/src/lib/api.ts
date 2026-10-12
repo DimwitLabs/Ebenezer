@@ -400,7 +400,6 @@ export type SecretName = "openrouter_key" | "ntfy_token" | "ntfy_password" | "sm
 
 export interface SecretState {
   set: boolean;
-  fromEnv: boolean;
 }
 
 export interface Metals {

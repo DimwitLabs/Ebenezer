@@ -71,9 +71,6 @@ func (s *Server) saveSecret(w http.ResponseWriter, r *http.Request) error {
 	if !app.IsSecret(name) {
 		return fail(http.StatusNotFound, "no such secret")
 	}
-	if s.app.SecretFromEnv(name) {
-		return fail(http.StatusConflict, "this is set in the server's environment; change it there")
-	}
 	var body struct {
 		Value string `json:"value"`
 	}
@@ -90,15 +87,14 @@ func (s *Server) saveSecret(w http.ResponseWriter, r *http.Request) error {
 }
 
 type secretState struct {
-	Set     bool `json:"set"`
-	FromEnv bool `json:"fromEnv"`
+	Set bool `json:"set"`
 }
 
-// secrets reports only whether each secret is set and where from, never its value.
+// secrets reports only whether each secret is set, never its value.
 func (s *Server) secrets(r *http.Request) map[string]secretState {
 	out := map[string]secretState{}
 	for _, name := range app.SecretNames {
-		out[name] = secretState{Set: s.app.Secret(r.Context(), name) != "", FromEnv: s.app.SecretFromEnv(name)}
+		out[name] = secretState{Set: s.app.Secret(r.Context(), name) != ""}
 	}
 	return out
 }

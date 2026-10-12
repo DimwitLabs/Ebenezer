@@ -98,13 +98,7 @@ func run() error {
 	}
 
 	a := app.New(st, app.Config{
-		Seal: box,
-		Secrets: map[string]string{
-			app.OpenRouterKey: os.Getenv("EBENEZER_OPENROUTER_KEY"),
-			app.NtfyToken:     os.Getenv("EBENEZER_NTFY_TOKEN"),
-			app.NtfyPassword:  os.Getenv("EBENEZER_NTFY_PASSWORD"),
-			app.SMTPPassword:  os.Getenv("EBENEZER_SMTP_PASSWORD"),
-		},
+		Seal:      box,
 		NtfyURL:   os.Getenv("EBENEZER_NTFY_URL"),
 		PublicURL: publicURL,
 	})

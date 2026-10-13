@@ -3,15 +3,17 @@ import { useEffect, useRef } from "react";
 
 export const SEG = ["--seg1", "--seg2", "--seg3", "--seg4", "--seg5", "--seg6", "--seg7"];
 
-// Tokens hold light-dark() and var() chains, so a probe element resolves them to rgb().
+// Tokens hold light-dark() and var() chains, so a probe element resolves them to rgb(). One probe stays in the page, so a chart's
+// dozen reads cost one style pass rather than an insert, read and removal each.
+let probe: HTMLElement | null = null;
 export function token(name: string): string {
-  const probe = document.createElement("i");
-  probe.style.display = "none";
+  if (!probe?.isConnected) {
+    probe = document.createElement("i");
+    probe.hidden = true;
+    document.body.appendChild(probe);
+  }
   probe.style.color = `var(${name})`;
-  document.body.appendChild(probe);
-  const c = getComputedStyle(probe).color;
-  probe.remove();
-  return c || "#888";
+  return getComputedStyle(probe).color || "#888";
 }
 
 interface Props {

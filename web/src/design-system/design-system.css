@@ -228,8 +228,8 @@ th button:hover { color: var(--text); }
 th[aria-sort="ascending"] button::after { content: " \2191"; color: var(--text); }
 th[aria-sort="descending"] button::after { content: " \2193"; color: var(--text); }
 th.l, td.l { text-align: left; }
-td { padding: 11px 10px; border-bottom: 1px solid var(--line); text-align: right; white-space: nowrap; }
-tbody tr:last-child td { border-bottom: 0; }
+td { padding: 11px 10px; text-align: right; white-space: nowrap; }
+:is(thead, tfoot) td, tbody tr:not(:last-child) td { border-bottom: 1px solid var(--line); }
 td .nm { display: block; font-weight: 500; line-height: 1.25; }
 td .sm { display: block; font-size: 0.75rem; color: var(--text3); }
 td.wrap { white-space: normal; }
@@ -388,8 +388,8 @@ button.badge:disabled { cursor: progress; }
 .dropzone.over { border-color: var(--accent); background: color-mix(in srgb, var(--accent) 6%, transparent); }
 .dropzone:disabled { cursor: progress; }
 
-.item { display: flex; align-items: center; gap: 14px; padding: 10px 0; border-bottom: 1px solid var(--line); min-height: 60px; }
-.item:last-of-type { border-bottom: 0; }
+.item { display: flex; align-items: center; gap: 14px; padding: 10px 0; min-height: 60px; }
+.item:has(~ .item) { border-bottom: 1px solid var(--line); }
 .item-i { flex: none; width: 40px; height: 40px; border-radius: 50%; display: grid; place-items: center; font-size: 1.25rem; background: var(--sc); color: var(--on-sc); }
 .item-i.on { background: var(--pc); color: var(--on-pc); }
 .item-i.bad { background: var(--lossbg); color: var(--md-sys-color-on-error-container); }
@@ -533,7 +533,7 @@ kbd { font: 600 0.625rem/1 var(--sans); padding: 2px 5px; border-radius: 5px; ba
 }
 
 @media (max-width: 37.5em) {
-  .fold-t .sum { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; min-height: 36px; }
+  .fold-t .sum { display: -webkit-box; -webkit-line-clamp: 2; line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; min-height: 36px; }
   .ptile .h { min-height: 0; }
   .mid { max-width: 150px; }
 }

@@ -262,8 +262,8 @@ td.num .fixin { text-align: right; }
 .ptile .counts { grid-area: chk; align-self: start; }
 .ptile[aria-pressed="true"] .counts { color: var(--on-pc2); }
 
-.run { padding: 16px 0; border-bottom: 1px solid var(--line); }
-.run:last-of-type { border-bottom: 0; }
+.run { padding: 16px 0; }
+.run:has(~ .run) { border-bottom: 1px solid var(--line); }
 .run.open { padding-bottom: 24px; }
 .run header { display: grid; grid-template-columns: 40px minmax(0, 1fr) 40px 40px 124px; gap: 0 8px; align-items: center; }
 .run .rt { min-width: 0; padding: 0 0 0 8px; text-align: left; display: flex; flex-direction: column; }
@@ -341,8 +341,8 @@ td.num .fixin { text-align: right; }
 .ask-foot { text-align: center; margin-top: 12px; padding-bottom: 4px; }
 
 .spends { margin-top: 10px; background: var(--card); color: var(--text); border-radius: 16px; overflow: hidden; }
-.srow { display: grid; grid-template-columns: 36px minmax(0, 1fr) auto; gap: 12px; align-items: center; padding: 10px 14px; border-top: 1px solid var(--edge); }
-.srow:first-child { border-top: 0; }
+.srow { display: grid; grid-template-columns: 36px minmax(0, 1fr) auto; gap: 12px; align-items: center; padding: 10px 14px; }
+.srow:not(:first-child) { border-top: 1px solid var(--edge); }
 .srow b, .pend-h b { display: block; font-weight: 500; }
 .srow .s, .lr .s, .pend-h .s { font-size: 0.75rem; color: var(--text2); display: flex; gap: 6px; flex-wrap: wrap; align-items: center; }
 .srow > .num { font-weight: 600; font-size: 0.9375rem; }
@@ -678,7 +678,7 @@ a.fold-t { text-decoration: none; color: inherit; }
   .nw { text-align: left; }
   .nw i { display: inline; }
   .nw i::before { content: " · "; }
-  .nt a { white-space: normal; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; line-height: 1.25rem; height: 2lh; }
+  .nt a { white-space: normal; display: -webkit-box; -webkit-line-clamp: 2; line-clamp: 2; -webkit-box-orient: vertical; line-height: 1.25rem; height: 2lh; }
   .nt > span { display: none; }
 }
 .pick.voices { grid-template-columns: repeat(2, minmax(0, 1fr)); margin-bottom: 8px; }

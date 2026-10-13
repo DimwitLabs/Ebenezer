@@ -74,17 +74,8 @@ func (w When) Due(now time.Time) bool {
 
 func (w When) Next(now time.Time) *time.Time {
 	for d := 0; d <= 7; d++ {
-		day := now.AddDate(0, 0, d)
-		if !slices.Contains(w.Days, day.Weekday()) {
-			continue
-		}
 		var best *time.Time
-		for _, t := range w.Times {
-			at, err := time.ParseInLocation("15:04", t, now.Location())
-			if err != nil {
-				continue
-			}
-			when := time.Date(day.Year(), day.Month(), day.Day(), at.Hour(), at.Minute(), 0, 0, now.Location())
+		for _, when := range w.slots(now.AddDate(0, 0, d)) {
 			if when.After(now) && (best == nil || when.Before(*best)) {
 				best = &when
 			}
@@ -94,6 +85,46 @@ func (w When) Next(now time.Time) *time.Time {
 		}
 	}
 	return nil
+}
+
+// Last is the latest due time at or before now, within the past week.
+func (w When) Last(now time.Time) *time.Time {
+	for d := 0; d <= 7; d++ {
+		var best *time.Time
+		for _, when := range w.slots(now.AddDate(0, 0, -d)) {
+			if !when.After(now) && (best == nil || when.After(*best)) {
+				best = &when
+			}
+		}
+		if best != nil {
+			return best
+		}
+	}
+	return nil
+}
+
+func (w When) slots(day time.Time) []time.Time {
+	if !slices.Contains(w.Days, day.Weekday()) {
+		return nil
+	}
+	var out []time.Time
+	for _, t := range w.Times {
+		at, err := time.ParseInLocation("15:04", t, day.Location())
+		if err == nil {
+			out = append(out, time.Date(day.Year(), day.Month(), day.Day(), at.Hour(), at.Minute(), 0, 0, day.Location()))
+		}
+	}
+	return out
+}
+
+// Missed is the due time a chain slept through: the latest before the scheduler woke at awake, with no run since and its minute past.
+// Only times before awake count, so a slot moved earlier while the scheduler ran is not mistaken for one slept through; a chain never run waits for its first time.
+func (w When) Missed(now, awake, lastRun time.Time) *time.Time {
+	due := w.Last(awake)
+	if due == nil || lastRun.IsZero() || !lastRun.Before(*due) || now.Sub(*due) < time.Minute {
+		return nil
+	}
+	return due
 }
 
 func dayNames(names []string) []time.Weekday {

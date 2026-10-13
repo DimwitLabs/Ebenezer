@@ -61,7 +61,7 @@ func (a *App) Start(job string, portfolioID string) error {
 	}
 	go func() {
 		defer done()
-		a.run(ctx, job, portfolioID)
+		a.run(ctx, job, portfolioID, nil)
 	}()
 	return nil
 }
@@ -128,7 +128,8 @@ func (a *App) setProgress(key string, p Progress) {
 	a.progress[key] = p
 }
 
-func (a *App) run(ctx context.Context, job, portfolioID string) (ok bool) {
+// run runs one job; catchUp is the due time it makes up for, when the server was down then.
+func (a *App) run(ctx context.Context, job, portfolioID string, catchUp *time.Time) (ok bool) {
 	defer func() {
 		a.mu.Lock()
 		a.lastOK[job+":"+portfolioID] = ok
@@ -138,7 +139,11 @@ func (a *App) run(ctx context.Context, job, portfolioID string) (ok bool) {
 	if portfolioID != "" {
 		pid = &portfolioID
 	}
-	id, err := a.Store.StartJob(ctx, job, pid)
+	id, err := a.Store.StartJob(ctx, job, pid, catchUp)
+	if errors.Is(err, store.ErrNotFound) {
+		slog.Info("already caught up", "job", job, "portfolio", portfolioID)
+		return false
+	}
 	if err != nil {
 		slog.Error("starting job", "job", job, "err", err)
 		return false
@@ -931,7 +936,11 @@ func (a *App) Schedule(ctx context.Context) {
 		}
 	}
 	// Starting from the current minute keeps a restart from firing that minute's jobs twice.
-	last := time.Now().In(Zone).Format("2006-01-02 15:04")
+	start := time.Now().In(Zone)
+	a.tick(ctx, start, false, &start)
+	last := start.Format("2006-01-02 15:04")
+	// The first tick after the start minute catches up a slot due in that minute; after it, the scheduler has been awake for every slot.
+	awake := &start
 	t := time.NewTicker(30 * time.Second)
 	defer t.Stop()
 	for {
@@ -942,13 +951,15 @@ func (a *App) Schedule(ctx context.Context) {
 			now := time.Now().In(Zone)
 			if minute := now.Format("2006-01-02 15:04"); minute != last {
 				last = minute
-				a.tick(ctx, now)
+				a.tick(ctx, now, true, awake)
+				awake = nil
 			}
 		}
 	}
 }
 
-func (a *App) tick(ctx context.Context, now time.Time) {
+// tick starts what is due this minute and, given when the scheduler woke, catches up what was due before it; at startup only the catching up, as a restart must not run this minute twice.
+func (a *App) tick(ctx context.Context, now time.Time, onTime bool, awake *time.Time) {
 	is, err := a.Store.InstanceSettings(ctx)
 	if err != nil {
 		slog.Error("reading settings", "err", err)
@@ -958,16 +969,33 @@ func (a *App) tick(ctx context.Context, now time.Time) {
 	if err != nil {
 		slog.Error("listing portfolios", "err", err)
 	}
-	for _, c := range Chains {
-		if !c.Portfolio {
-			if ChainWhen(c.Name, is, nil).Due(now) {
-				a.startChainQuietly(c.Name, "")
-			}
-			continue
+	var started map[string]time.Time
+	if awake != nil {
+		if started, err = a.Store.LastStarts(ctx); err != nil {
+			slog.Error("reading last runs", "err", err)
 		}
-		for i := range ps {
-			if ChainWhen(c.Name, is, &ps[i]).Due(now) {
-				a.startChainQuietly(c.Name, ps[i].ID)
+	}
+	for _, c := range Chains {
+		targets := []*store.Portfolio{nil}
+		if c.Portfolio {
+			targets = targets[:0]
+			for i := range ps {
+				targets = append(targets, &ps[i])
+			}
+		}
+		for _, p := range targets {
+			pid := ""
+			if p != nil {
+				pid = p.ID
+			}
+			w := ChainWhen(c.Name, is, p)
+			if onTime && w.Due(now) {
+				a.startChainQuietly(c.Name, pid, nil)
+			} else if awake != nil {
+				if due := w.Missed(now, *awake, started[c.Steps[0].Job+":"+pid]); due != nil {
+					slog.Info("catching up", "schedule", c.Name, "portfolio", pid, "missed", due.Format("2006-01-02 15:04"))
+					a.startChainQuietly(c.Name, pid, due)
+				}
 			}
 		}
 	}

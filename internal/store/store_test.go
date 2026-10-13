@@ -3,10 +3,12 @@ package store
 import (
 	"context"
 	"crypto/rand"
+	"errors"
 	"fmt"
 	"os"
 	"strings"
 	"testing"
+	"time"
 
 	"github.com/jackc/pgx/v5"
 )
@@ -99,5 +101,28 @@ func TestAnOlderDatabaseIsBroughtUpToDate(t *testing.T) {
 	}
 	if owners["Shared"] != "Admin" || owners["Guest's"] != "Guest" {
 		t.Fatalf("owners after the upgrade = %v", owners)
+	}
+}
+
+func TestACatchUpRunsOnceHoweverManyCopiesTry(t *testing.T) {
+	st, _ := openTwice(t)
+	ctx := context.Background()
+	missed := time.Now().Add(-time.Hour).Truncate(time.Minute)
+	if _, err := st.StartJob(ctx, "prices", nil, &missed); err != nil {
+		t.Fatal(err)
+	}
+	if _, err := st.StartJob(ctx, "prices", nil, &missed); !errors.Is(err, ErrNotFound) {
+		t.Fatalf("a second catch-up for the same time = %v", err)
+	}
+	runs, err := st.LastRuns(ctx, NewID())
+	if err != nil {
+		t.Fatal(err)
+	}
+	if len(runs) != 1 || runs[0].CatchUpFor == nil || !runs[0].CatchUpFor.Equal(missed) {
+		t.Fatalf("runs = %+v", runs)
+	}
+	started, err := st.LastStarts(ctx)
+	if err != nil || started["prices:"].IsZero() {
+		t.Fatalf("last starts = %v, %v", started, err)
 	}
 }

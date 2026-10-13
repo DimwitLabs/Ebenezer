@@ -1,9 +1,10 @@
 import { useEffect, useRef, useState, type ReactNode } from "react";
 
-import { del, post, type Job } from "../lib/api";
+import { del, post, type Job, type JobRun } from "../lib/api";
 import { ago } from "../lib/format";
 import { useInterval, useLoad } from "../lib/hooks";
-import { usePortfolio } from "../lib/session";
+import { usePortfolio, useSession } from "../lib/session";
+import { Badge } from "../design-system/Badge";
 import { useSnack } from "../design-system/Snack";
 
 export function useJobs() {
@@ -30,6 +31,19 @@ export function lastRunText(j: Job): string {
   const when = ago(j.lastRun.startedAt);
   if (j.lastRun.ok === null) return `Started ${when}`;
   return `${j.lastRun.ok ? "Ran" : "Failed"} ${when}${j.lastRun.message ? ` · ${j.lastRun.message}` : ""}`;
+}
+
+// Times are in the server's zone, the one schedules are set in.
+export function CatchUp({ run }: { run: JobRun | null | undefined }) {
+  const { timeZone } = useSession();
+  if (!run?.catchUpFor) return null;
+  const hm = (s: string) => new Date(s).toLocaleTimeString("en-GB", { hour: "2-digit", minute: "2-digit", timeZone });
+  const day = new Date(run.catchUpFor).toLocaleDateString("en-GB", { day: "numeric", month: "short", timeZone });
+  return (
+    <Badge tone="warn" icon="history" title="I was not running when this was due, so I ran it once I was back.">
+      {`Missed ${hm(run.catchUpFor)} on ${day}; caught up at ${hm(run.startedAt)}`}
+    </Badge>
+  );
 }
 
 interface Props {
@@ -97,6 +111,7 @@ export function Status({ job, fallback, children }: { job?: Job; fallback?: stri
     <div className="status-row">
       <span className={`okdot${tone === "bad" ? " bad" : tone === "idle" ? " idle" : ""}`} />
       <span className="help">{job ? lastRunText(job) : (fallback ?? "…")}</span>
+      {!job?.running && <CatchUp run={job?.lastRun} />}
       {children && <span className="status-a">{children}</span>}
     </div>
   );

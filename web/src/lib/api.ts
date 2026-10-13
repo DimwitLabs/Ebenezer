@@ -355,6 +355,7 @@ export interface JobRun {
   ok: boolean | null;
   message: string;
   facts: Fact[];
+  catchUpFor: string | null;
 }
 
 export interface Fact {

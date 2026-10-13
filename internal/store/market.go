@@ -323,6 +323,7 @@ type JobRun struct {
 	OK          *bool      `json:"ok"`
 	Message     string     `json:"message"`
 	Facts       []Fact     `json:"facts"`
+	CatchUpFor  *time.Time `json:"catchUpFor"`
 }
 
 type Fact struct {
@@ -330,10 +331,46 @@ type Fact struct {
 	Value string `json:"value"`
 }
 
-func (s *Store) StartJob(ctx context.Context, job string, portfolioID *string) (int64, error) {
+// StartJob records a run; a catch-up is recorded only if no run has started since the time it makes up for, so two copies of me never both catch up.
+func (s *Store) StartJob(ctx context.Context, job string, portfolioID *string, catchUpFor *time.Time) (int64, error) {
+	tx, err := s.pool.Begin(ctx)
+	if err != nil {
+		return 0, err
+	}
+	defer tx.Rollback(ctx)
+	if catchUpFor != nil {
+		if _, err := tx.Exec(ctx, `SELECT pg_advisory_xact_lock(hashtext($1))`, "ebenezer-catch-up:"+s.schema+":"+job); err != nil {
+			return 0, err
+		}
+	}
 	var id int64
-	err := s.pool.QueryRow(ctx, s.q(`INSERT INTO {s}.job_runs (job, portfolio_id) VALUES ($1, $2) RETURNING id`), job, portfolioID).Scan(&id)
-	return id, err
+	err = tx.QueryRow(ctx, s.q(`INSERT INTO {s}.job_runs (job, portfolio_id, catch_up_for) SELECT $1, $2::uuid, $3::timestamptz
+		WHERE $3::timestamptz IS NULL OR NOT EXISTS (SELECT 1 FROM {s}.job_runs
+			WHERE job = $1 AND portfolio_id IS NOT DISTINCT FROM $2::uuid AND started_at >= $3::timestamptz)
+		RETURNING id`), job, portfolioID, catchUpFor).Scan(&id)
+	if err != nil {
+		return 0, notFound(err)
+	}
+	return id, tx.Commit(ctx)
+}
+
+// LastStarts says when each job last started, keyed by job and portfolio as job:portfolio.
+func (s *Store) LastStarts(ctx context.Context) (map[string]time.Time, error) {
+	rows, err := s.pool.Query(ctx, s.q(`SELECT job || ':' || coalesce(portfolio_id::text, ''), max(started_at) FROM {s}.job_runs GROUP BY 1`))
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	out := map[string]time.Time{}
+	for rows.Next() {
+		var key string
+		var at time.Time
+		if err := rows.Scan(&key, &at); err != nil {
+			return nil, err
+		}
+		out[key] = at
+	}
+	return out, rows.Err()
 }
 
 func (s *Store) FinishJob(ctx context.Context, id int64, ok bool, message string, facts []Fact) error {
@@ -356,7 +393,7 @@ func (s *Store) CloseInterruptedJobs(ctx context.Context) error {
 }
 
 func (s *Store) LastRuns(ctx context.Context, portfolioID string) ([]JobRun, error) {
-	rows, err := s.pool.Query(ctx, s.q(`SELECT DISTINCT ON (job) id, job, portfolio_id::text, started_at, finished_at, ok, message, facts
+	rows, err := s.pool.Query(ctx, s.q(`SELECT DISTINCT ON (job) id, job, portfolio_id::text, started_at, finished_at, ok, message, facts, catch_up_for
 		FROM {s}.job_runs WHERE portfolio_id IS NULL OR portfolio_id = $1 ORDER BY job, started_at DESC`), portfolioID)
 	if err != nil {
 		return nil, err
@@ -365,7 +402,7 @@ func (s *Store) LastRuns(ctx context.Context, portfolioID string) ([]JobRun, err
 	out := []JobRun{}
 	for rows.Next() {
 		var r JobRun
-		if err := rows.Scan(&r.ID, &r.Job, &r.PortfolioID, &r.StartedAt, &r.FinishedAt, &r.OK, &r.Message, &r.Facts); err != nil {
+		if err := rows.Scan(&r.ID, &r.Job, &r.PortfolioID, &r.StartedAt, &r.FinishedAt, &r.OK, &r.Message, &r.Facts, &r.CatchUpFor); err != nil {
 			return nil, err
 		}
 		out = append(out, r)

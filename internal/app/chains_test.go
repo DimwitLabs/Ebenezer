@@ -32,7 +32,7 @@ func TestAChainWaitingOnAnotherRunTakesItsOutcome(t *testing.T) {
 		a.mu.Unlock()
 		done()
 	}()
-	if a.step(context.Background(), "chain:news:p", "snapshot", "p") {
+	if a.step(context.Background(), "chain:news:p", "snapshot", "p", nil) {
 		t.Fatal("the chain carried on after the run it waited on failed")
 	}
 	if step := a.chainStep["chain:news:p"]; step != "" {

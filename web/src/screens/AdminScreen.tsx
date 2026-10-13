@@ -8,7 +8,7 @@ import { FormActions } from "../design-system/FormActions";
 import { Item } from "../design-system/Item";
 import { PageHead } from "../design-system/PageHead";
 import Progress from "../design-system/Progress";
-import RunNow, { useJobs } from "../components/RunNow";
+import RunNow, { CatchUp, useJobs } from "../components/RunNow";
 import { useSnack } from "../design-system/Snack";
 import { del, post, put, type InstanceView, type Job, type Schedule, type User } from "../lib/api";
 import { ago } from "../lib/format";
@@ -119,6 +119,7 @@ function ScheduleRow({ s, byName, onAct, onDone }: { s: Schedule; byName: Map<st
               ·
             </span>
             <span className="faint">{nextText(s)}</span>
+            {state !== "run" && <CatchUp run={jobs[0]?.lastRun} />}
           </span>
           {state === "run" && live?.progress && live.progress.total > 0 && <Progress className="run-prog" done={live.progress.done} total={live.progress.total} label={s.label} />}
         </button>

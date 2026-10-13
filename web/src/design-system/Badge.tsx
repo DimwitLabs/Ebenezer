@@ -13,7 +13,7 @@ export function Badge({
 }: {
   children: ReactNode;
   icon?: string;
-  tone?: "ok" | "bad" | "new" | "on";
+  tone?: "ok" | "bad" | "new" | "on" | "warn";
   title?: string;
   className?: string;
   onClick?: (e: MouseEvent) => void;

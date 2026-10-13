@@ -46,6 +46,10 @@ func chainKey(c Chain, portfolioID string) string {
 }
 
 func (a *App) StartChain(name, portfolioID string) error {
+	return a.startChain(name, portfolioID, nil)
+}
+
+func (a *App) startChain(name, portfolioID string, catchUp *time.Time) error {
 	c, ok := ChainByName(name)
 	if !ok {
 		return errors.New("no such schedule")
@@ -57,13 +61,13 @@ func (a *App) StartChain(name, portfolioID string) error {
 	}
 	go func() {
 		defer done()
-		a.runChain(ctx, key, c, portfolioID)
+		a.runChain(ctx, key, c, portfolioID, catchUp)
 	}()
 	return nil
 }
 
-func (a *App) startChainQuietly(name, portfolioID string) {
-	if err := a.StartChain(name, portfolioID); err != nil && !errors.Is(err, ErrRunning) {
+func (a *App) startChainQuietly(name, portfolioID string, catchUp *time.Time) {
+	if err := a.startChain(name, portfolioID, catchUp); err != nil && !errors.Is(err, ErrRunning) {
 		slog.Error("starting schedule", "schedule", name, "err", err)
 	}
 }
@@ -92,9 +96,14 @@ func (a *App) StopChain(name, portfolioID string) error {
 }
 
 // runChain runs a chain's steps in order; a failing shared step stops the chain, and a failing portfolio step stops it for that portfolio only.
-func (a *App) runChain(ctx context.Context, key string, c Chain, portfolioID string) {
+func (a *App) runChain(ctx context.Context, key string, c Chain, portfolioID string, catchUp *time.Time) {
 	failed := map[string]bool{}
-	for _, s := range c.Steps {
+	for i, s := range c.Steps {
+		var missed *time.Time
+		// The first step's runs are what say when the chain last ran, so a catch-up is marked there.
+		if i == 0 {
+			missed = catchUp
+		}
 		j, _ := JobByName(s.Job)
 		pids := []string{""}
 		if j.Portfolio {
@@ -115,7 +124,7 @@ func (a *App) runChain(ctx context.Context, key string, c Chain, portfolioID str
 			if failed[pid] || (s.Job == "notes" && !a.mayVoice(ctx, pid)) {
 				continue
 			}
-			ok := a.step(ctx, key, s.Job, pid)
+			ok := a.step(ctx, key, s.Job, pid, missed)
 			if ctx.Err() != nil {
 				return
 			}
@@ -130,7 +139,7 @@ func (a *App) runChain(ctx context.Context, key string, c Chain, portfolioID str
 }
 
 // step runs one job of a chain; a copy already running, started by hand or by a page load, is waited for rather than run twice.
-func (a *App) step(ctx context.Context, chain, job, portfolioID string) bool {
+func (a *App) step(ctx context.Context, chain, job, portfolioID string, catchUp *time.Time) bool {
 	key := job + ":" + portfolioID
 	sctx, done, err := a.begin(ctx, key, 30*time.Minute)
 	if errors.Is(err, ErrRunning) {
@@ -154,5 +163,5 @@ func (a *App) step(ctx context.Context, chain, job, portfolioID string) bool {
 		delete(a.chainStep, chain)
 		a.mu.Unlock()
 	}()
-	return a.run(sctx, job, portfolioID)
+	return a.run(sctx, job, portfolioID, catchUp)
 }

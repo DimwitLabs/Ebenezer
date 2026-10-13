@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, type ReactElement } from "react";
 import { BrowserRouter, Navigate, Outlet, Route, Routes, useLocation, useParams } from "react-router-dom";
 
 import AppShell from "./components/AppShell";
@@ -41,7 +41,8 @@ function Home() {
   return <Navigate to={portfolioPath(portfolio!.slug)} replace />;
 }
 
-function Root() {
+// The demo passes its own shell to show a screen without the navigation.
+export function Root({ shell = <AppShell /> }: { shell?: ReactElement }) {
   const { status, portfolio, retry, user } = useSession();
   if (status === "loading") return null;
   if (status === "unreachable") {
@@ -64,7 +65,7 @@ function Root() {
   return (
     <Routes>
       <Route path="/welcome" element={<OnboardingScreen />} />
-      <Route element={portfolio ? <AppShell /> : <Navigate to="/welcome" replace />}>
+      <Route element={portfolio ? shell : <Navigate to="/welcome" replace />}>
         <Route path="/p/:slug" element={<PortfolioRoute />}>
           <Route index element={<TodayScreen />} />
           <Route path="portfolio" element={<PortfolioScreen />} />

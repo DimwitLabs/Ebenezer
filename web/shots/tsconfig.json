@@ -1,0 +1,5 @@
+{
+  "extends": "../tsconfig.json",
+  "compilerOptions": { "resolveJsonModule": true },
+  "include": [".", "../src/vite-env.d.ts", "../src/md.d.ts"]
+}

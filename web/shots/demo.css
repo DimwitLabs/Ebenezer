@@ -1,0 +1,8 @@
+/* The site sizes an embed to its content, so nothing here may take its height from the frame. */
+[data-embed], [data-embed] body, [data-embed] #root { height: auto; }
+[data-embed] .ask { min-height: 0; }
+[data-embed] .askc { height: 620px; min-height: 0; }
+@media (min-width: 1101px) { [data-embed] .exp { grid-template-rows: auto 640px auto; } }
+[data-embed] .chatc { height: 620px; min-height: 0; }
+[data-embed] .exp[data-show="chat"] > .chatc { height: 560px; min-height: 0; }
+[data-embed] .view { padding-bottom: 28px; }

@@ -7,7 +7,6 @@ import { get, patch, type Portfolio } from "../lib/api";
 import { short } from "../lib/format";
 import { portfolioPath, useSession, useTo } from "../lib/session";
 import BugDialog from "./BugDialog";
-import { useReveal } from "../design-system/motion";
 import { applySeed, applyTheme, reportPalette, savedTheme, type Theme } from "../lib/theme";
 
 const NAV = [
@@ -52,8 +51,6 @@ export default function AppShell() {
       .catch(() => {});
   }, [portfolio, replace]);
   const menu = useRef<MdMenu>(null);
-  const view = useRef<HTMLElement>(null);
-  useReveal(view);
   const navigate = useNavigate();
   const { pathname, hash } = useLocation();
   const to = useTo();
@@ -167,7 +164,7 @@ export default function AppShell() {
             </md-icon-button>
           </div>
         </header>
-        <main className="view" ref={view}>
+        <main className="view">
           <Outlet />
         </main>
         {reporting && <BugDialog onClose={() => setReporting(false)} />}

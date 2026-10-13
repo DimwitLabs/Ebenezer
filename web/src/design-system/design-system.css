@@ -161,13 +161,20 @@ md-tabs.tabs {
 .grid { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); gap: 16px; }
 .s8 { grid-column: span 8; } .s6 { grid-column: span 6; } .s4 { grid-column: span 4; }
 .card { background: var(--card); border-radius: 28px; padding: 24px; min-width: 0; box-shadow: var(--e1); }
-[data-reveal="wait"] { opacity: 0; transform: translateY(16px); }
-[data-reveal="in"] { transition: opacity 0.55s ease, transform 0.55s cubic-bezier(0.2, 0.7, 0.2, 1); }
-@keyframes enter { from { opacity: 0; transform: translateY(6px); } }
+@keyframes enter { from { opacity: 0; translate: 0 6px; } }
 .enter { animation: enter 0.35s ease; }
-@keyframes grow { from { width: 0; } }
-.grow > * { animation: grow 0.9s cubic-bezier(0.2, 0.7, 0.2, 1); transition: width 0.9s cubic-bezier(0.2, 0.7, 0.2, 1); }
-@media (prefers-reduced-motion: reduce) { [data-reveal] { opacity: 1; transform: none; transition: none; } .enter, .grow > * { animation: none; transition: none; } }
+/* The bar unveils left to right as one clip, so no segment's width is animated on arrival. */
+@keyframes unveil { from { clip-path: inset(0 100% 0 0); } }
+.grow { animation: unveil 0.9s cubic-bezier(0.2, 0.7, 0.2, 1); }
+.grow > * { transition: flex-basis 0.9s cubic-bezier(0.2, 0.7, 0.2, 1), width 0.9s cubic-bezier(0.2, 0.7, 0.2, 1); }
+/* Cards below the fold fade up as they scroll in, driven by the scroll itself; cards already in view are past their range and sit still. */
+@keyframes reveal { from { opacity: 0; translate: 0 16px; } }
+@media (prefers-reduced-motion: no-preference) {
+  @supports (animation-timeline: view()) {
+    .view .card:not(:is(.card, md-dialog, dialog) .card) { animation: reveal linear both; animation-timeline: view(); animation-range: entry 0% entry 60%; }
+  }
+}
+@media (prefers-reduced-motion: reduce) { .enter, .grow, .grow > * { animation: none; transition: none; } }
 .card-h { display: flex; justify-content: space-between; align-items: center; gap: 12px; margin-bottom: 14px; flex-wrap: wrap; min-height: 40px; }
 .card-h h3 { font-size: 1.125rem; line-height: 1.5rem; font-weight: 650; letter-spacing: -0.1px; }
 .card-h .help { margin-top: 2px; }
@@ -403,12 +410,17 @@ button.item { position: relative; width: 100%; text-align: left; }
   position: fixed; inset: auto; margin: 0; border: 0; width: min(360px, calc(100vw - 24px)); padding: 12px 16px 16px; border-radius: 12px;
   background: var(--md-sys-color-surface-container-high); color: var(--text); box-shadow: 0 2px 6px rgb(0 0 0 / 15%), 0 8px 24px rgb(0 0 0 / 12%);
 }
-.facts-pop:popover-open { animation: drop 0.14s ease-out; }
+/* Opens and closes with the same short slide; display and overlay stay until it has faded out. */
+.facts-pop { opacity: 0; translate: 0 -4px; transition: opacity 0.14s ease-out, translate 0.14s ease-out, display 0.14s allow-discrete, overlay 0.14s allow-discrete; }
+.facts-pop:popover-open { opacity: 1; translate: 0 0; }
+@starting-style { .facts-pop:popover-open { opacity: 0; translate: 0 -4px; } }
 .facts-pop.sheet { left: 0; right: 0; bottom: 0; width: auto; border-radius: 28px 28px 0 0; padding: 8px 24px 32px; }
-.facts-pop.sheet:popover-open { animation: rise 0.2s ease-out; }
+.facts-pop.sheet { opacity: 1; translate: 0 100%; transition-duration: 0.2s; }
+.facts-pop.sheet:popover-open { translate: 0 0; }
+@starting-style { .facts-pop.sheet:popover-open { opacity: 1; translate: 0 100%; } }
+@media (prefers-reduced-motion: reduce) { .facts-pop, .facts-pop.sheet { transition: none; } }
 .facts-pop.sheet::before { content: ""; display: block; width: 32px; height: 4px; border-radius: 2px; background: var(--text3); margin: 4px auto 12px; }
 .facts-pop.sheet::backdrop { background: rgb(0 0 0 / 32%); }
-@keyframes rise { from { transform: translateY(100%); } }
 .facts-h { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; }
 .facts-h b { font-weight: 500; }
 .facts-h > span { font-size: 0.75rem; font-weight: 500; letter-spacing: 0.4px; color: var(--text3); }

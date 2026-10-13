@@ -178,8 +178,13 @@ export default function Chat({ className = "", fresh, started, stage, children, 
     if (box.current) box.current.scrollTop = box.current.scrollHeight;
   }, []);
 
+  // Scrolls only when the thread grew, not on every keystroke in the box below it.
+  const tall = useRef(0);
   useEffect(() => {
-    if (started) box.current?.scrollTo({ top: box.current.scrollHeight, behavior: "smooth" });
+    const el = box.current;
+    if (!started || !el || el.scrollHeight === tall.current) return;
+    tall.current = el.scrollHeight;
+    el.scrollTo({ top: el.scrollHeight, behavior: still() ? "auto" : "smooth" });
   });
 
   useEffect(() => {

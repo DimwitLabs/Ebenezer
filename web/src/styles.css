@@ -285,6 +285,7 @@ td.num .fixin { text-align: right; }
 .rchev md-icon { transition: transform 0.2s; }
 .run.open .rchev md-icon { transform: rotate(180deg); }
 .rsteps { list-style: none; padding: 0; margin: 16px 0 0 56px; animation: drop 0.18s ease-out; }
+@media (prefers-reduced-motion: reduce) { .rsteps { animation: none; } .step-spin { animation-duration: 2.4s; } .bb { transition: box-shadow 0.2s; } }
 .rsteps li { display: grid; grid-template-columns: 24px minmax(0, 1fr); column-gap: 16px; row-gap: 4px; position: relative; padding-bottom: 16px; }
 .rsteps li:last-child { padding-bottom: 0; }
 .rsteps li:not(:last-child)::before { content: ""; position: absolute; left: 11px; top: 28px; bottom: 4px; width: 2px; border-radius: 1px; background: var(--line); }

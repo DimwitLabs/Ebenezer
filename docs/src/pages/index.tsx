@@ -15,7 +15,7 @@ const ACTS = [
       ["event", "Money in, dated to the day"],
       ["hourglass_top", "No yearly rate before 90 days"],
     ],
-    shots: ["today-past"],
+    shots: [["today-past", "Net worth over time, set against every rupee put in."]],
   },
   {
     when: "present",
@@ -27,7 +27,10 @@ const ACTS = [
       ["compare_arrows", "Against your index, on the same days"],
       ["lock", "Statements read in your browser, never uploaded"],
     ],
-    shots: ["money-sits", "against-index"],
+    shots: [
+      ["money-sits", "Where the money sits: each section's share of net worth."],
+      ["against-index", "Each section's yearly return, ahead of or behind the same money in the Nifty 50."],
+    ],
   },
   {
     when: "future",
@@ -39,20 +42,20 @@ const ACTS = [
       ["price_change", "At inflation, just keeping up"],
       ["shopping_bag", "What today's rupee buys in 20 years"],
     ],
-    shots: ["today-future"],
+    shots: [["today-future", "Net worth in 5, 10 and 20 years, at your own rate and at inflation."]],
   },
 ] as const;
 
 const DAILY = [
-  { title: "My Note", text: "What changed, what is carrying you, what is not.", shot: "note-phone" },
-  { title: "Signal Or Humbug", text: "Every story about what you hold, judged in one line.", shot: "news-phone" },
-  { title: "Ask Me", text: "Answers from your own books, and what to ask next.", shot: "ask-phone" },
+  { title: "My Note", text: "What changed, what is carrying you, what is not.", shot: "note-phone", alt: "My note on Today: a verdict, then the points behind it." },
+  { title: "Signal Or Humbug", text: "Every story about what you hold, judged in one line.", shot: "news-phone", alt: "News about your holdings, each marked signal or humbug with a reason." },
+  { title: "Ask Me", text: "Answers from your own books, and what to ask next.", shot: "ask-phone", alt: "A question answered from your own ledger, with questions to ask next." },
 ];
 
 const SPEND = [
-  { title: "Say It", text: "“₹450 on lunch” is enough. I do the filing.", shot: "spend-chat-phone" },
-  { title: "Habits", text: "Which small spends add up, and which big ones are rare.", shot: "trends-phone" },
-  { title: "Cards", text: "Every statement, every due date, and what is billed.", shot: "cards-phone" },
+  { title: "Say It", text: "“₹450 on lunch” is enough. I do the filing.", shot: "spend-chat-phone", alt: "Telling the chat about ₹450 on lunch, and picking how it was paid." },
+  { title: "Habits", text: "Which small spends add up, and which big ones are rare.", shot: "trends-phone", alt: "Spending categories sorted by how often and how much." },
+  { title: "Cards", text: "Every statement, every due date, and what is billed.", shot: "cards-phone", alt: "A credit card with its statement, due date and what is billed." },
 ];
 
 const MORE = [
@@ -64,19 +67,20 @@ const MORE = [
   ["key", "Keys Kept Locked", "AI, mail and alert passwords encrypted at rest."],
 ];
 
-function Tiles({ items }: { items: { title: string; text: string; shot: string }[] }) {
+function Tiles({ label, items }: { label: string; items: { title: string; text: string; shot: string; alt: string }[] }) {
   return (
-    <div className="ptiles swipe">
+    // On a phone the row scrolls sideways, so it takes keyboard focus to be scrolled with arrow keys.
+    <ul className="ptiles swipe" role="list" aria-label={label} tabIndex={0}>
       {items.map((t) => (
-        <div key={t.title} className="ptile">
-          <b>{t.title}</b>
+        <li key={t.title} className="ptile">
+          <h3>{t.title}</h3>
           <p>{t.text}</p>
           <div className="pimg">
-            <Pic name={t.shot} alt={t.title} phone={false} />
+            <Pic name={t.shot} alt={t.alt} phone={false} />
           </div>
-        </div>
+        </li>
       ))}
-    </div>
+    </ul>
   );
 }
 
@@ -125,22 +129,22 @@ export default function Home() {
           </div>
         </section>
 
-        <section className="verdict">
+        <div className="verdict">
           <span className="vkick">Plainly</span>
           <p>
             Your money earned <b className="up">9.4%</b> a year. The same rupees in the Nifty 50 earned <b className="down">13.8%</b>.
           </p>
           <small>Every dated rupee counted, against the same money on the same days. Usually the index wins. I will say so.</small>
-        </section>
+        </div>
 
-        <section className="pname">
+        <div className="pname">
           <span className="vkick">About The Name</span>
           <p>
             Ebenezer Scrooge kept the books, counted every coin, and thought most of what people spent money on was humbug. Then three ghosts kept him up all night, showing him his past, his present
             and his likely future. He came out of it better with his money and with his people.
           </p>
           <p className="punch">I have kept the ledger and the ghosts. The miserliness I now practise on your behalf.</p>
-        </section>
+        </div>
 
         <div className="phead">
           <span className="ghosts">
@@ -151,15 +155,15 @@ export default function Home() {
           <h2>Past, Present And Future</h2>
           <p>My three ghosts, put to work on your money.</p>
         </div>
-        <div className="acts swipe">
+        <ul className="acts swipe" role="list" aria-label="Past, present and future" tabIndex={0}>
           {ACTS.map((a, i) => (
-            <section key={a.when} className={`act act-${a.when}${i % 2 ? " flip" : ""}`}>
+            <li key={a.when} className={`act act-${a.when}${i % 2 ? " flip" : ""}`}>
               <div className="acopy">
                 <span className="aghost">
                   <Ghost when={a.when} />
                   {a.ghost}
                 </span>
-                <h2>{a.title}</h2>
+                <h3>{a.title}</h3>
                 <p>{a.text}</p>
                 <ul>
                   {a.facts.map(([icon, fact]) => (
@@ -170,21 +174,21 @@ export default function Home() {
                   ))}
                 </ul>
               </div>
-              <figure className="ashot">
-                {a.shots.map((shot) => (
-                  <Pic key={shot} name={shot} alt={a.title} />
+              <div className="ashot">
+                {a.shots.map(([shot, alt]) => (
+                  <Pic key={shot} name={shot} alt={alt} />
                 ))}
-              </figure>
-            </section>
+              </div>
+            </li>
           ))}
-        </div>
+        </ul>
 
         <section className="pband">
           <div className="phead">
             <h2>Every Morning, A Word</h2>
             <p>I read the news before you wake, and I answer what you ask from your own books.</p>
           </div>
-          <Tiles items={DAILY} />
+          <Tiles label="Every morning" items={DAILY} />
         </section>
 
         <section className="pband">
@@ -192,24 +196,24 @@ export default function Home() {
             <h2>And Your Spending</h2>
             <p>A side job, kept properly.</p>
           </div>
-          <Tiles items={SPEND} />
+          <Tiles label="Your spending" items={SPEND} />
         </section>
 
         <section className="pband">
           <div className="phead">
             <h2>…More?</h2>
           </div>
-          <div className="pmore swipe">
+          <ul className="pmore swipe" role="list" aria-label="More" tabIndex={0}>
             {MORE.map(([icon, title, text]) => (
-              <div key={title}>
+              <li key={title}>
                 <span className="item-i ms" aria-hidden="true">
                   {icon}
                 </span>
-                <b>{title}</b>
+                <h3>{title}</h3>
                 <p>{text}</p>
-              </div>
+              </li>
             ))}
-          </div>
+          </ul>
         </section>
 
         <section className="pband prun" id="run">

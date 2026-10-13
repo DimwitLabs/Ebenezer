@@ -2,8 +2,15 @@ import { useEffect, useState } from "react";
 
 import "../../css/landing.css";
 
+import sizes from "./sizes.json";
+
+const SIZES: Record<string, number[]> = sizes;
+
 // Screenshots with a phone-width capture of the app's own phone layout.
 const PHONE = new Set(["today-past", "today-future", "money-sits", "against-index"]);
+
+const shot = (name: string) => `/img/shots/${name}.webp`;
+const box = (name: string) => ({ width: SIZES[name]?.[0], height: SIZES[name]?.[1] });
 
 // Both themes are in the page and CSS shows the one matching the site's toggle; a hidden lazy image is never fetched.
 export function Pic({ name, alt, phone = PHONE.has(name) }: { name: string; alt: string; phone?: boolean }) {
@@ -11,8 +18,8 @@ export function Pic({ name, alt, phone = PHONE.has(name) }: { name: string; alt:
     <>
       {(["light", "dark"] as const).map((t) => (
         <picture key={t} className={`only-${t}`}>
-          {phone && <source srcSet={`/img/shots/${name}-phone-${t}.webp`} media="(max-width: 600px)" />}
-          <img src={`/img/shots/${name}-${t}.webp`} alt={alt} loading="lazy" />
+          {phone && <source srcSet={shot(`${name}-phone-${t}`)} media="(max-width: 600px)" {...box(`${name}-phone`)} />}
+          <img src={shot(`${name}-${t}`)} alt={alt} loading="lazy" {...box(name)} />
         </picture>
       ))}
     </>
@@ -21,13 +28,12 @@ export function Pic({ name, alt, phone = PHONE.has(name) }: { name: string; alt:
 
 // The hero is the page's largest paint, so it is one picture fetched first; it follows the system theme, which the site's toggle matches unless set by hand.
 export function Hero({ alt }: { alt: string }) {
-  const shot = (name: string) => `/img/shots/${name}.webp`;
   return (
     <picture>
-      <source media="(max-width: 600px) and (prefers-color-scheme: dark)" srcSet={shot("today-phone-dark")} width={764} height={902} />
-      <source media="(max-width: 600px)" srcSet={shot("today-phone-light")} width={764} height={902} />
-      <source media="(prefers-color-scheme: dark)" srcSet={shot("today-dark")} width={2296} height={768} />
-      <img src={shot("today-light")} alt={alt} width={2296} height={768} fetchPriority="high" />
+      <source media="(max-width: 600px) and (prefers-color-scheme: dark)" srcSet={shot("today-phone-dark")} {...box("today-phone")} />
+      <source media="(max-width: 600px)" srcSet={shot("today-phone-light")} {...box("today-phone")} />
+      <source media="(prefers-color-scheme: dark)" srcSet={shot("today-dark")} {...box("today")} />
+      <img src={shot("today-light")} alt={alt} fetchPriority="high" {...box("today")} />
     </picture>
   );
 }
@@ -67,7 +73,7 @@ export function Copy({ text }: { text: string }) {
   }, [said]);
   return (
     <div className="cmd">
-      <code>{text}</code>
+      <code tabIndex={0}>{text}</code>
       <button type="button" aria-label={`Copy ${text}`} onClick={copy}>
         <Icon name={said === "Copied" ? "check" : "content_copy"} />
       </button>

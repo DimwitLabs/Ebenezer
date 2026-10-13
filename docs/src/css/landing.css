@@ -1,6 +1,6 @@
 @font-face { font-family: "Material Symbols Rounded"; font-style: normal; font-weight: 400 600; font-display: block; src: url("../../../web/src/design-system/icons.woff2") format("woff2"); }
 .eb { font-size: 17px; line-height: 1.55; }
-.eb p, .eb h1, .eb h2, .eb figure { margin: 0; }
+.eb p, .eb h1, .eb h2, .eb h3, .eb figure { margin: 0; }
 .eb img { display: block; max-width: 100%; height: auto; }
 .eb code { padding: 0; border: 0; background: none; font-family: var(--mono); font-size: 0.92em; }
 .eb button { border: 0; background: none; cursor: pointer; }
@@ -17,9 +17,9 @@
 .eb .cmd button { display: grid; place-items: center; width: 40px; height: 40px; border-radius: 20px; color: var(--text2); }
 .eb .cmd button:hover { background: var(--surface); color: var(--text); }
 .eb { --pad: clamp(16px, 4vw, 48px); --wide: 1200px; }
-.eb h1, .eb h2 { font-stretch: 100%; font-weight: 650; text-wrap: balance; }
+.eb h1, .eb h2, .eb h3 { font-stretch: 100%; font-weight: 650; text-wrap: balance; }
 .eb h1 { font-size: clamp(48px, 6.4vw, 84px); line-height: 1; letter-spacing: -0.035em; }
-.eb h2 { font-size: clamp(30px, 3.4vw, 44px); line-height: 1.08; letter-spacing: -0.025em; }
+.eb h2, .eb .acopy h3 { font-size: clamp(30px, 3.4vw, 44px); line-height: 1.08; letter-spacing: -0.025em; }
 .eb .up { color: var(--gain); }
 .eb .down { color: var(--loss); }
 .eb .phero { display: grid; justify-items: center; padding: clamp(56px, 8vw, 104px) var(--pad) 0; text-align: center; }
@@ -53,17 +53,19 @@
 .eb .pband { max-width: calc(var(--wide) + 2 * var(--pad)); margin: 0 auto; padding: clamp(80px, 9vw, 128px) var(--pad) 0; }
 .eb .phead { display: grid; justify-items: center; margin-bottom: 40px; text-align: center; }
 .eb .phead p { max-width: 520px; margin-top: 12px; font-size: 18px; color: var(--text2); }
+.eb .acts, .eb .ptiles, .eb .pmore { margin: 0; padding: 0; list-style: none; }
+.eb .swipe:focus-visible { outline: 2px solid var(--accent); outline-offset: 4px; border-radius: 8px; }
 .eb .ptiles { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; }
 .eb .ptile { position: relative; display: flex; flex-direction: column; height: 560px; padding: 28px 24px 0; border-radius: 32px; background: var(--card); overflow: hidden; }
-.eb .ptile b { font-size: 20px; font-weight: 650; }
+.eb .ptile h3 { font-size: 20px; font-weight: 650; }
 .eb .ptile p { margin-top: 6px; min-height: 48px; font-size: 15px; color: var(--text2); }
 .eb .pimg { margin: 20px -4px 0; }
 .eb .pimg img { width: 100%; }
 .eb .ptile::after { content: ""; position: absolute; inset: auto 0 0; height: 72px; background: linear-gradient(transparent, var(--card)); pointer-events: none; }
 .eb .pmore { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); grid-auto-rows: 1fr; gap: 12px; }
-.eb .pmore > div { display: grid; grid-template-columns: 40px minmax(0, 1fr); grid-template-rows: auto auto; align-content: center; column-gap: 16px; row-gap: 2px; padding: 20px; border-radius: 24px; background: var(--card); }
+.eb .pmore > li { display: grid; grid-template-columns: 40px minmax(0, 1fr); grid-template-rows: auto auto; align-content: center; column-gap: 16px; row-gap: 2px; padding: 20px; border-radius: 24px; background: var(--card); }
 .eb .pmore .item-i { grid-row: span 2; align-self: center; }
-.eb .pmore b { font-size: 16px; font-weight: 650; }
+.eb .pmore h3 { font-size: 16px; font-weight: 650; }
 .eb .pmore p { font-size: 14px; color: var(--text2); }
 .eb .pcmds { display: grid; gap: 10px; max-width: 520px; margin: 0 auto; }
 .eb .pcmds code { display: block; padding: 16px 20px; border-radius: 18px; background: var(--card); font-size: 15px; }
@@ -97,4 +99,7 @@
   .eb .acts .act { display: flex; flex-direction: column; align-items: stretch; gap: 28px; margin: 0; }
   .eb .acts .ashot { margin-top: auto; }
   .eb .pmore.swipe { grid-auto-columns: 72%; }
+}
+@media (max-width: 996px) and (pointer: fine) {
+  .eb .swipe { scrollbar-width: thin; }
 }

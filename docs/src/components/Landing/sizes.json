@@ -1,0 +1,66 @@
+{
+  "against-index": [
+    2296,
+    644
+  ],
+  "against-index-phone": [
+    764,
+    644
+  ],
+  "ask-phone": [
+    728,
+    856
+  ],
+  "cards-phone": [
+    764,
+    1080
+  ],
+  "money-sits": [
+    2296,
+    892
+  ],
+  "money-sits-phone": [
+    764,
+    892
+  ],
+  "news-phone": [
+    764,
+    896
+  ],
+  "note-phone": [
+    764,
+    848
+  ],
+  "spend-chat-phone": [
+    728,
+    766
+  ],
+  "today-future": [
+    1536,
+    856
+  ],
+  "today-future-phone": [
+    764,
+    870
+  ],
+  "today": [
+    2296,
+    768
+  ],
+  "today-past": [
+    1536,
+    1018
+  ],
+  "today-past-phone": [
+    764,
+    990
+  ],
+  "today-phone": [
+    764,
+    902
+  ],
+  "trends-phone": [
+    764,
+    2586
+  ]
+}

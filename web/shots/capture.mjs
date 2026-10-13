@@ -2,13 +2,16 @@
 //   cd web && node_modules/.bin/vite --config vite.shots.config.ts
 // then: node web/shots/capture.mjs [name ...]
 import { spawn, spawnSync } from "node:child_process";
-import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from "node:fs";
+import { existsSync, mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { fileURLToPath } from "node:url";
 
 const BASE = process.env.SHOTS_URL ?? "http://localhost:5180";
 const OUT = fileURLToPath(new URL("../../docs/static/img/shots/", import.meta.url));
+// The landing page gives every shot its width and height, so the page does not jump as they load.
+const SIZES = fileURLToPath(new URL("../../docs/src/components/Landing/sizes.json", import.meta.url));
+const sizes = existsSync(SIZES) ? JSON.parse(readFileSync(SIZES, "utf8")) : {};
 const CHROME = process.env.CHROME ?? "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome";
 
 const card = (text) => `[...document.querySelectorAll('.card')].filter(c => c.querySelector('h3, b')?.textContent.trim().startsWith(${JSON.stringify(text)})).slice(0, 1)`;
@@ -110,11 +113,14 @@ for (const s of shots) {
     }
     const shot = await send("Page.captureScreenshot", { format: "png", captureBeyondViewport: true, clip: { ...box, scale: 1 } });
     const png = join(OUT, `${s.name}-${theme}.png`);
-    writeFileSync(png, Buffer.from(shot.result.data, "base64"));
+    const data = Buffer.from(shot.result.data, "base64");
+    writeFileSync(png, data);
+    sizes[s.name] = [data.readUInt32BE(16), data.readUInt32BE(20)];
     if (spawnSync("cwebp", ["-quiet", "-q", "88", png, "-o", png.replace(/\.png$/, ".webp")]).status !== 0) throw new Error("cwebp failed; install it with brew install webp");
     rmSync(png);
     console.log(`${s.name}-${theme}.webp ${Math.round(box.width)}x${Math.round(box.height)}`);
   }
 }
+writeFileSync(SIZES, `${JSON.stringify(Object.fromEntries(Object.entries(sizes).sort()), null, 2)}\n`);
 chrome.kill();
 process.exit(0);

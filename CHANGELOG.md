@@ -9,21 +9,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- **Portfolios And Sections:** Shares, funds, bonds, gold, deposits, savings, loans and property, plus custom sections.
-- **Paste, Match And Tidy:** Paste any table, match its columns once, and fix bad rows with a sandboxed script.
-- **Statement PDFs:** CAMS and KFintech fill in fund transactions; NSDL and CDSL check your demat holdings.
-- **Evening Prices:** BSE, NSE, AMFI, index closes, and gold and silver rates, every evening.
-- **Bullion Where It Belongs:** Gold ETFs, gold funds and SGBs can count as bullion.
-- **Ebenezer's Note:** A short verdict beside your figures, checked against the ledger before it shows.
-- **Ask Ebenezer:** Questions answered from your own ledger, with follow-ups to ask next.
-- **Expenses:** Log spends by chatting, with a monthly view, trends and CSV import.
-- **Credit Cards:** What you owe, what's billed and what's left, cycle by cycle.
-- **Daily Report:** An email on your schedule, through your own SMTP server.
-- **Voice:** Pick a personality and tone per portfolio, or describe your own.
-- **Holdings And Returns:** First-in-first-out positions, and XIRR against your index and inflation.
-- **The Three Ghosts:** Past, Present and Future views of your net worth.
-- **Judged News:** Company news and filings, sorted into signal and humbug.
-- **Export:** Everything as CSVs in one zip, ready to import back.
-- **Source Health:** Alerts through ntfy when a price source breaks, and catch-up for missed runs.
-- **Sealed Secrets:** API keys and passwords are encrypted before they reach the database.
-- **Run It Where You Like:** One Docker image, with bundled Postgres or your own.
+- **Portfolios:** Shares, mutual funds, bonds, gold, deposits, savings, loans and property each get a typed section, and anything else a custom one. Paste any table and match its columns once, or upload CAMS, KFintech, NSDL and CDSL statements to fill in transactions and check holdings.
+- **Prices And Returns:** BSE, NSE, AMFI, index closes and gold and silver rates are fetched every evening. Positions are worked out first in first out, and every section gets its XIRR against your chosen index and inflation, with Past, Present and Future views of your net worth.
+- **Ebenezer Himself:** A short note beside your figures, checked against the ledger before it shows, and answers to your questions from your own data. Pick a personality and tone per portfolio or describe your own, and news about what you hold comes sorted into signal and humbug.
+- **Expenses And Cards:** Log spends by chatting, as in `swiggy 450 on regalia`, and see the month against a usual one. Credit cards track what you owe, what is billed and what is left, cycle by cycle.
+- **Reports And Alerts:** A daily email on your schedule through your own SMTP server, and an ntfy alert when a price source breaks. Runs missed while the server was down catch up when it is back.
+- **Self-Hosted:** One Docker image with a bundled Postgres, or your own, Supabase included. Keys and passwords are encrypted before they reach the database, and everything exports as CSVs that import straight back.

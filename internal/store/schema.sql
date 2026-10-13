@@ -1,4 +1,5 @@
-CREATE TABLE {s}.users (
+-- Runs on every start, so every statement must be safe to repeat; see CONTRIBUTING.md.
+CREATE TABLE IF NOT EXISTS {s}.users (
 	id            uuid PRIMARY KEY,
 	email         text NOT NULL UNIQUE,
 	name          text NOT NULL,
@@ -8,15 +9,15 @@ CREATE TABLE {s}.users (
 	must_change_password boolean NOT NULL DEFAULT false
 );
 
-CREATE TABLE {s}.sessions (
+CREATE TABLE IF NOT EXISTS {s}.sessions (
 	token_hash bytea PRIMARY KEY,
 	user_id    uuid NOT NULL REFERENCES {s}.users (id) ON DELETE CASCADE,
 	created_at timestamptz NOT NULL DEFAULT now(),
 	expires_at timestamptz NOT NULL
 );
-CREATE INDEX sessions_user_idx ON {s}.sessions (user_id);
+CREATE INDEX IF NOT EXISTS sessions_user_idx ON {s}.sessions (user_id);
 
-CREATE TABLE {s}.portfolios (
+CREATE TABLE IF NOT EXISTS {s}.portfolios (
 	id         uuid PRIMARY KEY,
 	name       text NOT NULL,
 	slug       text NOT NULL,
@@ -25,17 +26,25 @@ CREATE TABLE {s}.portfolios (
 	currency   text NOT NULL DEFAULT 'INR',
 	fy_start   smallint NOT NULL DEFAULT 4 CHECK (fy_start BETWEEN 1 AND 12),
 	settings   jsonb NOT NULL DEFAULT '{}',
+	owner_id   uuid REFERENCES {s}.users (id) ON DELETE SET NULL,
 	created_at timestamptz NOT NULL DEFAULT now()
 );
-CREATE UNIQUE INDEX portfolios_slug ON {s}.portfolios (slug);
+ALTER TABLE {s}.portfolios ADD COLUMN IF NOT EXISTS owner_id uuid REFERENCES {s}.users (id) ON DELETE SET NULL;
+CREATE UNIQUE INDEX IF NOT EXISTS portfolios_slug ON {s}.portfolios (slug);
 
-CREATE TABLE {s}.portfolio_members (
+CREATE TABLE IF NOT EXISTS {s}.portfolio_members (
 	portfolio_id uuid NOT NULL REFERENCES {s}.portfolios (id) ON DELETE CASCADE,
 	user_id      uuid NOT NULL REFERENCES {s}.users (id) ON DELETE CASCADE,
 	PRIMARY KEY (portfolio_id, user_id)
 );
 
-CREATE TABLE {s}.sections (
+-- Portfolios from before owners were kept go to the admin if they are on it, else to the earliest member.
+UPDATE {s}.portfolios p SET owner_id = (
+	SELECT m.user_id FROM {s}.portfolio_members m JOIN {s}.users u ON u.id = m.user_id
+	WHERE m.portfolio_id = p.id ORDER BY u.is_owner DESC, u.created_at LIMIT 1)
+WHERE p.owner_id IS NULL;
+
+CREATE TABLE IF NOT EXISTS {s}.sections (
 	id           uuid PRIMARY KEY,
 	portfolio_id uuid NOT NULL REFERENCES {s}.portfolios (id) ON DELETE CASCADE,
 	kind         text NOT NULL,
@@ -52,10 +61,10 @@ CREATE TABLE {s}.sections (
 	position     integer NOT NULL DEFAULT 0,
 	created_at   timestamptz NOT NULL DEFAULT now()
 );
-CREATE INDEX sections_portfolio_idx ON {s}.sections (portfolio_id);
-CREATE UNIQUE INDEX sections_one_per_kind ON {s}.sections (portfolio_id, kind) WHERE kind <> 'custom';
+CREATE INDEX IF NOT EXISTS sections_portfolio_idx ON {s}.sections (portfolio_id);
+CREATE UNIQUE INDEX IF NOT EXISTS sections_one_per_kind ON {s}.sections (portfolio_id, kind) WHERE kind <> 'custom';
 
-CREATE TABLE {s}.imports (
+CREATE TABLE IF NOT EXISTS {s}.imports (
 	id         uuid PRIMARY KEY,
 	section_id uuid NOT NULL REFERENCES {s}.sections (id) ON DELETE CASCADE,
 	source     text NOT NULL,
@@ -64,9 +73,9 @@ CREATE TABLE {s}.imports (
 	user_id    uuid REFERENCES {s}.users (id) ON DELETE SET NULL,
 	created_at timestamptz NOT NULL DEFAULT now()
 );
-CREATE INDEX imports_section_idx ON {s}.imports (section_id);
+CREATE INDEX IF NOT EXISTS imports_section_idx ON {s}.imports (section_id);
 
-CREATE TABLE {s}.rows (
+CREATE TABLE IF NOT EXISTS {s}.rows (
 	id         uuid PRIMARY KEY,
 	section_id uuid NOT NULL REFERENCES {s}.sections (id) ON DELETE CASCADE,
 	data       jsonb NOT NULL,
@@ -78,7 +87,7 @@ CREATE TABLE {s}.rows (
 	UNIQUE (section_id, row_hash)
 );
 
-CREATE TABLE {s}.holdings (
+CREATE TABLE IF NOT EXISTS {s}.holdings (
 	section_id uuid NOT NULL REFERENCES {s}.sections (id) ON DELETE CASCADE,
 	key        text NOT NULL,
 	isin       text NOT NULL DEFAULT '',
@@ -92,7 +101,7 @@ CREATE TABLE {s}.holdings (
 	PRIMARY KEY (section_id, key)
 );
 
-CREATE TABLE {s}.templates (
+CREATE TABLE IF NOT EXISTS {s}.templates (
 	id           uuid PRIMARY KEY,
 	portfolio_id uuid NOT NULL REFERENCES {s}.portfolios (id) ON DELETE CASCADE,
 	kind         text NOT NULL,
@@ -102,7 +111,7 @@ CREATE TABLE {s}.templates (
 	UNIQUE (portfolio_id, kind, name)
 );
 
-CREATE TABLE {s}.securities (
+CREATE TABLE IF NOT EXISTS {s}.securities (
 	isin       text PRIMARY KEY,
 	symbol     text NOT NULL DEFAULT '',
 	bse_code   text NOT NULL DEFAULT '',
@@ -112,7 +121,7 @@ CREATE TABLE {s}.securities (
 	updated_at timestamptz NOT NULL DEFAULT now()
 );
 
-CREATE TABLE {s}.prices (
+CREATE TABLE IF NOT EXISTS {s}.prices (
 	isin   text NOT NULL,
 	day    date NOT NULL,
 	close  numeric NOT NULL,
@@ -120,7 +129,7 @@ CREATE TABLE {s}.prices (
 	PRIMARY KEY (isin, day)
 );
 
-CREATE TABLE {s}.index_closes (
+CREATE TABLE IF NOT EXISTS {s}.index_closes (
 	name  text NOT NULL,
 	day   date NOT NULL,
 	close numeric NOT NULL,
@@ -130,7 +139,7 @@ CREATE TABLE {s}.index_closes (
 	PRIMARY KEY (name, day)
 );
 
-CREATE TABLE {s}.snapshots (
+CREATE TABLE IF NOT EXISTS {s}.snapshots (
 	portfolio_id uuid NOT NULL REFERENCES {s}.portfolios (id) ON DELETE CASCADE,
 	day          date NOT NULL,
 	net_worth    numeric NOT NULL,
@@ -138,7 +147,7 @@ CREATE TABLE {s}.snapshots (
 	PRIMARY KEY (portfolio_id, day)
 );
 
-CREATE TABLE {s}.job_runs (
+CREATE TABLE IF NOT EXISTS {s}.job_runs (
 	id           bigserial PRIMARY KEY,
 	job          text NOT NULL,
 	portfolio_id uuid REFERENCES {s}.portfolios (id) ON DELETE CASCADE,
@@ -146,16 +155,18 @@ CREATE TABLE {s}.job_runs (
 	finished_at  timestamptz,
 	ok           boolean,
 	message      text NOT NULL DEFAULT '',
-	facts        jsonb NOT NULL DEFAULT '[]'
+	facts        jsonb NOT NULL DEFAULT '[]',
+	catch_up_for timestamptz
 );
-CREATE INDEX job_runs_job_idx ON {s}.job_runs (job, started_at DESC);
+ALTER TABLE {s}.job_runs ADD COLUMN IF NOT EXISTS catch_up_for timestamptz;
+CREATE INDEX IF NOT EXISTS job_runs_job_idx ON {s}.job_runs (job, started_at DESC);
 
-CREATE TABLE {s}.settings (
+CREATE TABLE IF NOT EXISTS {s}.settings (
 	key   text PRIMARY KEY,
 	value jsonb NOT NULL
 );
 
-CREATE TABLE {s}.news (
+CREATE TABLE IF NOT EXISTS {s}.news (
 	id           bigserial PRIMARY KEY,
 	portfolio_id uuid NOT NULL REFERENCES {s}.portfolios (id) ON DELETE CASCADE,
 	link         text NOT NULL,
@@ -172,18 +183,18 @@ CREATE TABLE {s}.news (
 	fetched_at   timestamptz NOT NULL DEFAULT now(),
 	UNIQUE (portfolio_id, link)
 );
-CREATE INDEX news_portfolio_idx ON {s}.news (portfolio_id, published_at DESC);
+CREATE INDEX IF NOT EXISTS news_portfolio_idx ON {s}.news (portfolio_id, published_at DESC);
 
 -- Ebenezer's notes as the model wrote them, keyed by the plain fact each one says, so a fact that
 -- has not changed keeps its wording and only new facts go back to the model.
-CREATE TABLE {s}.voiced_notes (
+CREATE TABLE IF NOT EXISTS {s}.voiced_notes (
 	portfolio_id uuid PRIMARY KEY REFERENCES {s}.portfolios (id) ON DELETE CASCADE,
 	voice        text NOT NULL,
 	lines        jsonb NOT NULL DEFAULT '{}',
 	updated_at   timestamptz NOT NULL DEFAULT now()
 );
 
-CREATE TABLE {s}.cards (
+CREATE TABLE IF NOT EXISTS {s}.cards (
 	id                uuid PRIMARY KEY,
 	portfolio_id      uuid NOT NULL REFERENCES {s}.portfolios (id) ON DELETE CASCADE,
 	kind              text NOT NULL CHECK (kind IN ('credit', 'charge')),
@@ -205,9 +216,9 @@ CREATE TABLE {s}.cards (
 	position          integer NOT NULL DEFAULT 0,
 	created_at        timestamptz NOT NULL DEFAULT now()
 );
-CREATE INDEX cards_portfolio_idx ON {s}.cards (portfolio_id);
+CREATE INDEX IF NOT EXISTS cards_portfolio_idx ON {s}.cards (portfolio_id);
 
-CREATE TABLE {s}.spend_imports (
+CREATE TABLE IF NOT EXISTS {s}.spend_imports (
 	id           uuid PRIMARY KEY,
 	portfolio_id uuid NOT NULL REFERENCES {s}.portfolios (id) ON DELETE CASCADE,
 	source       text NOT NULL,
@@ -217,7 +228,7 @@ CREATE TABLE {s}.spend_imports (
 	created_at   timestamptz NOT NULL DEFAULT now()
 );
 
-CREATE TABLE {s}.spend_categories (
+CREATE TABLE IF NOT EXISTS {s}.spend_categories (
 	portfolio_id uuid NOT NULL REFERENCES {s}.portfolios (id) ON DELETE CASCADE,
 	name         text NOT NULL,
 	icon         text NOT NULL,
@@ -225,7 +236,7 @@ CREATE TABLE {s}.spend_categories (
 );
 
 -- paid_with is card:<id>, account:<savings row id>, cash, or empty when not known.
-CREATE TABLE {s}.spends (
+CREATE TABLE IF NOT EXISTS {s}.spends (
 	id           uuid PRIMARY KEY,
 	portfolio_id uuid NOT NULL REFERENCES {s}.portfolios (id) ON DELETE CASCADE,
 	day          date NOT NULL,
@@ -240,4 +251,4 @@ CREATE TABLE {s}.spends (
 	created_at   timestamptz NOT NULL DEFAULT now(),
 	UNIQUE (portfolio_id, row_hash)
 );
-CREATE INDEX spends_portfolio_day_idx ON {s}.spends (portfolio_id, day DESC);
+CREATE INDEX IF NOT EXISTS spends_portfolio_day_idx ON {s}.spends (portfolio_id, day DESC);

@@ -62,14 +62,8 @@ func (s *Store) createTables(ctx context.Context) error {
 	if _, err := tx.Exec(ctx, s.q(`CREATE SCHEMA IF NOT EXISTS {s}`)); err != nil {
 		return fmt.Errorf("create schema: %w", err)
 	}
-	var made bool
-	if err := tx.QueryRow(ctx, `SELECT to_regclass($1) IS NOT NULL`, s.schema+".users").Scan(&made); err != nil {
-		return err
-	}
-	if !made {
-		if _, err := tx.Exec(ctx, s.q(schema)); err != nil {
-			return fmt.Errorf("create tables: %w", err)
-		}
+	if _, err := tx.Exec(ctx, s.q(schema)); err != nil {
+		return fmt.Errorf("create tables: %w", err)
 	}
 	return tx.Commit(ctx)
 }

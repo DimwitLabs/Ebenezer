@@ -49,6 +49,7 @@ const config: Config = {
 
   url: "https://ebenezer.dimwit.me",
   baseUrl: "/",
+  trailingSlash: false,
 
   organizationName: "DimwitLabs",
   projectName: "Ebenezer",

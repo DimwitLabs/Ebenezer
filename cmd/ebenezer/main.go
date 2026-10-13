@@ -99,7 +99,6 @@ func run() error {
 
 	a := app.New(st, app.Config{
 		Seal:      box,
-		NtfyURL:   os.Getenv("EBENEZER_NTFY_URL"),
 		PublicURL: publicURL,
 	})
 	if err := a.SealStoredSecrets(ctx); err != nil {

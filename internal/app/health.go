@@ -18,6 +18,9 @@ type Check struct {
 	Detail   string    `json:"detail"`
 	Failures int       `json:"failures"`
 	At       time.Time `json:"at"`
+	// FailingSince is when the current run of failures began, and Alerted when it was last sent out.
+	FailingSince *time.Time `json:"failingSince,omitempty"`
+	Alerted      *time.Time `json:"alerted,omitempty"`
 }
 
 type Health struct {
@@ -32,10 +35,6 @@ func (a *App) health(ctx context.Context) (string, error) {
 	var prev Health
 	if _, err := a.Store.Setting(ctx, healthSetting, &prev); err != nil {
 		return "", err
-	}
-	failures := map[string]int{}
-	for _, c := range prev.Checks {
-		failures[c.Name] = c.Failures
 	}
 	day, nse, err := a.lastTradingDay(ctx)
 	checks := []Check{result("NSE bhavcopy", err, len(nse) > 1000, fmt.Sprintf("%d quotes", len(nse)))}
@@ -66,31 +65,26 @@ func (a *App) health(ctx context.Context) (string, error) {
 	}
 
 	now := time.Now()
-	var bad, alerts []string
-	for i := range checks {
-		c := &checks[i]
-		c.At = now
-		if c.OK {
-			continue
-		}
-		c.Failures = failures[c.Name] + 1
-		bad = append(bad, c.Name)
-		if c.Failures == 2 {
-			alerts = append(alerts, c.Name+": "+c.Detail)
-		}
-	}
+	alerts, back := review(prev.Checks, checks, now)
 	if err := a.Store.SetSetting(ctx, healthSetting, Health{Checks: checks, At: now}); err != nil {
 		return "", err
 	}
 	if len(alerts) > 0 {
-		if err := a.notify(ctx, "Ebenezer: a source stopped working", strings.Join(alerts, "\n")); err != nil {
+		if err := a.notify(ctx, "Ebenezer: a source is failing", strings.Join(alerts, "\n"), "warning"); err != nil {
 			slog.Error("ntfy", "err", err)
 		}
 	}
+	if len(back) > 0 {
+		if err := a.notify(ctx, "Ebenezer: a source is back", strings.Join(back, "\n"), "white_check_mark"); err != nil {
+			slog.Error("ntfy", "err", err)
+		}
+	}
+	var bad []string
 	for _, c := range checks {
 		v := "answering"
 		if !c.OK {
 			v = "failing"
+			bad = append(bad, c.Name)
 		}
 		fact(ctx, c.Name, v)
 	}
@@ -99,6 +93,47 @@ func (a *App) health(ctx context.Context) (string, error) {
 	}
 	return fmt.Sprintf("All %d checks pass", len(checks)), nil
 }
+
+// review carries each check's failing streak forward and says what to send: an alert a day from the second failure, and word when an alerted source is back.
+func review(prev, checks []Check, now time.Time) (alerts, back []string) {
+	before := map[string]Check{}
+	for _, c := range prev {
+		before[c.Name] = c
+	}
+	for i := range checks {
+		c, was := &checks[i], before[checks[i].Name]
+		c.At = now
+		if c.OK {
+			if was.Alerted != nil && was.FailingSince != nil {
+				back = append(back, fmt.Sprintf("%s answers again, after failing for %s.", c.Name, failingFor(*was.FailingSince, was.At)))
+			}
+			continue
+		}
+		c.Failures = was.Failures + 1
+		c.FailingSince, c.Alerted = was.FailingSince, was.Alerted
+		if c.FailingSince == nil {
+			c.FailingSince = &now
+		}
+		if c.Failures >= 2 && (c.Alerted == nil || !sameDay(*c.Alerted, now)) {
+			alerts = append(alerts, fmt.Sprintf("%s has failed for %s: %s", c.Name, failingFor(*c.FailingSince, now), c.Detail))
+			c.Alerted = &now
+		}
+	}
+	return alerts, back
+}
+
+func failingFor(since, now time.Time) string {
+	days := int(midnight(now).Sub(midnight(since))/(24*time.Hour)) + 1
+	return plural(days, "day", "days")
+}
+
+// midnight is the day in Zone as a UTC date, so days count the same either side of a clock change.
+func midnight(t time.Time) time.Time {
+	y, m, d := t.In(Zone).Date()
+	return time.Date(y, m, d, 0, 0, 0, 0, time.UTC)
+}
+
+func sameDay(a, b time.Time) bool { return midnight(a).Equal(midnight(b)) }
 
 func result(name string, err error, shapeOK bool, detail string) Check {
 	if err != nil {
@@ -132,7 +167,7 @@ func (a *App) LastHealth(ctx context.Context) (Health, error) {
 	return h, err
 }
 
-func (a *App) notify(ctx context.Context, title, body string) error {
+func (a *App) notify(ctx context.Context, title, body, tag string) error {
 	u := a.NtfyURL(ctx)
 	if u == "" {
 		return nil
@@ -147,7 +182,7 @@ func (a *App) notify(ctx context.Context, title, body string) error {
 	} else if is, err := a.Store.InstanceSettings(ctx); err == nil && is.NtfyUser != "" {
 		req.SetBasicAuth(is.NtfyUser, a.Secret(ctx, NtfyPassword))
 	}
-	req.Header.Set("Tags", "warning")
+	req.Header.Set("Tags", tag)
 	resp, err := healthHTTP.Do(req)
 	if err != nil {
 		return err
@@ -161,5 +196,5 @@ func (a *App) notify(ctx context.Context, title, body string) error {
 }
 
 func (a *App) TestNotify(ctx context.Context) error {
-	return a.notify(ctx, "Ebenezer", "Test alert. If you can read this, health alerts will reach you.")
+	return a.notify(ctx, "Ebenezer", "Test alert. If you can read this, health alerts will reach you.", "warning")
 }

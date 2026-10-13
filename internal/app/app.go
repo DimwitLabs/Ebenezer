@@ -34,7 +34,6 @@ func zone(name string) *time.Location {
 
 type Config struct {
 	Seal      *seal.Box
-	NtfyURL   string
 	PublicURL string
 }
 
@@ -78,10 +77,10 @@ func (a *App) PublicURL() string { return a.cfg.PublicURL }
 
 func (a *App) NtfyURL(ctx context.Context) string {
 	is, err := a.Store.InstanceSettings(ctx)
-	if err == nil && is.NtfyURL != "" {
-		return is.NtfyURL
+	if err != nil {
+		return ""
 	}
-	return a.cfg.NtfyURL
+	return is.NtfyURL
 }
 
 // RebuildHoldings fills ISINs and official names so prices and news can find each scrip by more than its ticker.

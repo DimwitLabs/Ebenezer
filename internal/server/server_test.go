@@ -377,6 +377,25 @@ func TestSecretsAreNeverSentBack(t *testing.T) {
 	}
 }
 
+func TestTheAlertAddressIsSetUnderAdminFromNothing(t *testing.T) {
+	ts := newTestServer(t)
+	owner, _, _ := setUp(t, ts)
+	var view struct {
+		Settings store.InstanceSettings `json:"settings"`
+	}
+	owner.must(http.StatusOK, "GET", "/api/settings", nil, &view)
+	if view.Settings.NtfyURL != "" {
+		t.Fatalf("a new instance has an alert address: %q", view.Settings.NtfyURL)
+	}
+	owner.must(http.StatusBadRequest, "PUT", "/api/settings", map[string]string{"ntfyUrl": "ntfy.sh/topic"}, nil)
+	owner.must(http.StatusBadRequest, "POST", "/api/settings/ntfy-test", nil, nil)
+	owner.must(http.StatusOK, "PUT", "/api/settings", map[string]string{"ntfyUrl": " https://ntfy.sh/a-secret-topic "}, nil)
+	owner.must(http.StatusOK, "GET", "/api/settings", nil, &view)
+	if view.Settings.NtfyURL != "https://ntfy.sh/a-secret-topic" || view.Settings.PricesTime != "18:45" {
+		t.Fatalf("settings after saving the address = %+v", view.Settings)
+	}
+}
+
 func TestReportPreview(t *testing.T) {
 	ts := newTestServer(t)
 	c, pid, secs := setUp(t, ts)

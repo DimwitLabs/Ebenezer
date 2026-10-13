@@ -157,8 +157,10 @@ export default function InstanceCards({ inst }: { inst: Inst }) {
 
       <AIFold inst={inst} />
 
-      <Fold id="alerts" icon="notifications" title="Alerts" summary="Where to be told when a source breaks">
-        <p className="help">Every day I check each public file I rely on, and send an alert through ntfy after two failures in a row.</p>
+      <Fold id="alerts" icon="notifications" title="Alerts" summary="Where to be told when a source breaks" badge={view.settings.ntfyUrl ? undefined : "Not set"}>
+        <p className="help">
+          Every day I check each public file I rely on. After two failures in a row I send an alert through ntfy, then one a day while it stays broken, and a last one when it answers again.
+        </p>
         {!editAlerts && view.settings.ntfyUrl ? (
           <>
             <Item

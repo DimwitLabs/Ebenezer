@@ -704,7 +704,9 @@ export default function ImportDialog({ target, onClose, onDone }: Props) {
           isOwn={isOwn}
         />
       )}
-      {step === 2 && table && <TidyStep pid={p.id} fields={fields} columns={table.headers} mapped={matched} raw={raw} tidy={tidy} setTidy={setTidy} onOutput={setOutput} onPending={setPending} />}
+      {step === 2 && table && (
+        <TidyStep pid={section?.portfolioId ?? p.id} fields={fields} columns={table.headers} mapped={matched} raw={raw} tidy={tidy} setTidy={setTidy} onOutput={setOutput} onPending={setPending} />
+      )}
       {step === 3 && (
         <CheckStep
           fields={fields}

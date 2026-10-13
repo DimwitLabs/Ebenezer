@@ -845,7 +845,7 @@ func (s *Server) ask(w http.ResponseWriter, r *http.Request) error {
 }
 
 func (s *Server) tidy(w http.ResponseWriter, r *http.Request) error {
-	u, _, err := s.portfolio(r)
+	u, p, err := s.portfolio(r)
 	if err != nil {
 		return err
 	}
@@ -860,7 +860,7 @@ func (s *Server) tidy(w http.ResponseWriter, r *http.Request) error {
 	if len(ask.Change) > 500 || (ask.Previous != "" && ask.Change == "") {
 		return fail(http.StatusBadRequest, "say what to change in up to 500 characters")
 	}
-	t, err := s.app.TidyScript(r.Context(), ask)
+	t, err := s.app.TidyScript(r.Context(), p, ask)
 	if errors.Is(err, app.ErrNoAI) {
 		writeJSON(w, http.StatusOK, map[string]bool{"ai": false})
 		return nil

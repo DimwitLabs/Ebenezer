@@ -7,6 +7,7 @@ import (
 	"strings"
 
 	"github.com/DimwitLabs/ebenezer/internal/openrouter"
+	"github.com/DimwitLabs/ebenezer/internal/store"
 )
 
 // Tidy is a script the model wrote and its summary; the script runs in the browser's sandbox, never on the server.
@@ -53,7 +54,7 @@ are ones that are not data at all, such as totals, headers repeated mid-file, or
 Never merge or invent rows.
 summary: one plain sentence, under 30 words, saying what the script does to these rows.`
 
-func (a *App) TidyScript(ctx context.Context, ask TidyAsk) (Tidy, error) {
+func (a *App) TidyScript(ctx context.Context, p *store.Portfolio, ask TidyAsk) (Tidy, error) {
 	key := a.Secret(ctx, OpenRouterKey)
 	if key == "" {
 		return Tidy{}, ErrNoAI
@@ -81,7 +82,7 @@ func (a *App) TidyScript(ctx context.Context, ask TidyAsk) (Tidy, error) {
 	case ask.Change != "":
 		user += "\n\nAlso: " + ask.Change
 	}
-	text, err := a.ai(key).Chat(ctx, openrouter.Request{Model: is.OpenRouterModel, Temperature: 0.1, MaxTokens: 2500, JSON: true,
+	text, err := a.ai(key).Chat(ctx, openrouter.Request{Model: ModelFor(is, p), Temperature: 0.1, MaxTokens: 2500, JSON: true,
 		Messages: []openrouter.Message{{Role: "system", Content: tidyPrompt}, {Role: "user", Content: user}}})
 	if err != nil {
 		return Tidy{}, err

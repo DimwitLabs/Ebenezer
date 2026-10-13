@@ -394,7 +394,7 @@ button.badge:disabled { cursor: progress; }
 .dropzone:disabled { cursor: progress; }
 
 .item { display: flex; align-items: center; gap: 14px; padding: 10px 0; min-height: 60px; }
-.item:has(~ .item) { border-bottom: 1px solid var(--line); }
+.item:where(:has(~ .item)) { border-bottom: 1px solid var(--line); }
 .item-i { flex: none; width: 40px; height: 40px; border-radius: 50%; display: grid; place-items: center; font-size: 1.25rem; background: var(--sc); color: var(--on-sc); }
 .item-i.on { background: var(--pc); color: var(--on-pc); }
 .item-i.bad { background: var(--lossbg); color: var(--md-sys-color-on-error-container); }

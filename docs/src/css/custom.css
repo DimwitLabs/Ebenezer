@@ -1,0 +1,251 @@
+@import "@fontsource-variable/roboto-flex/wdth.css";
+@import "../../../web/src/design-system/tokens.css";
+
+:root {
+  --ifm-font-family-base: var(--sans);
+  --ifm-font-family-monospace: var(--mono);
+  --ifm-font-size-base: 16px;
+  --ifm-line-height-base: 1.65;
+  --ifm-font-weight-semibold: 600;
+  --ifm-font-weight-bold: 650;
+  --ifm-color-primary: var(--md-sys-color-primary);
+  --ifm-color-primary-dark: var(--md-sys-color-primary);
+  --ifm-color-primary-darker: var(--md-sys-color-primary);
+  --ifm-color-primary-darkest: var(--md-sys-color-primary);
+  --ifm-color-primary-light: var(--md-sys-color-primary);
+  --ifm-color-primary-lighter: var(--md-sys-color-primary);
+  --ifm-color-primary-lightest: var(--pc);
+  --ifm-background-color: var(--bg);
+  --ifm-background-surface-color: var(--bg);
+  --ifm-font-color-base: var(--text);
+  --ifm-font-color-secondary: var(--text2);
+  --ifm-heading-color: var(--text);
+  --ifm-heading-font-weight: 650;
+  --ifm-link-color: var(--md-sys-color-primary);
+  --ifm-link-hover-color: var(--md-sys-color-primary);
+  --ifm-link-decoration: none;
+  --ifm-link-hover-decoration: underline;
+  --ifm-global-radius: 16px;
+  --ifm-global-shadow-lw: var(--e1);
+  --ifm-global-shadow-md: var(--e1);
+  --ifm-global-shadow-tl: var(--e1);
+  --ifm-hr-border-color: var(--line);
+  --ifm-toc-border-color: var(--line);
+  --ifm-table-border-color: var(--line);
+  --ifm-table-head-background: transparent;
+  --ifm-table-stripe-background: transparent;
+  --ifm-code-background: var(--surface);
+  --ifm-code-font-size: 0.86em;
+  --ifm-code-padding-horizontal: 0.4rem;
+  --ifm-code-padding-vertical: 0.12rem;
+  --ifm-code-border-radius: 8px;
+  --ifm-pre-background: var(--surface);
+  --ifm-pre-color: var(--text);
+  --docusaurus-highlighted-code-line-bg: var(--sc);
+  --ifm-navbar-background-color: var(--bg);
+  --ifm-navbar-height: 4.5rem;
+  --ifm-navbar-padding-horizontal: 2rem;
+  --ifm-navbar-shadow: none;
+  --ifm-navbar-link-color: var(--text2);
+  --ifm-navbar-link-hover-color: var(--text);
+  --ifm-navbar-item-padding-horizontal: 0;
+  --ifm-navbar-search-input-background-color: var(--surface);
+  --ifm-navbar-search-input-color: var(--text);
+  --ifm-navbar-search-input-placeholder-color: var(--text3);
+  --navbar-control-height: 2.5rem;
+  --search-local-modal-background: transparent;
+  --search-local-modal-shadow: none;
+  --search-local-modal-width: 26rem;
+  --search-local-modal-width-sm: 20rem;
+  --search-local-spacing: 0;
+  --search-local-hit-background: var(--card);
+  --search-local-hit-shadow: var(--e1);
+  --search-local-hit-color: var(--text);
+  --search-local-hit-height: 3rem;
+  --search-local-hit-active-color: var(--md-sys-color-primary);
+  --search-local-highlight-color: var(--md-sys-color-primary);
+  --search-local-muted-color: var(--text3);
+  --search-local-input-active-border-color: var(--md-sys-color-primary);
+  --ifm-menu-color: var(--text2);
+  --ifm-menu-color-active: var(--on-sc);
+  --ifm-menu-color-background-active: var(--sc);
+  --ifm-menu-color-background-hover: color-mix(in srgb, var(--text) 6%, transparent);
+  --ifm-menu-link-padding-horizontal: 1rem;
+  --ifm-menu-link-padding-vertical: 0.55rem;
+  --ifm-breadcrumb-color-active: var(--on-sc);
+  --ifm-breadcrumb-item-background-active: var(--sc);
+  --ifm-breadcrumb-padding-horizontal: 0.85rem;
+  --ifm-breadcrumb-border-radius: 999px;
+  --ifm-footer-background-color: transparent;
+  --ifm-footer-color: var(--text2);
+  --ifm-footer-link-color: var(--text2);
+  --ifm-footer-link-hover-color: var(--md-sys-color-primary);
+  --ifm-footer-title-color: var(--text);
+  --ifm-alert-border-radius: 20px;
+  --ifm-alert-border-width: 0;
+  --ifm-alert-border-left-width: 0;
+  --ifm-alert-padding-horizontal: 1.25rem;
+  --ifm-alert-padding-vertical: 1rem;
+  --ifm-button-border-radius: 999px;
+  --ifm-scrollbar-track-background-color: transparent;
+  --ifm-scrollbar-thumb-background-color: var(--line);
+  --ifm-dropdown-background-color: var(--card);
+  --ifm-dropdown-link-color: var(--text2);
+  --ifm-dropdown-hover-background-color: var(--surface);
+  --ifm-toc-link-color: var(--text3);
+  --ifm-toc-padding-vertical: 0.35rem;
+  --arrow-left: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cline x1='19' y1='12' x2='5' y2='12'/%3E%3Cpolyline points='12 19 5 12 12 5'/%3E%3C/svg%3E");
+  --arrow-right: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cline x1='5' y1='12' x2='19' y2='12'/%3E%3Cpolyline points='12 5 19 12 12 19'/%3E%3C/svg%3E");
+}
+
+html { background: var(--bg); }
+body { background: var(--bg); color: var(--text); overflow-wrap: anywhere; -webkit-font-smoothing: antialiased; }
+
+.navbar { border-bottom: 0; }
+.navbar__inner { gap: 1.5rem; }
+.navbar__items { gap: 0.25rem; }
+.navbar__items--right { gap: 0.5rem; }
+.navbar__brand { margin-right: 1rem; gap: 0.6rem; }
+.navbar__logo { height: 2rem; margin-right: 0; }
+.navbar__logo img { height: 100%; width: auto; }
+.navbar__title { font-size: 1.25rem; font-weight: 650; font-stretch: 95%; letter-spacing: -0.3px; color: var(--text); }
+.navbar__link { font-size: 0.9rem; font-weight: 500; padding: 0.55rem 1rem; border-radius: 999px; transition: background 0.15s ease, color 0.15s ease; }
+.plugin-pages .navbar__toggle { display: none; }
+.navbar-sidebar__back { display: none; }
+.navbar__link:hover { background: color-mix(in srgb, var(--text) 6%, transparent); color: var(--text); text-decoration: none; }
+.navbar__link--active { background: var(--sc); color: var(--on-sc); font-weight: 600; }
+.navbar__search { padding-left: 0; }
+.navbar__search-input { height: var(--navbar-control-height); padding: 0 2.25rem; border-radius: 999px; font-family: inherit; font-size: 0.9rem; border: 2px solid transparent; transition: border-color 0.15s ease, background 0.15s ease; }
+.navbar__search-input:focus { outline: none; border-color: var(--md-sys-color-primary); background: var(--card); }
+
+/* The result list is a CSS module whose class names carry a build hash; the prefix is stable, and these rules have to outrank the theme's unlayered ones. */
+html .navbar__search [class*="dropdownMenu_"] { border: none; box-shadow: var(--e1); background: var(--card); border-radius: 20px; padding: 0.5rem; }
+html .navbar__search [class*="dropdownMenu_"] [class*="suggestion_"] { border-radius: 14px; padding: 0 1rem; box-shadow: none; background: transparent; }
+html .navbar__search [class*="dropdownMenu_"] [class*="suggestion_"]:hover:not([class*="cursor_"]) { background-color: var(--surface); }
+html .navbar__search [class*="dropdownMenu_"] [class*="suggestion_"][class*="cursor_"] { background-color: var(--sc); }
+html .navbar__search [class*="dropdownMenu_"] [class*="hitTitle_"] { font-weight: 600; }
+html .navbar__search [class*="dropdownMenu_"] [class*="noResults_"] { padding: 1.25rem 1rem; color: var(--text2); }
+html .navbar__search [class*="dropdownMenu_"] [class*="hitFooter_"] { margin-top: 0.25rem; }
+html .navbar__search [class*="dropdownMenu_"] [class*="hitFooter_"] a { display: flex; align-items: center; gap: 0.5rem; padding: 0.65rem 1.2rem; border-radius: 999px; background: var(--sc); color: var(--on-sc); font-size: 0.75rem; font-weight: 600; text-decoration: none; }
+html .navbar__search [class*="dropdownMenu_"] [class*="hitFooter_"] a::after { content: ""; margin-left: auto; width: 1rem; height: 1rem; background-color: currentColor; mask: var(--arrow-right) center / contain no-repeat; -webkit-mask: var(--arrow-right) center / contain no-repeat; }
+html[class*="docusaurus-search-local"] .main-wrapper .container { background: var(--card); border-radius: 28px; box-shadow: var(--e1); padding: 2rem 2.25rem; max-width: 48rem; margin-top: 1.5rem; margin-bottom: 2rem; }
+html[class*="docusaurus-search-local"] [class*="searchQueryInput_"], html[class*="docusaurus-search-local"] [class*="searchContextInput_"] { background: var(--surface); border: 2px solid transparent; border-radius: 999px; padding: 0.8rem 1.4rem; font-family: inherit; font-size: 1rem; color: var(--text); }
+html[class*="docusaurus-search-local"] [class*="searchQueryInput_"]:focus, html[class*="docusaurus-search-local"] [class*="searchContextInput_"]:focus { outline: none; border-color: var(--md-sys-color-primary); }
+html[class*="docusaurus-search-local"] [class*="searchResultItem_"] { border-bottom: 1px solid var(--line); }
+html[class*="docusaurus-search-local"] [class*="searchResultItemPath_"] { color: var(--text3); }
+html[class*="docusaurus-search-local"] [class*="searchResultItemSummary_"] { font-style: normal; color: var(--text2); }
+
+/* Infima narrows the field below 996px and the search theme collapses it to an icon below 576px, so it is only widened where there is room. */
+@media (min-width: 997px) { .navbar__search-input { width: 14rem; } }
+
+.navbar-sidebar { background: var(--bg); }
+.navbar-sidebar__brand { box-shadow: none; }
+.clean-btn { border-radius: 999px; color: var(--text2); transition: background 0.12s ease, color 0.12s ease; }
+.clean-btn:hover { background: color-mix(in srgb, var(--text) 6%, transparent); color: var(--text); }
+
+.version-pill { display: inline-flex; align-items: center; gap: 0.4rem; height: 2rem; padding: 0 0.85rem; border-radius: 999px; background: var(--sc); color: var(--on-sc); font-size: 0.75rem; font-weight: 600; font-variant-numeric: tabular-nums; text-decoration: none; white-space: nowrap; transition: background 0.12s ease, color 0.12s ease; }
+.version-pill:hover { background: var(--md-sys-color-primary); color: var(--accent-ink); text-decoration: none; }
+.version-pill svg { flex-shrink: 0; opacity: 0.75; }
+
+.theme-doc-sidebar-container { border-right: 0 !important; }
+.menu { padding: 1rem 0.75rem !important; font-weight: 500; }
+.menu__link { border-radius: 999px; font-size: 0.9rem; transition: background 0.15s ease, color 0.15s ease; }
+.menu__link--active:not(.menu__link--sublist) { font-weight: 600; }
+.menu__list-item-collapsible:hover { background: color-mix(in srgb, var(--text) 6%, transparent); border-radius: 999px; }
+.menu__caret:hover { background: transparent; }
+.theme-doc-sidebar-item-category > .menu__list-item-collapsible > .menu__link { color: var(--text3); font-size: 0.75rem; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; }
+.menu__list .menu__list { padding-left: 0; }
+
+.theme-doc-markdown { display: flex; flex-direction: column; gap: 16px; }
+.doc-card { background: var(--card); border-radius: 28px; box-shadow: var(--e1); padding: 1.75rem 2rem; }
+.doc-card > *:last-child, .doc-card > *:last-child > *:last-child { margin-bottom: 0; }
+@media (max-width: 768px) { .doc-card { border-radius: 24px; padding: 1.25rem 1.15rem; } }
+
+/* Infima sets --ifm-hN-font-size on .markdown > hN itself, which outranks :root, so the sizes live here. */
+.markdown h1, .markdown header h1 { font-size: 36px; line-height: 44px; font-weight: 650; font-stretch: 95%; letter-spacing: -0.6px; margin-bottom: 8px; }
+.markdown h2 { font-size: 18px; line-height: 24px; font-weight: 650; letter-spacing: -0.1px; margin-top: 0; margin-bottom: 12px; }
+.markdown h3 { font-size: 16px; font-weight: 650; margin-top: 1.75rem; margin-bottom: 0.5rem; }
+.markdown h4 { font-size: 14px; font-weight: 650; color: var(--text2); margin-top: 1.5rem; margin-bottom: 0.4rem; }
+.markdown > p, .markdown li { color: var(--text2); }
+.doc-card p, .doc-card li { color: var(--text2); }
+.markdown strong { color: var(--text); font-weight: 600; }
+.markdown a { font-weight: 500; text-underline-offset: 0.2em; }
+.markdown hr { border: none; border-top: 1px solid var(--line); margin: 2.5rem 0; }
+.markdown blockquote { border-left: 3px solid var(--md-sys-color-primary); border-radius: 0 12px 12px 0; background: var(--surface); padding: 0.9rem 1.25rem; color: var(--text2); }
+.markdown img { border-radius: 16px; box-shadow: var(--e1); }
+@media (max-width: 768px) { .markdown h1, .markdown header h1 { font-size: 30px; line-height: 36px; } }
+
+/* Infima defines --ifm-code-color but no rule reads it; the child combinator keeps this off fenced blocks. */
+.markdown :not(pre) > code { border: 0; color: var(--text); font-weight: 500; overflow-wrap: normal; }
+.theme-code-block { border-radius: 16px !important; border: none; box-shadow: none !important; overflow: hidden; }
+.theme-code-block pre { font-size: 0.86rem; }
+.theme-code-block .theme-code-block-highlighted-line { background: var(--sc); }
+div[class^="codeBlockTitle"] { background: var(--surface2) !important; border-bottom: 0 !important; color: var(--text2); font-size: 0.78rem; font-weight: 600; }
+
+.markdown table { overflow-wrap: break-word; display: table; width: 100%; border-collapse: separate; border-spacing: 0; border-radius: 16px; overflow: hidden; background: var(--surface); margin-bottom: 0; font-size: 14px; }
+.markdown table thead tr { border: none; }
+.markdown table th { color: var(--text2); font-size: 12px; font-weight: 600; text-align: left; }
+.markdown table th, .markdown table td { border: none; border-bottom: 1px solid var(--line); padding: 0.75rem 1rem; }
+.markdown table tbody tr { background: transparent; }
+.markdown table tbody tr:last-child td { border-bottom: none; }
+.markdown table td { color: var(--text); }
+/* A cell holding only a token never breaks mid-token; the table gives that column the room and wraps the others. */
+.markdown table th:has(> code:only-child), .markdown table td:has(> code:only-child) { white-space: nowrap; overflow-wrap: normal; }
+.markdown table td code { background: var(--card); }
+.table-scroll { overflow-x: auto; margin: 0 0 1.5rem; }
+
+.theme-admonition { --ifm-alert-foreground-color: var(--on-sc); background: var(--sc); border: none; border-radius: 20px; color: var(--on-sc); margin-bottom: 1.25rem; }
+.theme-admonition > div:first-child { align-items: center; font-size: 0.8rem; font-weight: 650; letter-spacing: 0.02em; line-height: 1.2; margin-bottom: 0.5rem; }
+.theme-admonition > div:first-child svg { height: 1.1rem; width: 1.1rem; vertical-align: -0.2rem; }
+.theme-admonition p, .theme-admonition li { color: inherit !important; }
+.theme-admonition p:last-child { margin-bottom: 0; }
+.theme-admonition code { background: color-mix(in srgb, currentColor 10%, transparent); }
+.theme-admonition-note, .theme-admonition-info { background: var(--note); color: var(--noteink); --ifm-alert-foreground-color: var(--noteink); }
+.theme-admonition-tip { background: var(--pc); color: var(--on-pc); --ifm-alert-foreground-color: var(--on-pc); }
+.theme-admonition-warning, .theme-admonition-caution { background: var(--warn); color: var(--warnink); --ifm-alert-foreground-color: var(--warnink); }
+.theme-admonition-danger { background: var(--lossbg); color: var(--md-sys-color-on-error-container); --ifm-alert-foreground-color: var(--md-sys-color-on-error-container); }
+
+.pagination-nav__link { border: 0; border-radius: 24px; background: var(--card); box-shadow: var(--e1); padding: 1.1rem 1.4rem; transition: background 0.15s ease; }
+.pagination-nav__link:hover { background: color-mix(in srgb, var(--card) 88%, var(--md-sys-color-primary)); }
+.pagination-nav__link--prev .pagination-nav__label::before, .pagination-nav__link--next .pagination-nav__label::after { content: ""; display: inline-block; width: 1rem; height: 1rem; vertical-align: -0.15rem; background-color: currentColor; mask: var(--arrow) center / contain no-repeat; -webkit-mask: var(--arrow) center / contain no-repeat; }
+.pagination-nav__link--prev .pagination-nav__label::before { --arrow: var(--arrow-left); margin-right: 0.45rem; }
+.pagination-nav__link--next .pagination-nav__label::after { --arrow: var(--arrow-right); margin-left: 0.45rem; }
+.pagination-nav__sublabel { color: var(--text3); font-size: 0.75rem; font-weight: 500; }
+.pagination-nav__label { color: var(--text); font-weight: 650; }
+.breadcrumbs__item--active .breadcrumbs__link { font-weight: 600; }
+.breadcrumbs__link { border-radius: 999px; font-size: 0.82rem; font-weight: 500; }
+.table-of-contents { border-left: 0; font-size: 0.84rem; }
+.table-of-contents__link { display: block; font-weight: 500; }
+.table-of-contents__link--active { color: var(--md-sys-color-primary); font-weight: 600; }
+
+.button { font-family: inherit; font-weight: 600; border: none; }
+.button--primary { background: var(--md-sys-color-primary); color: var(--accent-ink); }
+.button--secondary { background: var(--sc); color: var(--on-sc); }
+
+.footer { background: transparent; border-top: 1px solid var(--line); padding: 2.5rem 2rem 2rem; font-size: 0.88rem; }
+.footer__title { font-size: 0.75rem; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: var(--text3); }
+.footer__link-item { font-weight: 500; }
+.footer__col { text-align: center; }
+@media (max-width: 996px) {
+  .footer { padding: 2rem 1rem 1.5rem; }
+  .footer__links.row { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); margin: 0; }
+  .footer__col { max-width: none; margin-bottom: 0; padding: 0 4px; }
+  .footer__link-item { font-size: 0.82rem; }
+}
+.footer__bottom { margin-top: 2rem; padding-top: 1.5rem; border-top: 1px solid var(--line); }
+.footer__copyright { color: var(--text3); font-size: 0.82rem; }
+
+.theme-edit-this-page { display: inline-flex; align-items: center; gap: 0.4rem; padding: 0.35rem 0.9rem; border-radius: 999px; background: var(--sc); color: var(--on-sc); font-size: 0.8rem; font-weight: 600; white-space: nowrap; text-decoration: none; }
+.theme-edit-this-page:hover { background: var(--md-sys-color-primary); color: var(--accent-ink); text-decoration: none; }
+.theme-edit-this-page svg { width: 0.85rem; height: 0.85rem; margin-right: 0; }
+
+@media (max-width: 996px) {
+  :root { --ifm-navbar-padding-horizontal: 1rem; }
+  .navbar__inner { gap: 0.75rem; }
+  /* Below this width Docusaurus pins the search to the bar's right edge, out of the flow, on top of the toggle. */
+  html [class*="navbarSearchContainer_"] { position: static; right: auto; }
+  .footer { padding: 2rem 1rem 1.5rem; }
+}
+
+/* On phones the bar has room for the search icon, the toggle and the menu, so the version pill steps aside. */
+@media (max-width: 576px) { .version-pill { display: none; } }

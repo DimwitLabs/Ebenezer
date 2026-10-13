@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64" role="img" aria-label="Ebenezer">
+  <style>
+    .disc{fill:#0a7c5c}
+    .ink{fill:#ffffff}
+    .ring{fill:none;stroke:#ffffff;stroke-opacity:.45;stroke-width:3.4}
+    @media (prefers-color-scheme: dark){
+      .disc{fill:#36d3a1}
+      .ink{fill:#06130e}
+      .ring{stroke:#06130e}
+    }
+  </style>
+  <defs>
+    <clipPath id="gap"><polygon points="0,0 64,0 64,38 46.1,38 46.1,64 0,64"/></clipPath>
+  </defs>
+  <circle class="disc" cx="32" cy="32" r="32"/>
+  <circle class="ring" cx="32" cy="32" r="25.5" clip-path="url(#gap)"/>
+  <path class="ink" d="M21.5 18.5h22.5v5.8H27.9v4.4h13.2v5.6H27.9v4.4H44v5.8H21.5z"/>
+</svg>

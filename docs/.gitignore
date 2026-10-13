@@ -1,0 +1,7 @@
+.docusaurus/
+build/
+node_modules/
+.vercel
+*.tsbuildinfo
+static/img/og/
+static/img/og.png

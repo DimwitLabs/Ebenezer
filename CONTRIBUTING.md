@@ -50,15 +50,17 @@ Screens are built from `web/src/design-system/`. Read its `README.md` before wri
 
 Elements that sit together as a set, such as options, tiles, chips, buttons or rows, share one height and width whatever their text. Check every set at desktop and phone widths.
 
-Colours live as tokens at the top of `web/src/design-system/design-system.css`, each holding its light and dark value through `light-dark()`; add a colour there rather than inline.
+Colours live as tokens in `web/src/design-system/tokens.css`, each holding its light and dark value through `light-dark()`; add a colour there rather than inline.
 
 The price and news sources are unofficial. When you change how one is read, change its health check in `internal/app/health.go` too.
+
+The site at `docs/` is one Docusaurus build: the landing page in `docs/src/pages/index.tsx` at the root, and the docs under `/docs`. The landing page is screenshots of the real app with a little copy in Ebenezer's own voice, styled from the app's tokens and icons in `docs/src/css/landing.css`; on a phone each section becomes a row of swipeable cards. When a screen it shows changes, retake the screenshots: start `cd web && node_modules/.bin/vite --config vite.shots.config.ts`, then run `node web/shots/capture.mjs` (needs `cwebp`). They land in `docs/static/img/shots` with transparent backgrounds. The sample data in `web/shots/` is typed against `web/src/lib/api.ts`, so `npx tsc --noEmit -p shots` from `web` catches drift.
 
 ## Guidelines
 
 - Keep things readable and follow existing conventions of code structure
 - Format Go with gofmt and TypeScript with prettier at `--print-width 200`; keep CSS to one rule per line and don't run prettier on it
-- Change the database by editing `internal/store/schema.sql` in place; there are no migrations
+- Change the database by editing `internal/store/schema.sql` in place; there are no migrations. It runs on every start, so every statement must be safe to run again: `CREATE TABLE IF NOT EXISTS`, `CREATE [UNIQUE] INDEX IF NOT EXISTS`, `ON CONFLICT DO NOTHING` for seed rows, and an update that fills old rows only where they are still empty. To add a column, put it in the `CREATE TABLE` and add `ALTER TABLE {s}.table ADD COLUMN IF NOT EXISTS ...` with the same definition straight after it, so existing databases get it too; a `NOT NULL` column needs a `DEFAULT` for the rows already there. A constraint, type, function or trigger outside a `CREATE TABLE` needs its own guard, such as `CREATE OR REPLACE FUNCTION` or a `DO` block that checks the catalogue first
 - Comment the why, not the what; delete a comment that restates the code beneath it
 - Delete code you make unreachable rather than leaving it behind a flag
 - Include tests for new behaviour and ensure all tests pass before submitting

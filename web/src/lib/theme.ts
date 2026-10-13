@@ -58,26 +58,30 @@ function inks(s: DynamicScheme): [string, number, number][] {
 const cream = (s: DynamicScheme) => s.neutralPalette.tone(98);
 
 // Roles hold light-dark(), so the color-scheme switch applyTheme drives needs no second pass.
-function paint(hex: string) {
+export function themeRoles(hex: string): Record<string, string> {
   const { light, dark } = schemes(hex);
-  const root = document.documentElement.style;
   const pair = (l: number, d: number) => `light-dark(${hexFromArgb(l)}, ${hexFromArgb(d)})`;
-  for (const c of light.colors.allColors) {
-    root.setProperty(`--md-sys-color-${c.name.replace(/_/g, "-")}`, pair(c.getArgb(light), c.getArgb(dark)));
-  }
-  for (const [role, l, d] of inks(light)) root.setProperty(`--md-sys-color-${role}`, pair(l, d));
+  const out: Record<string, string> = {};
+  for (const c of light.colors.allColors) out[`--md-sys-color-${c.name.replace(/_/g, "-")}`] = pair(c.getArgb(light), c.getArgb(dark));
+  for (const [role, l, d] of inks(light)) out[`--md-sys-color-${role}`] = pair(l, d);
   const off = cream(light);
-  root.setProperty("--md-sys-color-surface-container-lowest", pair(off, dark.surfaceContainerLowest));
-  root.setProperty("--md-sys-color-on-swatch", hexFromArgb(off));
-  series(hex).forEach(([l, d], i) => root.setProperty(`--series-${i + 1}`, pair(l, d)));
+  out["--md-sys-color-surface-container-lowest"] = pair(off, dark.surfaceContainerLowest);
+  out["--md-sys-color-on-swatch"] = hexFromArgb(off);
+  series(hex).forEach(([l, d], i) => (out[`--series-${i + 1}`] = pair(l, d)));
   for (const [role, d] of [
     ["on-primary", dark.onPrimary],
     ["on-secondary", dark.onSecondary],
     ["on-tertiary", dark.onTertiary],
     ["on-error", dark.onError],
   ] as const) {
-    root.setProperty(`--md-sys-color-${role}`, pair(off, d));
+    out[`--md-sys-color-${role}`] = pair(off, d);
   }
+  return out;
+}
+
+function paint(hex: string) {
+  const root = document.documentElement.style;
+  for (const [k, v] of Object.entries(themeRoles(hex))) root.setProperty(k, v);
 }
 
 // Seven hues round the wheel: adjacent bars at least two steps apart, wheel neighbours at different tones.

@@ -1,56 +1,4 @@
-/* lib/theme.ts writes every --md-sys-color-* role; the tokens below point at those roles. */
-:root {
-  color-scheme: light dark;
-  --md-ref-typeface-brand: "Roboto Flex Variable", system-ui, -apple-system, sans-serif;
-  --md-ref-typeface-plain: "Roboto Flex Variable", system-ui, -apple-system, sans-serif;
-  --md-icon-font: "Material Symbols Rounded";
-  --bg: light-dark(var(--md-sys-color-surface-container), var(--md-sys-color-surface));
-  --edge: color-mix(in srgb, var(--line) 65%, transparent);
-  --card: light-dark(var(--md-sys-color-surface-container-lowest), var(--md-sys-color-surface-container));
-  --surface: var(--md-sys-color-surface-container-high);
-  --hero: var(--md-sys-color-primary-container);
-  --on-hero: var(--md-sys-color-on-primary-container);
-  /* A solid mix, never see-through. */
-  --hero-ink2: color-mix(in oklab, var(--on-hero) 78%, var(--hero));
-  --hero-line: color-mix(in srgb, var(--on-hero) 18%, transparent);
-  --hero-loss: var(--md-sys-color-error);
-  --hero-gain: var(--md-sys-color-primary);
-  --surface2: var(--md-sys-color-surface-container-highest);
-  --e1: 0 1px 2px light-dark(rgb(23 29 25 / 6%), rgb(0 0 0 / 30%)), 0 2px 8px light-dark(rgb(23 29 25 / 6%), rgb(0 0 0 / 20%));
-  --line: var(--md-sys-color-outline-variant);
-  --text: var(--md-sys-color-on-surface);
-  --text2: var(--md-sys-color-on-surface-variant);
-  --text3: var(--md-sys-color-on-surface-faint);
-  --accent: var(--md-sys-color-primary);
-  --accent-ink: var(--md-sys-color-on-primary);
-  --gain: var(--md-sys-color-primary);
-  --gainbg: var(--md-sys-color-primary-container);
-  --loss: var(--md-sys-color-error);
-  --lossbg: var(--md-sys-color-error-container);
-  --pc: var(--md-sys-color-primary-container);
-  --on-pc: var(--md-sys-color-on-primary-container);
-  --sc: var(--md-sys-color-secondary-container);
-  --on-sc: var(--md-sys-color-on-secondary-container);
-  --note: var(--md-sys-color-tertiary-container);
-  --warn: light-dark(#ffdf9e, #5b4300);
-  --warnink: light-dark(#261a00, #ffdf9e);
-  --noteink: var(--md-sys-color-on-tertiary-container);
-  --noteink2: color-mix(in oklab, var(--noteink) 78%, var(--note));
-  --on-pc2: color-mix(in oklab, var(--on-pc) 78%, var(--pc));
-  --on-sc2: color-mix(in oklab, var(--on-sc) 78%, var(--sc));
-  --on-swatch: var(--md-sys-color-on-swatch, #fbf9f6);
-  --seg1: var(--series-1);
-  --seg2: var(--series-2);
-  --seg3: var(--series-3);
-  --seg4: var(--series-4);
-  --seg5: var(--series-5);
-  --seg6: var(--series-6);
-  --seg7: var(--series-7);
-  --sans: var(--md-ref-typeface-plain);
-  --mono: ui-monospace, SFMono-Regular, Menlo, monospace;
-}
-:root[data-theme="light"] { color-scheme: light; }
-:root[data-theme="dark"] { color-scheme: dark; }
+@import "./tokens.css";
 
 * { box-sizing: border-box; }
 html, body, #root { height: 100%; }
@@ -213,6 +161,13 @@ md-tabs.tabs {
 .grid { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); gap: 16px; }
 .s8 { grid-column: span 8; } .s6 { grid-column: span 6; } .s4 { grid-column: span 4; }
 .card { background: var(--card); border-radius: 28px; padding: 24px; min-width: 0; box-shadow: var(--e1); }
+[data-reveal="wait"] { opacity: 0; transform: translateY(16px); }
+[data-reveal="in"] { transition: opacity 0.55s ease, transform 0.55s cubic-bezier(0.2, 0.7, 0.2, 1); }
+@keyframes enter { from { opacity: 0; transform: translateY(6px); } }
+.enter { animation: enter 0.35s ease; }
+@keyframes grow { from { width: 0; } }
+.grow > * { animation: grow 0.9s cubic-bezier(0.2, 0.7, 0.2, 1); transition: width 0.9s cubic-bezier(0.2, 0.7, 0.2, 1); }
+@media (prefers-reduced-motion: reduce) { [data-reveal] { opacity: 1; transform: none; transition: none; } .enter, .grow > * { animation: none; transition: none; } }
 .card-h { display: flex; justify-content: space-between; align-items: center; gap: 12px; margin-bottom: 14px; flex-wrap: wrap; min-height: 40px; }
 .card-h h3 { font-size: 18px; line-height: 24px; font-weight: 650; letter-spacing: -0.1px; }
 .card-h .help { margin-top: 2px; }
@@ -385,6 +340,7 @@ md-dialog.narrow { width: 100%; max-width: min(560px, calc(100% - 32px)); }
 .badge.bad { background: var(--lossbg); color: var(--md-sys-color-on-error-container); }
 .badge.new { background: var(--note); color: var(--noteink); }
 .badge.on { background: var(--pc); color: var(--on-pc); }
+.badge.warn { background: var(--warn); color: var(--warnink); }
 button.badge { position: relative; }
 :is(a, button).badge { text-decoration: none; cursor: pointer; }
 :is(a, button).badge:hover { background: var(--sc); color: var(--on-sc); }
@@ -519,6 +475,8 @@ button.item { position: relative; width: 100%; text-align: left; }
 .msgs .msg.eb { align-items: flex-start; }
 .eb-b { min-width: 0; max-width: min(640px, 92%); display: flex; flex-direction: column; }
 .eb-b .bub { max-width: 100%; }
+.follow-ups { align-self: flex-start; display: inline-grid; grid-template-columns: minmax(0, 1fr); grid-auto-rows: 1fr; gap: 8px; max-width: 100%; margin-top: 10px; }
+.follow-ups md-assist-chip { width: 100%; max-width: 100%; --md-assist-chip-container-shape: 12px; }
 .fnote { display: flex; align-items: center; justify-content: center; gap: 6px; font-size: 12px; color: var(--text3); font-weight: 500; }
 .fnote .ms { font-size: 16px; }
 .stage { margin: auto; max-width: 560px; width: 100%; display: flex; flex-direction: column; align-items: center; text-align: center; padding: 12px 0; }

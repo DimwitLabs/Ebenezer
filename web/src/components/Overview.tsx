@@ -1,9 +1,9 @@
 import { NO_RETURNS, type Returns, type Section, type SectionResult, type Summary } from "../lib/api";
 import { date, pct, plainPct, short, tone } from "../lib/format";
 import Amount from "../design-system/Amount";
-import Chart, { token } from "../design-system/Chart";
 import { CardHead } from "../design-system/CardHead";
 import { Hero } from "../design-system/Hero";
+import AgainstIndex from "./AgainstIndex";
 import { Notes } from "./Note";
 import { gainPill, returnsLine } from "./Returns";
 import { ListRow } from "../design-system/ListRow";
@@ -114,43 +114,7 @@ export default function Overview({ summary, minDays, onOpen }: Props) {
           })}
         </div>
       </div>
-      {rated.length > 0 && (
-        <div className="card s12">
-          <CardHead title={`Each section against ${summary.benchmark}`} />
-          <Chart
-            height={Math.max(180, 70 + rated.length * 56)}
-            deps={[summary]}
-            option={() => ({
-              grid: { left: 8, right: 16, top: 32, bottom: 8, containLabel: true },
-              legend: { top: 0, left: 0, icon: "roundRect", itemWidth: 10, itemHeight: 10, textStyle: { color: token("--text2") } },
-              tooltip: {
-                trigger: "axis",
-                axisPointer: { type: "shadow" },
-                valueFormatter: (v: number | null) => (v === null || v === undefined || Number.isNaN(v) ? "No index history that far back" : pct(v / 100)),
-              },
-              xAxis: { type: "value", splitLine: { lineStyle: { color: token("--line") } }, axisLabel: { color: token("--text3"), formatter: (v: number) => `${v}%` } },
-              yAxis: {
-                type: "category",
-                inverse: true,
-                data: rated.map((l) => l.s.name),
-                axisLine: { lineStyle: { color: token("--line") } },
-                axisTick: { show: false },
-                axisLabel: { color: token("--text2") },
-              },
-              series: [
-                { name: "XIRR", type: "bar", barGap: "20%", barMaxWidth: 16, itemStyle: { color: token("--accent"), borderRadius: 4 }, data: rated.map((l) => +(l.r.returns!.xirr! * 100).toFixed(1)) },
-                {
-                  name: `Same money in ${summary.benchmark}`,
-                  type: "bar",
-                  barMaxWidth: 16,
-                  itemStyle: { color: token("--text3"), borderRadius: 4 },
-                  data: rated.map((l) => (l.r.returns!.benchmark === null ? null : +(l.r.returns!.benchmark * 100).toFixed(1))),
-                },
-              ],
-            })}
-          />
-        </div>
-      )}
+      {rated.length > 0 && <AgainstIndex benchmark={summary.benchmark} rows={rated.map((l) => ({ name: l.s.name, xirr: l.r.returns!.xirr!, benchmark: l.r.returns!.benchmark }))} />}
     </div>
   );
 }

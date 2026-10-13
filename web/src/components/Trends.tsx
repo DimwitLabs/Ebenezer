@@ -23,56 +23,83 @@ interface Placed {
   x: number;
   y: number;
   r: number;
+  bare?: boolean;
 }
 
 const clamp = (v: number, lo: number, hi: number) => Math.max(lo, Math.min(hi, v));
 const lg = (v: number, lo: number, hi: number) => clamp((Math.log(v) - Math.log(lo)) / (Math.log(hi) - Math.log(lo)), 0, 1);
 
+// A small bubble wears its name underneath, so its footprint is the circle plus that label.
+const LABEL = 18;
+const halfW = (b: Placed) => (b.r >= 40 ? b.r : Math.max(b.r, b.p.name.length * 3.4 + 4));
+const below = (b: Placed) => (b.r >= 40 || b.bare ? 0 : LABEL);
+
 // Each half is its own scale, so a bubble's place within its quadrant still says how often and how big.
-function place(points: Point[], big: number, maxTotal: number, box: DOMRect, cells: Record<Quadrant, DOMRect>): Placed[] {
+// The corner headings wrap on a phone, so the room left for bubbles is measured from them, not assumed.
+function place(points: Point[], big: number, maxTotal: number, box: DOMRect, cells: Record<Quadrant, DOMRect>, heads: Record<Quadrant, DOMRect>): Placed[] {
   const L = cells.br.left - box.left + 30;
-  const T = cells.br.top - box.top + 44;
+  const T = Math.max(heads.br.bottom, heads.bo.bottom) - box.top + 8;
   const W = cells.so.right - cells.br.left - 60;
-  const H = cells.so.bottom - cells.br.top - 88;
+  const H = Math.min(heads.sr.top, heads.so.top) - box.top - 8 - T;
   const mx = cells.bo.left - box.left;
   const my = cells.sr.top - box.top;
   const unit = Math.min(W, H);
+  const small = W < 400 ? 12 : 16;
   const lo = Math.max(1, big / 6);
-  const out = points.map((p) => {
+  const out: Placed[] = points.map((p) => {
     const fx = p.n >= OFTEN ? 0.5 + 0.5 * lg(p.n, OFTEN, 30) : 0.5 * lg(p.n, 1, OFTEN);
     const fy = p.a > big ? 0.5 + 0.5 * lg(p.a, big, big * 10) : 0.5 * lg(Math.max(p.a, lo), lo, big);
-    return { p, x: L + fx * W, y: T + (1 - fy) * H, r: Math.max(16, Math.sqrt(p.t / maxTotal) * unit * 0.13) };
+    return { p, x: L + fx * W, y: T + (1 - fy) * H, r: Math.max(small, Math.sqrt(p.t / maxTotal) * unit * 0.13) };
   });
   const keep = (b: Placed) => {
     const left = b.p.q[1] === "r";
     const top = b.p.q[0] === "b";
-    const half = b.r >= 40 ? b.r : Math.max(b.r, b.p.name.length * 3.4 + 4);
+    const half = halfW(b);
     b.x = left ? clamp(b.x, L - 18 + half, mx - 8 - half) : clamp(b.x, mx + 8 + half, L + W + 18 - half);
-    b.y = top ? clamp(b.y, T + b.r - 6, my - 22 - b.r) : clamp(b.y, my + 8 + b.r, T + H - 10 - b.r);
+    b.y = top ? clamp(b.y, T + b.r, my - 8 - b.r - below(b)) : clamp(b.y, my + 8 + b.r, T + H - b.r - below(b));
   };
-  out.forEach(keep);
+  // How far two footprints overlap on each axis, with a little air between them.
+  const overlap = (a: Placed, b: Placed) => [halfW(a) + halfW(b) + 6 - Math.abs(b.x - a.x), Math.min(a.y + a.r + below(a), b.y + b.r + below(b)) - Math.max(a.y - a.r, b.y - b.r) + 6];
   // Bubbles that land on each other are eased apart, never out of their own quadrant.
-  for (let it = 0; it < 120; it++) {
-    for (let i = 0; i < out.length; i++)
-      for (let j = i + 1; j < out.length; j++) {
-        const a = out[i];
-        const b = out[j];
-        let dx = b.x - a.x;
-        let dy = b.y - a.y;
-        if (Math.abs(dx) < 3) dx = (a.p.t < b.p.t ? -1 : 1) * 3;
-        if (!dy) dy = 1;
-        const d = Math.hypot(dx, dy);
-        const min = a.r + b.r + (a.r < 40 || b.r < 40 ? 18 : 6);
-        if (d < min) {
-          const m = (min - d) / 2;
+  const settle = () => {
+    out.forEach(keep);
+    for (let it = 0; it < 160; it++) {
+      for (let i = 0; i < out.length; i++)
+        for (let j = i + 1; j < out.length; j++) {
+          const a = out[i];
+          const b = out[j];
+          if (a.p.q !== b.p.q) continue;
+          const [ox, oy] = overlap(a, b);
+          if (ox <= 0 || oy <= 0) continue;
+          // Pushed along the line between them, so a bubble boxed in sideways can still slip past above or below.
+          let dx = b.x - a.x;
+          const dy = b.y - a.y || 1;
+          if (Math.abs(dx) < 3) dx = (a.p.t < b.p.t ? -1 : 1) * 3;
+          const d = Math.hypot(dx, dy);
+          const m = Math.min(ox, oy) / 2 + 0.5;
           a.x -= (dx / d) * m;
           a.y -= (dy / d) * m;
           b.x += (dx / d) * m;
           b.y += (dy / d) * m;
         }
-      }
-    out.forEach(keep);
-  }
+      out.forEach(keep);
+    }
+  };
+  // A phone's quadrant has no room for names at all; tapping a bubble names it in the panel beside.
+  if (W < 400) out.forEach((b) => (b.bare = b.r < 40));
+  settle();
+  // Where a quadrant is still too cramped for every name, the smaller spender drops its label and the rest settle again.
+  let dropped = false;
+  for (let i = 0; i < out.length; i++)
+    for (let j = 0; j < out.length; j++) {
+      const a = out[i];
+      const b = out[j];
+      const bigger = b.p.t > a.p.t || (b.p.t === a.p.t && j < i);
+      if (i === j || !bigger || a.bare || a.r >= 40 || a.p.q !== b.p.q) continue;
+      const [ox, oy] = overlap(a, b);
+      if (ox > 6 && oy > 6) dropped = a.bare = true;
+    }
+  if (dropped) settle();
   return out;
 }
 
@@ -114,8 +141,9 @@ export default function Trends({ spends, categories }: { spends: Spend[]; catego
   useLayoutEffect(() => {
     const el = grid.current;
     if (!el || !frame) return;
-    const cell = (q: Quadrant) => el.querySelector(`[data-q="${q}"]`)!.getBoundingClientRect();
-    setPlaced(place(frame.points, t.big, t.maxTotal, el.getBoundingClientRect(), { br: cell("br"), bo: cell("bo"), sr: cell("sr"), so: cell("so") }));
+    const rect = (q: Quadrant, sel = "") => el.querySelector(`[data-q="${q}"]${sel}`)!.getBoundingClientRect();
+    const all = (sel = "") => Object.fromEntries(QUADRANTS.map((q) => [q, rect(q, sel)])) as Record<Quadrant, DOMRect>;
+    setPlaced(place(frame.points, t.big, t.maxTotal, el.getBoundingClientRect(), all(), all(" .cell-h")));
   }, [frame, t, size]);
 
   useEffect(() => {
@@ -265,11 +293,11 @@ export default function Trends({ spends, categories }: { spends: Spend[]; catego
           </div>
         </div>
         <div className="bl">
-          {placed.map(({ p, x, y, r }) => (
+          {placed.map(({ p, x, y, r, bare }) => (
             <button
               key={p.name}
               type="button"
-              className={`bb${r >= 40 ? " lg" : ""}${p.name === sel ? " on" : ""}`}
+              className={`bb${r >= 40 ? " lg" : ""}${bare ? " bare" : ""}${p.name === sel ? " on" : ""}`}
               style={{ width: r * 2, height: r * 2, transform: `translate(${x - r}px, ${y - r}px)`, ["--c" as string]: colorOf(p.name) }}
               title={`${p.name}: ${p.n} ${p.n === 1 ? "spend" : "spends"}, usually ${money(p.a)}, ${money(p.t)} in all`}
               onClick={() => setSel(p.name === sel ? null : p.name)}

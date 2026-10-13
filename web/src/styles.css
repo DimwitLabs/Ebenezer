@@ -443,6 +443,7 @@ td.num .fixin { text-align: right; }
 .bb.lg b { display: block; font-size: 13px; font-weight: 600; line-height: 16px; margin-top: 2px; max-width: 90%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .bb.lg i { display: block; font-style: normal; font-size: 12px; font-weight: 500; opacity: 0.9; font-variant-numeric: tabular-nums; }
 .bb:not(.lg) b { display: block; position: absolute; top: 100%; left: 50%; translate: -50% 0; margin-top: 4px; color: var(--text); font-size: 12px; font-weight: 500; white-space: nowrap; text-shadow: 0 0 3px var(--card), 0 0 3px var(--card); }
+.bb.bare b { display: none; }
 .tl { display: flex; align-items: flex-start; gap: 16px; margin-top: 16px; }
 .tl .play { width: 48px; height: 48px; border-radius: 16px; background: var(--accent); flex: none; margin-top: -2px; --md-icon-button-state-layer-shape: 16px; --md-icon-button-icon-color: var(--accent-ink); --md-icon-button-hover-icon-color: var(--accent-ink); --md-icon-button-focus-icon-color: var(--accent-ink); --md-icon-button-pressed-icon-color: var(--accent-ink); --md-icon-button-icon-size: 24px; }
 .track { position: relative; flex: 1; height: 64px; cursor: pointer; touch-action: none; }
@@ -594,7 +595,7 @@ a.fold-t { text-decoration: none; color: inherit; }
   .oa { width: 100%; justify-content: flex-end; }
   .trends { padding: 20px 16px; }
   .trends .seg { width: 100%; }
-  .mx { grid-template-columns: 1fr 1fr; grid-template-rows: auto minmax(180px, auto) minmax(180px, auto); }
+  .mx { grid-template-columns: 1fr 1fr; grid-template-rows: auto minmax(240px, auto) minmax(180px, auto); }
   .mx > .corner, .mx > .rowh { display: none; }
   .mx > .colh { grid-area: 1 / 1; }
   .mx > .colh.r { grid-area: 1 / 2; }

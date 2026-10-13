@@ -17,13 +17,16 @@ import Protected from "../components/Protected";
 import type { NewsItem, Snapshot, Summary } from "../lib/api";
 import { date, money, pct, plainPct, realReturn, short, tone, years } from "../lib/format";
 import { useInterval, useLoad } from "../lib/hooks";
-import { usePortfolio, useTo } from "../lib/session";
+import { usePortfolio, useSession, useTo } from "../lib/session";
 import { tabOf } from "./PortfolioScreen";
 import Spinner from "../design-system/Spinner";
+import { useCount } from "../design-system/motion";
 
 function Past({ snapshots }: { snapshots: Snapshot[] }) {
+  const { user } = useSession();
   if (snapshots.length < 2) {
-    return <p className="help">I write down your net worth every evening after prices come in. This chart fills in from the second evening. You can run a snapshot from Settings.</p>;
+    const sooner = user?.isOwner ? "You can run a snapshot sooner from Schedules under Admin." : "The owner can run a snapshot sooner from Schedules under Admin.";
+    return <p className="help">I write down your net worth every evening after prices come in. This chart fills in from the second evening. {sooner}</p>;
   }
   return (
     <Chart
@@ -68,7 +71,7 @@ function Present({ summary }: { summary: Summary }) {
   if (assets === 0) return <p className="help">Nothing counted yet. Bring something in from Data.</p>;
   return (
     <>
-      <div className="alloc">
+      <div className="alloc grow">
         {rows.map((x) => (
           <i key={x.s.id} style={{ width: `${(x.r.value / assets) * 100}%`, background: x.color }} title={x.s.name} />
         ))}
@@ -173,6 +176,11 @@ function StockGap({ summary }: { summary: Summary }) {
   );
 }
 
+function NetWorth({ n, portfolio }: { n: number; portfolio: string }) {
+  const counted = useCount(n, portfolio);
+  return <span className="big num">{counted === null ? <Amount n={n} /> : short(counted)}</span>;
+}
+
 export default function TodayScreen() {
   const p = usePortfolio();
   const { data: summary, error, reload } = useLoad<Summary>(`/portfolios/${p.id}/summary`);
@@ -203,9 +211,7 @@ export default function TodayScreen() {
         )}
         <section className="card hero s8">
           <span className="eyebrow">Net worth</span>
-          <span className="big num">
-            <Amount n={summary.netWorth} />
-          </span>
+          <NetWorth n={summary.netWorth} portfolio={p.id} />
           {summary.invested > 0 && (
             <span className={`delta ${tone(gain)}`}>
               <span className="ms">{gain < 0 ? "south_east" : "north_east"}</span>
@@ -221,7 +227,7 @@ export default function TodayScreen() {
               )}
             </span>
           )}
-          <div className="lens">
+          <div className="lens enter" key={ghost}>
             {ghost === "past" && <Past snapshots={snapshots ?? []} />}
             {ghost === "present" && <Present summary={summary} />}
             {ghost === "future" && <Future summary={summary} />}

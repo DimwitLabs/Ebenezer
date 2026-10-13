@@ -1,0 +1,53 @@
+/* lib/theme.ts writes every --md-sys-color-* role; the tokens below point at those roles. */
+:root {
+  color-scheme: light dark;
+  --md-ref-typeface-brand: "Roboto Flex Variable", system-ui, -apple-system, sans-serif;
+  --md-ref-typeface-plain: "Roboto Flex Variable", system-ui, -apple-system, sans-serif;
+  --md-icon-font: "Material Symbols Rounded";
+  --bg: light-dark(var(--md-sys-color-surface-container), var(--md-sys-color-surface));
+  --edge: color-mix(in srgb, var(--line) 65%, transparent);
+  --card: light-dark(var(--md-sys-color-surface-container-lowest), var(--md-sys-color-surface-container));
+  --surface: var(--md-sys-color-surface-container-high);
+  --hero: var(--md-sys-color-primary-container);
+  --on-hero: var(--md-sys-color-on-primary-container);
+  /* A solid mix, never see-through. */
+  --hero-ink2: color-mix(in oklab, var(--on-hero) 78%, var(--hero));
+  --hero-line: color-mix(in srgb, var(--on-hero) 18%, transparent);
+  --hero-loss: var(--md-sys-color-error);
+  --hero-gain: var(--md-sys-color-primary);
+  --surface2: var(--md-sys-color-surface-container-highest);
+  --e1: 0 1px 2px light-dark(rgb(23 29 25 / 6%), rgb(0 0 0 / 30%)), 0 2px 8px light-dark(rgb(23 29 25 / 6%), rgb(0 0 0 / 20%));
+  --line: var(--md-sys-color-outline-variant);
+  --text: var(--md-sys-color-on-surface);
+  --text2: var(--md-sys-color-on-surface-variant);
+  --text3: var(--md-sys-color-on-surface-faint);
+  --accent: var(--md-sys-color-primary);
+  --accent-ink: var(--md-sys-color-on-primary);
+  --gain: var(--md-sys-color-primary);
+  --gainbg: var(--md-sys-color-primary-container);
+  --loss: var(--md-sys-color-error);
+  --lossbg: var(--md-sys-color-error-container);
+  --pc: var(--md-sys-color-primary-container);
+  --on-pc: var(--md-sys-color-on-primary-container);
+  --sc: var(--md-sys-color-secondary-container);
+  --on-sc: var(--md-sys-color-on-secondary-container);
+  --note: var(--md-sys-color-tertiary-container);
+  --warn: light-dark(#ffdf9e, #5b4300);
+  --warnink: light-dark(#261a00, #ffdf9e);
+  --noteink: var(--md-sys-color-on-tertiary-container);
+  --noteink2: color-mix(in oklab, var(--noteink) 78%, var(--note));
+  --on-pc2: color-mix(in oklab, var(--on-pc) 78%, var(--pc));
+  --on-sc2: color-mix(in oklab, var(--on-sc) 78%, var(--sc));
+  --on-swatch: var(--md-sys-color-on-swatch, #fbf9f6);
+  --seg1: var(--series-1);
+  --seg2: var(--series-2);
+  --seg3: var(--series-3);
+  --seg4: var(--series-4);
+  --seg5: var(--series-5);
+  --seg6: var(--series-6);
+  --seg7: var(--series-7);
+  --sans: var(--md-ref-typeface-plain);
+  --mono: ui-monospace, SFMono-Regular, Menlo, monospace;
+}
+:root[data-theme="light"] { color-scheme: light; }
+:root[data-theme="dark"] { color-scheme: dark; }

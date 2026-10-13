@@ -4,7 +4,7 @@
 :root {
   --ifm-font-family-base: var(--sans);
   --ifm-font-family-monospace: var(--mono);
-  --ifm-font-size-base: 16px;
+  --ifm-font-size-base: 100%;
   --ifm-line-height-base: 1.65;
   --ifm-font-weight-semibold: 600;
   --ifm-font-weight-bold: 650;
@@ -136,7 +136,7 @@ html[class*="docusaurus-search-local"] [class*="searchResultItemPath_"] { color:
 html[class*="docusaurus-search-local"] [class*="searchResultItemSummary_"] { font-style: normal; color: var(--text2); }
 
 /* Infima narrows the field below 996px and the search theme collapses it to an icon below 576px, so it is only widened where there is room. */
-@media (min-width: 997px) { .navbar__search-input { width: 14rem; } }
+@media (min-width: 62.3125em) { .navbar__search-input { width: 14rem; } }
 
 .navbar-sidebar { background: var(--bg); }
 .navbar-sidebar__brand { box-shadow: none; }
@@ -159,13 +159,13 @@ html[class*="docusaurus-search-local"] [class*="searchResultItemSummary_"] { fon
 .theme-doc-markdown { display: flex; flex-direction: column; gap: 16px; }
 .doc-card { background: var(--card); border-radius: 28px; box-shadow: var(--e1); padding: 1.75rem 2rem; }
 .doc-card > *:last-child, .doc-card > *:last-child > *:last-child { margin-bottom: 0; }
-@media (max-width: 768px) { .doc-card { border-radius: 24px; padding: 1.25rem 1.15rem; } }
+@media (max-width: 48em) { .doc-card { border-radius: 24px; padding: 1.25rem 1.15rem; } }
 
 /* Infima sets --ifm-hN-font-size on .markdown > hN itself, which outranks :root, so the sizes live here. */
-.markdown h1, .markdown header h1 { font-size: 36px; line-height: 44px; font-weight: 650; font-stretch: 95%; letter-spacing: -0.6px; margin-bottom: 8px; }
-.markdown h2 { font-size: 18px; line-height: 24px; font-weight: 650; letter-spacing: -0.1px; margin-top: 0; margin-bottom: 12px; }
-.markdown h3 { font-size: 16px; font-weight: 650; margin-top: 1.75rem; margin-bottom: 0.5rem; }
-.markdown h4 { font-size: 14px; font-weight: 650; color: var(--text2); margin-top: 1.5rem; margin-bottom: 0.4rem; }
+.markdown h1, .markdown header h1 { font-size: 2.25rem; line-height: 2.75rem; font-weight: 650; font-stretch: 95%; letter-spacing: -0.6px; margin-bottom: 8px; }
+.markdown h2 { font-size: 1.125rem; line-height: 1.5rem; font-weight: 650; letter-spacing: -0.1px; margin-top: 0; margin-bottom: 12px; }
+.markdown h3 { font-size: 1rem; font-weight: 650; margin-top: 1.75rem; margin-bottom: 0.5rem; }
+.markdown h4 { font-size: 0.875rem; font-weight: 650; color: var(--text2); margin-top: 1.5rem; margin-bottom: 0.4rem; }
 .markdown > p, .markdown li { color: var(--text2); }
 .doc-card p, .doc-card li { color: var(--text2); }
 .markdown strong { color: var(--text); font-weight: 600; }
@@ -173,7 +173,7 @@ html[class*="docusaurus-search-local"] [class*="searchResultItemSummary_"] { fon
 .markdown hr { border: none; border-top: 1px solid var(--line); margin: 2.5rem 0; }
 .markdown blockquote { border-left: 3px solid var(--md-sys-color-primary); border-radius: 0 12px 12px 0; background: var(--surface); padding: 0.9rem 1.25rem; color: var(--text2); }
 .markdown img { border-radius: 16px; box-shadow: var(--e1); }
-@media (max-width: 768px) { .markdown h1, .markdown header h1 { font-size: 30px; line-height: 36px; } }
+@media (max-width: 48em) { .markdown h1, .markdown header h1 { font-size: 1.875rem; line-height: 2.25rem; } }
 
 /* Infima defines --ifm-code-color but no rule reads it; the child combinator keeps this off fenced blocks. */
 .markdown :not(pre) > code { border: 0; color: var(--text); font-weight: 500; overflow-wrap: normal; }
@@ -182,9 +182,9 @@ html[class*="docusaurus-search-local"] [class*="searchResultItemSummary_"] { fon
 .theme-code-block .theme-code-block-highlighted-line { background: var(--sc); }
 div[class^="codeBlockTitle"] { background: var(--surface2) !important; border-bottom: 0 !important; color: var(--text2); font-size: 0.78rem; font-weight: 600; }
 
-.markdown table { overflow-wrap: break-word; display: table; width: 100%; border-collapse: separate; border-spacing: 0; border-radius: 16px; overflow: hidden; background: var(--surface); margin-bottom: 0; font-size: 14px; }
+.markdown table { overflow-wrap: break-word; display: table; width: 100%; border-collapse: separate; border-spacing: 0; border-radius: 16px; overflow: hidden; background: var(--surface); margin-bottom: 0; font-size: 0.875rem; }
 .markdown table thead tr { border: none; }
-.markdown table th { color: var(--text2); font-size: 12px; font-weight: 600; text-align: left; }
+.markdown table th { color: var(--text2); font-size: 0.75rem; font-weight: 600; text-align: left; }
 .markdown table th, .markdown table td { border: none; border-bottom: 1px solid var(--line); padding: 0.75rem 1rem; }
 .markdown table tbody tr { background: transparent; }
 .markdown table tbody tr:last-child td { border-bottom: none; }
@@ -226,7 +226,7 @@ div[class^="codeBlockTitle"] { background: var(--surface2) !important; border-bo
 .footer__title { font-size: 0.75rem; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: var(--text3); }
 .footer__link-item { font-weight: 500; }
 .footer__col { text-align: center; }
-@media (max-width: 996px) {
+@media (max-width: 62.25em) {
   .footer { padding: 2rem 1rem 1.5rem; }
   .footer__links.row { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); margin: 0; }
   .footer__col { max-width: none; margin-bottom: 0; padding: 0 4px; }
@@ -239,7 +239,7 @@ div[class^="codeBlockTitle"] { background: var(--surface2) !important; border-bo
 .theme-edit-this-page:hover { background: var(--md-sys-color-primary); color: var(--accent-ink); text-decoration: none; }
 .theme-edit-this-page svg { width: 0.85rem; height: 0.85rem; margin-right: 0; }
 
-@media (max-width: 996px) {
+@media (max-width: 62.25em) {
   :root { --ifm-navbar-padding-horizontal: 1rem; }
   .navbar__inner { gap: 0.75rem; }
   /* Below this width Docusaurus pins the search to the bar's right edge, out of the flow, on top of the toggle. */
@@ -248,4 +248,4 @@ div[class^="codeBlockTitle"] { background: var(--surface2) !important; border-bo
 }
 
 /* On phones the bar has room for the search icon, the toggle and the menu, so the version pill steps aside. */
-@media (max-width: 576px) { .version-pill { display: none; } }
+@media (max-width: 36em) { .version-pill { display: none; } }

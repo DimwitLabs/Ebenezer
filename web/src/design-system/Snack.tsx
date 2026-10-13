@@ -47,10 +47,10 @@ export function SnackProvider({ children }: { children: ReactNode }) {
       {children}
       {snack && <Bar message={snack.message} error={snack.error} />}
       {/* Live regions announce changes, not arrivals, so these stay mounted and only their text changes. */}
-      <p className="sr-only" role="status">
+      <p className="sr" role="status">
         {snack && !snack.error ? snack.message : ""}
       </p>
-      <p className="sr-only" role="alert">
+      <p className="sr" role="alert">
         {snack?.error ? snack.message : ""}
       </p>
     </SnackContext.Provider>

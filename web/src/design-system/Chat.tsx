@@ -221,11 +221,11 @@ export default function Chat({ className = "", fresh, started, stage, children, 
           </>
         )}
       </div>
-      <p className="sr-only" aria-live="polite">
+      <p className="sr" aria-live="polite">
         {heard}
       </p>
       <form className={`compose${draft ? " typing" : ""}`} onSubmit={send}>
-        <label htmlFor={`${id}-say`} className="sr-only">
+        <label htmlFor={`${id}-say`} className="sr">
           Message
         </label>
         <textarea ref={field} id={`${id}-say`} rows={1} value={draft} placeholder={placeholder} maxLength={1000} onChange={(e) => setDraft(e.target.value)} onKeyDown={key} />

@@ -18,7 +18,7 @@ export function Pic({ name, alt, phone = PHONE.has(name) }: { name: string; alt:
     <>
       {(["light", "dark"] as const).map((t) => (
         <picture key={t} className={`only-${t}`}>
-          {phone && <source srcSet={shot(`${name}-phone-${t}`)} media="(max-width: 600px)" {...box(`${name}-phone`)} />}
+          {phone && <source srcSet={shot(`${name}-phone-${t}`)} media="(max-width: 37.5em)" {...box(`${name}-phone`)} />}
           <img src={shot(`${name}-${t}`)} alt={alt} loading="lazy" {...box(name)} />
         </picture>
       ))}
@@ -30,8 +30,8 @@ export function Pic({ name, alt, phone = PHONE.has(name) }: { name: string; alt:
 export function Hero({ alt }: { alt: string }) {
   return (
     <picture>
-      <source media="(max-width: 600px) and (prefers-color-scheme: dark)" srcSet={shot("today-phone-dark")} {...box("today-phone")} />
-      <source media="(max-width: 600px)" srcSet={shot("today-phone-light")} {...box("today-phone")} />
+      <source media="(max-width: 37.5em) and (prefers-color-scheme: dark)" srcSet={shot("today-phone-dark")} {...box("today-phone")} />
+      <source media="(max-width: 37.5em)" srcSet={shot("today-phone-light")} {...box("today-phone")} />
       <source media="(prefers-color-scheme: dark)" srcSet={shot("today-dark")} {...box("today")} />
       <img src={shot("today-light")} alt={alt} fetchPriority="high" {...box("today")} />
     </picture>
@@ -77,7 +77,7 @@ export function Copy({ text }: { text: string }) {
       <button type="button" aria-label={`Copy ${text}`} onClick={copy}>
         <Icon name={said === "Copied" ? "check" : "content_copy"} />
       </button>
-      <span className="sr-only" role="status">
+      <span className="sr" role="status">
         {said}
       </span>
     </div>

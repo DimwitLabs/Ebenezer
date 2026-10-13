@@ -144,6 +144,7 @@ const config: Config = {
           "self-hosted portfolio tracker, net worth tracker India, XIRR calculator, Nifty 50 benchmark, mutual fund tracker, CAMS statement, NSDL CDSL, expense tracker, credit card tracker, open source, Docker",
       },
       { name: "author", content: "Dimwit Labs" },
+      { name: "text-scale", content: "scale" },
       { name: "theme-color", content: "#206a4e", media: "(prefers-color-scheme: light)" },
       { name: "theme-color", content: "#0f1511", media: "(prefers-color-scheme: dark)" },
       { property: "og:site_name", content: "Ebenezer" },

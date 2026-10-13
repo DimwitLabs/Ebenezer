@@ -176,7 +176,7 @@ func TestSandboxCannotReachNetwork(t *testing.T) {
 		t.Fatal(err)
 	}
 	res.Body.Close()
-	if csp := res.Header.Get("Content-Security-Policy"); !strings.Contains(csp, "connect-src 'none'") {
+	if csp := res.Header.Get("Content-Security-Policy"); !strings.Contains(csp, "connect-src 'none'") || !strings.Contains(csp, "script-src 'unsafe-eval';") {
 		t.Fatalf("sandbox csp = %q", csp)
 	}
 	res, err = http.Get(ts.URL + "/")
@@ -756,4 +756,27 @@ func TestCardsComeBackFromAnExportRowOnce(t *testing.T) {
 		t.Fatalf("a card already there should be skipped, got %v", got)
 	}
 	c.must(http.StatusBadRequest, "POST", "/api/portfolios/"+pid+"/cards/import", map[string]any{"rows": []map[string]string{{"bank": "SBI", "name": "Elite"}}}, nil)
+}
+
+func TestHSTSOnlyOverHTTPS(t *testing.T) {
+	for _, https := range []bool{false, true} {
+		w := httptest.NewRecorder()
+		securityHeaders(https, http.NotFoundHandler()).ServeHTTP(w, httptest.NewRequest("GET", "/", nil))
+		if got := w.Header().Get("Strict-Transport-Security") != ""; got != https {
+			t.Fatalf("https %v: HSTS sent %v", https, got)
+		}
+		if got := w.Header().Get("Cross-Origin-Resource-Policy"); got != "same-origin" {
+			t.Fatalf("https %v: CORP = %q", https, got)
+		}
+	}
+}
+
+func TestLogoutClearsTheCacheOnly(t *testing.T) {
+	w := httptest.NewRecorder()
+	if err := (&Server{}).logout(w, httptest.NewRequest("POST", "/api/logout", nil)); err != nil {
+		t.Fatal(err)
+	}
+	if got := w.Header().Get("Clear-Site-Data"); got != `"cache"` {
+		t.Fatalf("Clear-Site-Data = %q", got)
+	}
 }

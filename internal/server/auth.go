@@ -127,6 +127,8 @@ func (s *Server) logout(w http.ResponseWriter, r *http.Request) error {
 		}
 	}
 	s.setSessionCookie(w, "", -1)
+	// Only the cache: "cookies" would reach every subdomain of the registrable domain, and "storage" holds the theme.
+	w.Header().Set("Clear-Site-Data", `"cache"`)
 	return ok(w)
 }
 

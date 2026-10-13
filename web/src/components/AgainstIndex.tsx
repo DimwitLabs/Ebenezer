@@ -2,6 +2,9 @@ import { pct } from "../lib/format";
 import Chart, { token } from "../design-system/Chart";
 import { CardHead } from "../design-system/CardHead";
 
+// ECharts writes a custom tooltip as HTML, and a section's name is whatever its owner typed.
+const esc = (t: string) => t.replace(/[&<>"']/g, (c) => `&#${c.charCodeAt(0)};`);
+
 export interface Rated {
   name: string;
   xirr: number;
@@ -27,7 +30,7 @@ export default function AgainstIndex({ rows, benchmark, className = "card s12" }
             formatter: (ps: { dataIndex: number }[]) => {
               const r = rows[ps[0].dataIndex];
               const g = gaps[ps[0].dataIndex];
-              return `<b>${r.name}</b><br>${both(r)}${g === null ? "" : `<br>${Math.abs(g)} points a year ${g >= 0 ? "ahead of" : "behind"} ${benchmark}`}`;
+              return `<b>${esc(r.name)}</b><br>${both(r)}${g === null ? "" : `<br>${Math.abs(g)} points a year ${g >= 0 ? "ahead of" : "behind"} ${esc(benchmark)}`}`;
             },
           },
           xAxis: {

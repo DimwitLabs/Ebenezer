@@ -154,7 +154,7 @@ func (s *Server) Handler() http.Handler {
 		writeJSON(w, http.StatusNotFound, map[string]string{"error": "no such endpoint"})
 	})
 	mux.Handle("/", s.spa())
-	return securityHeaders(csrfGuard(mux))
+	return securityHeaders(s.cfg.SecureCookies, csrfGuard(mux))
 }
 
 // contentSecurityPolicy allows inline styles, as ECharts and React set them, but never inline scripts.
@@ -162,10 +162,13 @@ const contentSecurityPolicy = "default-src 'self'; script-src 'self'; style-src 
 	"img-src 'self' data: blob:; font-src 'self'; connect-src 'self'; worker-src 'self'; object-src 'none'; " +
 	"base-uri 'none'; form-action 'self'; frame-ancestors 'none'"
 
-// sandboxPolicy lets the processing worker evaluate code the person wrote but not reach the network.
-const sandboxPolicy = "default-src 'none'; script-src 'self' 'unsafe-eval'; connect-src 'none'; worker-src 'none'"
+// sandboxPolicy lets the processing worker evaluate code the person wrote but load nothing: the worker is one self-contained
+// file, so without 'self' even a same-origin import() of an API path is refused.
+const sandboxPolicy = "default-src 'none'; script-src 'unsafe-eval'; connect-src 'none'; worker-src 'none'"
 
-func securityHeaders(next http.Handler) http.Handler {
+// securityHeaders sends HSTS only over HTTPS, which SecureCookies stands for; it leaves out includeSubDomains, since a
+// self-hosted Ebenezer often shares a domain with other things its owner runs.
+func securityHeaders(https bool, next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		h := w.Header()
 		policy := contentSecurityPolicy
@@ -177,6 +180,10 @@ func securityHeaders(next http.Handler) http.Handler {
 		h.Set("Referrer-Policy", "no-referrer")
 		h.Set("X-Frame-Options", "DENY")
 		h.Set("Cross-Origin-Opener-Policy", "same-origin")
+		h.Set("Cross-Origin-Resource-Policy", "same-origin")
+		if https {
+			h.Set("Strict-Transport-Security", "max-age=31536000")
+		}
 		h.Set("Permissions-Policy", "camera=(), microphone=(), geolocation=(), payment=()")
 		if strings.HasPrefix(r.URL.Path, "/api/") {
 			h.Set("Cache-Control", "no-store")

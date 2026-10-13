@@ -1,53 +1,56 @@
 # Ebenezer
 
+[![AI-DECLARATION: copilot](https://img.shields.io/badge/䷼%20AI--DECLARATION-copilot-fee2e2?labelColor=fee2e2)](https://ai-declaration.md)
 [![Coverage](https://img.shields.io/badge/coverage-50%25-dcfce7?labelColor=dcfce7)](https://github.com/DimwitLabs/Ebenezer/actions/workflows/ci.yml)
 
-A sceptical accountant for your money, run on your own server.
+A ledger for everything you own, kept on your own server.
 
-Ebenezer keeps every kind of thing you own in one ledger: shares, mutual funds, bonds, gold, fixed and recurring deposits, savings, loans, property, and anything else you define yourself. It prices what can be priced every evening from the exchanges and AMFI, works out your wealth XIRR across all of it, and tells you plainly whether you would have done better in the Nifty 50.
+Shares, funds, bonds, gold, deposits, savings, loans, property, and whatever else you insist on owning: I keep the lot. Each evening I price what can be priced, work out what all of it has really earned, and tell you whether you would have done better leaving it in the Nifty 50. Usually you would have.
 
-It is built for Indian investors and needs no broker account and no paid data.
+I want no broker account and no paid data from you. The exchanges and AMFI publish their prices every evening for anyone who asks, so I ask, and you pay nothing for them. I was built for Indian investors, and I count in lakh and crore like one.
 
-## What It Does
+## What I Do
 
-- **One Ledger, Many Sections:** A portfolio holds sections. Shares, funds and bonds are typed: Ebenezer knows their fields and prices them by ISIN. Anything else, a flat, a car, a chit fund, is a custom section with your own fields, an icon, and a description Ebenezer reads.
-- **Bring Your Data As It Is:** Paste any table from a spreadsheet or broker export and match its columns. Raw trade books run through a small script in your browser first; the default one is how Ebenezer has always read a trade book, and you can change it. It runs with no network access. Save the settings as a template for next time.
-- **Start From A Statement:** Upload a CAS PDF from CAMS or KFintech (every mutual fund transaction) or from NSDL or CDSL (everything in your demat). Ebenezer reads it in your browser, compares it with what it already has on the statement date, and offers to add what is missing or adjust what differs. You tick what goes in. The file and its password never leave the tab.
-- **Prices Without A Data Bill:** The BSE and NSE closing files, AMFI's daily NAVs, NSE's index closes and the day's gold and silver rates, fetched once each evening. No per-ticker calls, no API keys. Index history older than NSE's files, needed only when your money goes back that far, comes from Yahoo Finance, which is not an official source. Gold coins, bars and jewellery are valued by karat; gold ETFs and SGBs can be counted under gold instead of shares.
-- **Returns That Mean Something:** Wealth XIRR counts every dated rupee in, not just shares. Stocks get their own XIRR. Both are set against the same money put into your chosen index on the same days, and against inflation. XIRR waits until money has been in for 90 days, because annual rates over a few weeks are noise.
-- **The Three Ghosts:** Today's screen looks at your money as it was, as it is, and as it may be.
-- **Ask Ebenezer:** Ask "Is HODL working for me?" or "Where am I losing to the index?" and get an answer from your own ledger, including what you would have if you had never sold. You can see exactly what Ebenezer is told.
-- **A Daily Report:** A morning email with net worth, the change since yesterday, Ebenezer's note, each section, the day's movers and the news worth reading, through your own SMTP server. Pick the days, the time and what it holds.
-- **Your Kind Of Accountant:** Choose Ebenezer's personality and tone, or describe your own, and give him standing instructions.
-- **News, Judged:** For every company you hold, news is searched by its full official name, never a bare ticker, alongside its BSE filings. An AI of your choosing through OpenRouter marks each story signal or humbug, with a one-line reason. When and how often is up to each portfolio, and Fetch now always works.
-- **Settings For Everything:** Every schedule shows when it last ran and has a Run now button. Each portfolio keeps its own benchmark, inflation, news times and judge criteria.
-- **It Watches Its Own Sources:** The feeds Ebenezer uses are public files that can change without notice. A daily check tries each one, asserts the shape it expects, and sends you an ntfy alert after two failures in a row.
+- **One Ledger, Many Sections:** A portfolio is made of sections. Shares, funds and bonds I already understand: I know their fields and price them by ISIN. Anything else, a flat, a car, the chit fund you were talked into, becomes a section of your own, with its own fields, an icon, and a description I will read before I say anything about it.
+- **Bring Your Data As It Is:** Paste any table from a spreadsheet or a broker's export and tell me which column is which. When rows do not fit, the AI model writes a small script to tidy them, having seen only the column names and three sample rows, and you tell it in plain words what to change. The script runs in your browser with no network access, so it cannot send your rows anywhere. Save the whole arrangement as a template and you need not explain yourself twice.
+- **Start From A Statement:** Hand me a CAS PDF from CAMS or KFintech, which lists every mutual fund transaction you have made, or one from NSDL or CDSL, which lists everything in your demat. I read it in your browser, compare it with what I already hold for that date, and offer to add what is missing and correct what differs. You tick what goes in. The file and its password never leave the tab.
+- **Prices Without A Data Bill:** The BSE and NSE closing files, AMFI's daily NAVs, NSE's index closes and the day's gold and silver rates, fetched once each evening. I make no call per ticker and need no API key. Index history from before NSE's own files, which I need only when your money goes back that far, comes from Yahoo Finance, which is not an official source, and I will not pretend otherwise. Gold coins, bars and jewellery are valued by karat, and gold ETFs and SGBs may be counted as gold rather than shares.
+- **Returns That Mean Something:** Your wealth XIRR counts every dated rupee you put in, not only the shares. Stocks get an XIRR of their own. Both are set against the same money put into your chosen index on the same days, and against inflation. I wait until money has been in for 90 days before quoting a rate, because an annual figure over a few weeks is humbug.
+- **Past, Present, Future:** Three ghosts once kept me up all night showing me my past, my present and my likely future. Unpleasant, but useful. Today shows you your money the same three ways. You may keep your sleep.
+- **Ask Me:** Ask "Is holding on working for me?" or "Where am I losing to the index?" and I answer from your own ledger, including what you would have had if you had never sold. You may read exactly what I am shown before I answer, every word of it.
+- **A Morning Report:** An email with your net worth, the change since yesterday, my note, each section, the day's movers and the news worth reading, sent through your own mail server. You choose the days, the time and what goes in it.
+- **An Accountant To Your Taste:** Choose my personality and my tone, or describe the one you want, and give me standing instructions. I will follow them, though I may grumble.
+- **News, Judged:** For every company you hold, I search the news by its full official name, never a bare ticker, alongside its BSE filings. Every story crosses my desk, and an AI model of your choosing through OpenRouter helps me mark it signal or humbug, with one line on why. A broker's opinion: humbug. A price that moved: humbug. A headline written to be clicked: humbug, humbug. What is left, read.
+- **Every Schedule In Plain Sight:** Each job shows when it last ran and has a Run now button. Each portfolio keeps its own benchmark, inflation rate, news times and judging rules.
+- **I Watch My Own Sources:** The files I read are public and change without notice. Every day I try each one and check it still looks as it should. After two failures in a row I send you an ntfy alert. I do not write a letter for every cough.
 
-## Run It
+## Running Me
 
-You need Docker.
+All you need is Docker.
 
 ```bash
 cp .env.example .env
 ```
 
-Set `POSTGRES_PASSWORD` and `EBENEZER_ENCRYPTION_KEY` in `.env`, then:
+Set `POSTGRES_PASSWORD` and `EBENEZER_ENCRYPTION_KEY` in it, then start me:
 
 ```bash
 docker compose up -d
 ```
 
-Open http://localhost:8080 and create the first account; it owns the instance. Put it behind HTTPS before you use it for real, or set `EBENEZER_SECURE_COOKIES=false` to try it over plain HTTP on your own machine.
+You will find me at `http://localhost:8080`. Whoever makes the first account there owns the place. Put me behind HTTPS before you trust me with anything real, or set `EBENEZER_SECURE_COOKIES=false` to try me over plain HTTP on your own machine.
 
-To use your own Postgres, Supabase included, set `EBENEZER_DATABASE_URL` and use the other compose file:
+If you would rather use your own Postgres, Supabase included, set `EBENEZER_DATABASE_URL` and use the other compose file:
 
 ```bash
 docker compose -f docker-compose.external-db.yml up -d
 ```
 
-Ebenezer keeps its tables in their own schema, `ebenezer` by default, so it can share a database.
+I keep my tables in a schema of my own, `ebenezer` unless you say otherwise, so I can share a database without making a mess of it.
 
 ## Configuration
+
+Set these in `.env`. Everything else is in Settings, where it belongs.
 
 | Variable | Default | What it does |
 |---|---|---|
@@ -58,27 +61,37 @@ Ebenezer keeps its tables in their own schema, `ebenezer` by default, so it can 
 | `EBENEZER_SESSION_HOURS` | `336` | How long a sign-in lasts. |
 | `EBENEZER_SCHEDULER` | `true` | Run prices, news and health on schedule. Turn off on all but one copy. |
 | `TZ` | `Asia/Kolkata` | The clock every schedule time is written in. Settings show it next to each time. |
-| `EBENEZER_NTFY_URL` | | Where source alerts go. Also settable in Settings. |
 | `EBENEZER_PUBLIC_URL` | | Where people reach this Ebenezer, such as `https://ebenezer.example.com`, for links in emails. |
 | `EBENEZER_ADDR` | `:8080` | Listen address. |
 
-Everything else lives in Settings: price time, model, news and report schedules, the SMTP server, and every key and password. The OpenRouter key, the ntfy token or password and the SMTP password are sealed with `EBENEZER_ENCRYPTION_KEY` before they reach the database and are never shown again.
+Price times, the AI model, news and report schedules, the mail server, and every key and password are set in Settings. The OpenRouter key, the ntfy token or password and the mail password are locked with `EBENEZER_ENCRYPTION_KEY` before they reach the database, and I never show them again, not even to you.
 
-## Develop
+> [!WARNING]
+> Lose `EBENEZER_ENCRYPTION_KEY` and I cannot open those secrets. Nobody can. You will be typing the lot in again, so keep a copy.
+
+## Working On Me
+
+Start a database to test against:
 
 ```bash
 docker run -d --name ebenezer-dev-db -e POSTGRES_USER=ebenezer -e POSTGRES_PASSWORD=ebenezer -e POSTGRES_DB=ebenezer -p 127.0.0.1:54329:5432 postgres:18-alpine
 ```
 
+Run the server against it:
+
 ```bash
-EBENEZER_DATABASE_URL='postgres://ebenezer:ebenezer@127.0.0.1:54329/ebenezer?sslmode=disable' EBENEZER_SECURE_COOKIES=false go run ./cmd/ebenezer
+EBENEZER_DATABASE_URL='postgres://ebenezer:ebenezer@127.0.0.1:54329/ebenezer?sslmode=disable' EBENEZER_ENCRYPTION_KEY="$(openssl rand -base64 32)" EBENEZER_SECURE_COOKIES=false go run ./cmd/ebenezer
 ```
+
+Run the web app beside it:
 
 ```bash
 cd web && npm install && npm run dev
 ```
 
-The web app runs on http://localhost:5173 and sends `/api` to the Go server. `go test ./...` and `npm test` run the tests; `EBENEZER_LIVE=1 go test ./internal/market ./internal/news` also checks the real feeds still answer.
+The web app runs on `http://localhost:5173` and sends `/api` to the Go server. `go test ./...` and `npm test` run the tests, and `EBENEZER_LIVE=1 go test ./internal/market ./internal/news` checks that the real feeds still answer.
+
+A fresh key on every run means the secrets you saved last time will not open. Fix one in your shell if you mean to keep them.
 
 ## Licence
 

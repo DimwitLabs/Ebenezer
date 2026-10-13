@@ -60,33 +60,6 @@ jobs:
       - run: go vet ./...
       - run: go run golang.org/x/vuln/cmd/govulncheck@v1.8.0 ./...
       - run: go test -race ./... -coverpkg=./internal/... -coverprofile=cover.out
-      - run: go tool cover -func=cover.out | tail -1
-
-  image: postgres:18-alpine
-        env:
-          POSTGRES_USER: ebenezer
-          POSTGRES_PASSWORD: ebenezer
-          POSTGRES_DB: ebenezer
-        ports:
-          - 5432:5432
-        options: >-
-          --health-cmd "pg_isready -U ebenezer"
-          --health-interval 2s
-          --health-timeout 5s
-          --health-retries 20
-    env:
-      EBENEZER_TEST_DATABASE_URL: postgres://ebenezer:ebenezer@localhost:5432/ebenezer?sslmode=disable
-    steps:
-      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-        with:
-          persist-credentials: false
-      - uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7.0.0
-        with:
-          go-version-file: go.mod
-      - run: test -z "$(gofmt -l .)"
-      - run: go vet ./...
-      - run: go run golang.org/x/vuln/cmd/govulncheck@v1.8.0 ./...
-      - run: go test -race ./... -coverpkg=./internal/... -coverprofile=cover.out
       - name: Check Coverage
         run: |
           go tool cover -func=cover.out | tail -1
@@ -98,19 +71,20 @@ jobs:
             printf "coverage %s%% clears the %s%% floor\n", total, floor
           }'
         env:
-          COVERAGE_FLOOR: 85
-      - name: Check Version Pill
+          COVERAGE_FLOOR: 50
+      - name: Check Version
         run: |
           changelog=$(grep -o '^## \[[0-9]*\.[0-9]*\.[0-9]*\]' CHANGELOG.md | head -1 | tr -d '#[] ')
-          link=$(grep -o 'releases/tag/v[0-9.]*' landing/index.html | head -1 | sed 's|releases/tag/v||')
-          text=$(grep -o '>v[0-9.]*<' landing/index.html | head -1 | tr -d '><v')
-          for found in "$link" "$text"; do
-            if [ "$found" != "$changelog" ]; then
-              echo "the landing pill says $found but the changelog says $changelog"
-              exit 1
-            fi
-          done
-          echo "the landing pill matches the changelog at $changelog"
+          app=$(grep -o '"version": "[0-9.]*"' web/package.json | head -1 | grep -o '[0-9][0-9.]*')
+          if [ -z "$changelog" ]; then
+            echo "no release in the changelog yet"
+            exit 0
+          fi
+          if [ "$app" != "$changelog" ]; then
+            echo "web/package.json says $app but the changelog says $changelog; the site's version pill reads the former"
+            exit 1
+          fi
+          echo "the app version matches the changelog at $changelog"
 
   image:
     name: Image

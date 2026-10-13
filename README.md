@@ -1,5 +1,7 @@
 # Ebenezer
 
+[![Coverage](https://img.shields.io/badge/coverage-50%25-dcfce7?labelColor=dcfce7)](https://github.com/DimwitLabs/Ebenezer/actions/workflows/ci.yml)
+
 A sceptical accountant for your money, run on your own server.
 
 Ebenezer keeps every kind of thing you own in one ledger: shares, mutual funds, bonds, gold, fixed and recurring deposits, savings, loans, property, and anything else you define yourself. It prices what can be priced every evening from the exchanges and AMFI, works out your wealth XIRR across all of it, and tells you plainly whether you would have done better in the Nifty 50.

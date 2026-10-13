@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
-import Chat, { ChatError, Mine, Said, Stage, Theirs, Thinking } from "../design-system/Chat";
+import Chat, { ChatError, FollowUps, Mine, Stage, Theirs, Thinking } from "../design-system/Chat";
 import { PageHead } from "../design-system/PageHead";
 import SeesDialog from "../components/SeesDialog";
 import { ApiError, ask, isNoAI, get, type Ledger, type Portfolio, type Turn } from "../lib/api";
@@ -26,10 +26,9 @@ function LedgerDialog({ pid, onClose }: { pid: string; onClose: () => void }) {
   return <SeesDialog help="The plain text sent to the model with each question, along with your instructions from Settings." text={ledger?.ledger ?? null} error={error} onClose={onClose} />;
 }
 
-function Answer({ turn }: { turn: Turn }) {
+function Answer({ turn, typing, onTyped, onAsk }: { turn: Turn; typing: boolean; onTyped: () => void; onAsk?: (q: string) => void }) {
   return (
-    <Theirs>
-      <Said text={turn.content} />
+    <Theirs text={turn.content} typing={typing} onTyped={onTyped} after={onAsk && <FollowUps questions={turn.followUps ?? []} onAsk={onAsk} />}>
       {turn.redacted && (
         <p className="redacted">
           <span className="ms">visibility_off</span>
@@ -44,21 +43,23 @@ function Conversation({ p }: { p: Portfolio }) {
   const [turns, setTurns] = useState<Turn[]>([]);
   const [draft, setDraft] = useState("");
   const [busy, setBusy] = useState(false);
+  const [typing, setTyping] = useState(false);
   const [error, setError] = useState<{ message: string; noKey: boolean } | null>(null);
   const [ledger, setLedger] = useState(false);
   const { user } = useSession();
   const navigate = useNavigate();
 
   const send = async (question: string) => {
-    if (busy) return;
+    if (busy || typing) return;
     const history = turns.slice(-8);
     setTurns((t) => [...t, { role: "user", content: question }]);
     setDraft("");
     setError(null);
     setBusy(true);
     try {
-      const { answer, redacted } = await ask(p.id, question, history);
-      setTurns((t) => [...t, { role: "assistant", content: answer, redacted }]);
+      const { answer, redacted, followUps } = await ask(p.id, question, history);
+      setTurns((t) => [...t, { role: "assistant", content: answer, redacted, followUps }]);
+      setTyping(!!answer);
     } catch (e) {
       setTurns((t) => t.slice(0, -1));
       const status = e instanceof ApiError ? e.status : 0;
@@ -99,9 +100,15 @@ function Conversation({ p }: { p: Portfolio }) {
         draft={draft}
         setDraft={setDraft}
         onSend={(t) => void send(t)}
-        busy={busy}
+        busy={busy || typing}
       >
-        {turns.map((t, i) => (t.role === "user" ? <Mine key={i} text={t.content} /> : <Answer key={i} turn={t} />))}
+        {turns.map((t, i) =>
+          t.role === "user" ? (
+            <Mine key={i} text={t.content} />
+          ) : (
+            <Answer key={i} turn={t} typing={typing && i === turns.length - 1} onTyped={() => setTyping(false)} onAsk={i === turns.length - 1 && !busy ? (q) => void send(q) : undefined} />
+          ),
+        )}
         {busy && <Thinking label="Going through the books" />}
         {error && <ChatError text={error.message} action={error.noKey ? { label: "Open AI settings", onClick: () => navigate("/admin#ai") } : undefined} />}
       </Chat>

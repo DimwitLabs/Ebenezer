@@ -469,12 +469,14 @@ export interface Turn {
   content: string;
   // redacted marks an answer the OpenRouter account redacted words from before the model saw them.
   redacted?: boolean;
+  followUps?: string[];
 }
 
 // to is a section id, a kind key such as "gold" (made if missing), or "" to move it back.
 export const moveHolding = (pid: string, isin: string, to: string) => put<Portfolio>(`/portfolios/${pid}/moves`, { isin, to });
 
-export const ask = (pid: string, question: string, history: Turn[]) => post<{ answer: string; redacted: boolean }>(`/portfolios/${pid}/ask`, { question, history });
+export const ask = (pid: string, question: string, history: Turn[]) =>
+  post<{ answer: string; followUps: string[]; redacted: boolean }>(`/portfolios/${pid}/ask`, { question, history: history.map(({ role, content }) => ({ role, content })) });
 
 export interface Spend {
   id: string;

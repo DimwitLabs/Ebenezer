@@ -836,11 +836,14 @@ func (s *Server) ask(w http.ResponseWriter, r *http.Request) error {
 	if q == "" || len(q) > 1000 {
 		return fail(http.StatusBadRequest, "ask a question of up to 1000 characters")
 	}
-	answer, err := s.app.Ask(r.Context(), p, q, body.History)
+	answer, followUps, err := s.app.Ask(r.Context(), p, q, body.History)
 	if err != nil {
 		return s.aiFailure(r, u, err, "answer questions", "")
 	}
-	writeJSON(w, http.StatusOK, map[string]any{"answer": answer, "redacted": app.Redacted(answer)})
+	if followUps == nil {
+		followUps = []string{}
+	}
+	writeJSON(w, http.StatusOK, map[string]any{"answer": answer, "followUps": followUps, "redacted": app.Redacted(answer)})
 	return nil
 }
 

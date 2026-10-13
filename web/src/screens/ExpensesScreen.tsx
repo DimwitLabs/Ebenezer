@@ -4,7 +4,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import Amount from "../design-system/Amount";
 import CategoryTidy from "../components/CategoryTidy";
 import { Badge } from "../design-system/Badge";
-import Chat, { ChatError, Mine, Said, Stage, Theirs, Thinking } from "../design-system/Chat";
+import Chat, { ChatError, Mine, Stage, Theirs, Thinking } from "../design-system/Chat";
 import { Hero } from "../design-system/Hero";
 import { PageHead } from "../design-system/PageHead";
 import { EbenezerNote, type Note } from "../components/Note";
@@ -123,6 +123,7 @@ function SpendChat({ e, onChange, onTidy }: { e: Expenses; onChange: (x: Expense
   const [entries, setEntries] = useState<Entry[]>([]);
   const [draft, setDraft] = useState("");
   const [busy, setBusy] = useState(false);
+  const [typing, setTyping] = useState(false);
   const [focus, setFocus] = useState(0);
   const [pending, setPending] = useState<Record<string, string>>({});
 
@@ -135,6 +136,7 @@ function SpendChat({ e, onChange, onTidy }: { e: Expenses; onChange: (x: Expense
     try {
       const res = await post<ChatResult>(`/portfolios/${p.id}/expenses/chat`, { message: text, history });
       setEntries((xs) => [...xs, { kind: "eb", res, picked: {}, paid: [], offer: res.offerTidy }]);
+      setTyping(!!res.reply);
       onChange(res.expenses);
     } catch (err) {
       const status = err instanceof ApiError ? err.status : 0;
@@ -221,7 +223,7 @@ function SpendChat({ e, onChange, onTidy }: { e: Expenses; onChange: (x: Expense
       draft={draft}
       setDraft={setDraft}
       onSend={(t) => void send(t)}
-      busy={busy}
+      busy={busy || typing}
     >
       {entries.map((x, i) => {
         if (x.kind === "me") return <Mine key={i} text={x.text} />;
@@ -232,6 +234,9 @@ function SpendChat({ e, onChange, onTidy }: { e: Expenses; onChange: (x: Expense
         return (
           <Theirs
             key={i}
+            text={res.reply}
+            typing={typing && i === entries.length - 1}
+            onTyped={() => setTyping(false)}
             after={
               <>
                 {res.saved.length > 0 && (
@@ -277,7 +282,6 @@ function SpendChat({ e, onChange, onTidy }: { e: Expenses; onChange: (x: Expense
               </>
             }
           >
-            {res.reply && <Said text={res.reply} />}
             {res.saved.length > 1 && !res.reply && <p>{`${res.saved.length} spends${same ? ` on ${same}` : ""}:`}</p>}
             {res.saved.length > 0 && <SpendRows e={e} spends={res.saved} fresh={res.newCategories} />}
             {!x.undone &&

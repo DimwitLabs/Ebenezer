@@ -1,4 +1,8 @@
-import { useEffect, useRef, type FormEvent, type KeyboardEvent, type ReactNode } from "react";
+import { createContext, useCallback, useContext, useEffect, useLayoutEffect, useRef, useState, type FormEvent, type KeyboardEvent, type ReactNode } from "react";
+
+import { still } from "./motion";
+
+const Follow = createContext<() => void>(() => {});
 
 // Models sometimes bold a phrase with **; show that as bold and drop stray asterisks.
 export function Said({ text }: { text: string }) {
@@ -35,14 +39,61 @@ export function Mine({ text }: { text: string }) {
   );
 }
 
-export function Theirs({ children, after }: { children: ReactNode; after?: ReactNode }) {
+// Types the reply out at a steady pace, so even a long answer is done in about a second and a half.
+export function Typed({ text, onDone }: { text: string; onDone?: () => void }) {
+  const [n, setN] = useState(() => (still() ? text.length : 0));
+  const follow = useContext(Follow);
+  const done = useRef(onDone);
+  useEffect(() => {
+    done.current = onDone;
+  });
+  useEffect(() => {
+    if (still()) {
+      setN(text.length);
+      done.current?.();
+      return;
+    }
+    const rate = Math.max(text.length / 1500, 0.3);
+    const t0 = performance.now();
+    let raf = 0;
+    const step = (t: number) => {
+      const k = Math.min(text.length, Math.ceil((t - t0) * rate));
+      setN(k);
+      if (k < text.length) raf = requestAnimationFrame(step);
+      else done.current?.();
+    };
+    raf = requestAnimationFrame(step);
+    return () => cancelAnimationFrame(raf);
+  }, [text]);
+  useLayoutEffect(() => follow(), [n, follow]);
+  return <Said text={text.slice(0, n)} />;
+}
+
+// With typing set, text types itself out and children and after wait until it is done.
+export function Theirs({ text, typing = false, onTyped, children, after }: { text?: string; typing?: boolean; onTyped?: () => void; children?: ReactNode; after?: ReactNode }) {
   return (
     <div className="msg eb">
       <img src="/favicon.svg" alt="Ebenezer" />
       <div className="eb-b">
-        <div className="bub">{children}</div>
-        {after}
+        <div className="bub">
+          {text && (typing ? <Typed text={text} onDone={onTyped} /> : <Said text={text} />)}
+          {!typing && children}
+        </div>
+        {!typing && after}
       </div>
+    </div>
+  );
+}
+
+export function FollowUps({ questions, onAsk }: { questions: string[]; onAsk: (q: string) => void }) {
+  if (!questions.length) return null;
+  return (
+    <div className="follow-ups">
+      {questions.map((q) => (
+        <md-assist-chip key={q} label={q} title={q} onClick={() => onAsk(q)}>
+          <md-icon slot="icon">subdirectory_arrow_right</md-icon>
+        </md-assist-chip>
+      ))}
     </div>
   );
 }
@@ -112,6 +163,9 @@ interface Props {
 export default function Chat({ className = "", fresh, started, stage, children, placeholder, draft, setDraft, onSend, busy, focus }: Props) {
   const box = useRef<HTMLDivElement>(null);
   const field = useRef<HTMLTextAreaElement>(null);
+  const stick = useCallback(() => {
+    if (box.current) box.current.scrollTop = box.current.scrollHeight;
+  }, []);
 
   useEffect(() => {
     if (started) box.current?.scrollTo({ top: box.current.scrollHeight, behavior: "smooth" });
@@ -141,7 +195,7 @@ export default function Chat({ className = "", fresh, started, stage, children, 
     <div className={`chat ${className}`.trim()}>
       <div className="msgs" ref={box}>
         {started ? (
-          children
+          <Follow.Provider value={stick}>{children}</Follow.Provider>
         ) : (
           <>
             <p className="fnote">

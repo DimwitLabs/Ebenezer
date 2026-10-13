@@ -175,6 +175,11 @@ md-tabs.tabs {
   }
 }
 @media (prefers-reduced-motion: reduce) { .enter, .grow, .grow > * { animation: none; transition: none; } }
+/* Moving between screens cross-fades the main view alone; the rail stays put. */
+.view { view-transition-name: view; }
+::view-transition-group(view) { animation-duration: 0.2s; }
+::view-transition-old(root), ::view-transition-new(root) { animation-duration: 0.25s; }
+@media (prefers-reduced-motion: reduce) { ::view-transition-group(*), ::view-transition-old(*), ::view-transition-new(*) { animation: none; } }
 .card-h { display: flex; justify-content: space-between; align-items: center; gap: 12px; margin-bottom: 14px; flex-wrap: wrap; min-height: 40px; }
 .card-h h3 { font-size: 1.125rem; line-height: 1.5rem; font-weight: 650; letter-spacing: -0.1px; }
 .card-h .help { margin-top: 2px; }

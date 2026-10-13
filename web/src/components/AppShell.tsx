@@ -8,6 +8,7 @@ import { short } from "../lib/format";
 import { portfolioPath, useSession, useTo } from "../lib/session";
 import BugDialog from "./BugDialog";
 import { applySeed, applyTheme, reportPalette, savedTheme, type Theme } from "../lib/theme";
+import { morph } from "../design-system/motion";
 
 const NAV = [
   { to: "/", id: "nav-today", icon: "today", label: "Today" },
@@ -69,7 +70,7 @@ export default function AppShell() {
 
   const cycleTheme = () => {
     const t = NEXT_THEME[theme];
-    applyTheme(t);
+    morph(() => applyTheme(t));
     setTheme(t);
   };
 
@@ -94,7 +95,7 @@ export default function AppShell() {
         </div>
         <nav className="nav" aria-label="Screens">
           {NAV.map((n) => (
-            <NavLink key={n.to} id={n.id} to={to(n.to)} end={n.to === "/" || n.end} className={({ isActive }) => (isActive ? "active" : n.end && pathname.endsWith("/expenses/cards") ? "parent" : "")}>
+            <NavLink key={n.to} id={n.id} to={to(n.to)} end={n.to === "/" || n.end} viewTransition className={({ isActive }) => (isActive ? "active" : n.end && pathname.endsWith("/expenses/cards") ? "parent" : "")}>
               <span className="ind">
                 <md-ripple htmlFor={n.id} />
                 <md-focus-ring htmlFor={n.id} />
@@ -107,7 +108,7 @@ export default function AppShell() {
           ))}
         </nav>
         <div className="spacer" />
-        <NavLink to="/admin" id="nav-admin" className={({ isActive }) => `who${isActive ? " active" : ""}`} title="Your account and this Ebenezer">
+        <NavLink to="/admin" id="nav-admin" viewTransition className={({ isActive }) => `who${isActive ? " active" : ""}`} title="Your account and this Ebenezer">
           <span className="ind">
             <md-ripple htmlFor="nav-admin" />
             <md-focus-ring htmlFor="nav-admin" />

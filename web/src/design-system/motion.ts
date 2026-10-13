@@ -2,6 +2,12 @@ import { useEffect, useLayoutEffect, useRef, useState } from "react";
 
 export const still = () => window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
+// Cross-fades a change made to the whole page, such as the theme, where the browser can; elsewhere it just happens.
+export function morph(change: () => void) {
+  if (!document.startViewTransition || still()) change();
+  else document.startViewTransition(change);
+}
+
 // Counts up from 0 on mount and whenever key changes, then returns null so the caller shows the exact figure.
 export function useCount(target: number, key?: unknown, ms = 1100): number | null {
   const [n, setN] = useState<number | null>(() => (still() ? null : 0));

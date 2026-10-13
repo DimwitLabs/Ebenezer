@@ -77,16 +77,17 @@ docker compose -f docker-compose.external-db.yml up -d
 
 ## The Published Image
 
-Both compose files run `ghcr.io/dimwitlabs/ebenezer`, built for `linux/amd64` and `linux/arm64`. Each release is tagged several ways:
+Both compose files run `ghcr.io/dimwitlabs/ebenezer`, built for `linux/amd64` and `linux/arm64`. It is tagged several ways:
 
 | Tag | What it follows |
 | --- | --- |
-| `latest` | The newest full release. A pre-release never takes it. The compose files use it unless told otherwise. |
+| `latest` | The newest build of `main`, released or not. The compose files use it unless told otherwise. |
+| `development` | The newest build of the `development` branch, when there is one. Expect it to break. |
 | `X.Y.Z` | One release exactly, numbered as in its release notes. |
 | `X.Y` | The newest patch of that minor version. |
 | `X` | The newest release of that major version. |
 
-`EBENEZER_VERSION` in `.env` picks the tag. Each release on GitHub also lists the image with its exact digest. Moving between tags is covered in [Upgrading](/docs/self-hosting/upgrading).
+`EBENEZER_VERSION` in `.env` picks the tag; set it to `X.Y` to stay on releases. Each release on GitHub also lists the image with its exact digest. Moving between tags is covered in [Upgrading](/docs/self-hosting/upgrading).
 
 ## HTTPS And Reaching Me
 

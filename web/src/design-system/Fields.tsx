@@ -4,6 +4,11 @@ import type { MdFilledTextField } from "@material/web/textfield/filled-text-fiel
 
 import Tip from "./Tip";
 
+// Safari reports isComposing false on the Enter that picks an IME candidate, but still sends keyCode 229 for it.
+export function composing(e: KeyboardEvent) {
+  return e.nativeEvent.isComposing || e.keyCode === 229;
+}
+
 type TextFieldProps = Omit<JSX.IntrinsicElements["md-filled-text-field"], "value" | "onChange" | "onInput" | "ref" | "supportingText"> & {
   value: string;
   onChange: (value: string) => void;
@@ -54,7 +59,7 @@ export function TextField({ value, onChange, onKeyDown, autoFocus, label, classN
   }, [autoFocus]);
   const enter = (e: KeyboardEvent<MdFilledTextField>) => {
     onKeyDown?.(e);
-    if (e.key !== "Enter" || e.defaultPrevented || e.nativeEvent.isComposing || rest.type === "textarea") return;
+    if (e.key !== "Enter" || e.defaultPrevented || composing(e) || rest.type === "textarea") return;
     const form = e.currentTarget.form;
     if (form) {
       e.preventDefault();

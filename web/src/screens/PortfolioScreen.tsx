@@ -9,13 +9,12 @@ import Overview from "../components/Overview";
 import Policies from "../components/Policies";
 import SectionView from "../components/SectionView";
 import { useSnack } from "../design-system/Snack";
-import { moveHolding, type Position, type Section, type Summary } from "../lib/api";
+import { moveHolding, tabOf, type Position, type Summary } from "../lib/api";
 import { useInterval, useLoad } from "../lib/hooks";
 import { usePortfolio, useSession, useTo } from "../lib/session";
 import Spinner from "../design-system/Spinner";
 
 // Only custom sections can repeat a kind, so they go by id.
-export const tabOf = (s: Section) => (s.kind === "custom" ? s.id : s.kind);
 
 export default function PortfolioScreen() {
   const p = usePortfolio();

@@ -1,12 +1,7 @@
-import { BarChart, LineChart, PieChart } from "echarts/charts";
-import { GridComponent, LegendComponent, MarkLineComponent, TooltipComponent } from "echarts/components";
-import { init, use, type ECharts, type EChartsCoreOption } from "echarts/core";
-import { CanvasRenderer } from "echarts/renderers";
+import type { ECharts, EChartsCoreOption } from "echarts/core";
 import { useEffect, useRef } from "react";
 
 export const SEG = ["--seg1", "--seg2", "--seg3", "--seg4", "--seg5", "--seg6", "--seg7"];
-
-use([LineChart, BarChart, PieChart, GridComponent, TooltipComponent, MarkLineComponent, LegendComponent, CanvasRenderer]);
 
 // Tokens hold light-dark() and var() chains, so a probe element resolves them to rgb().
 export function token(name: string): string {
@@ -32,23 +27,33 @@ export default function Chart({ option, deps, height = 280 }: Props) {
   const build = useRef(option);
   build.current = option;
 
+  // ECharts arrives in its own chunk on the first chart; the box holds its height meanwhile, so nothing shifts.
   useEffect(() => {
-    if (!el.current) return;
-    const c = init(el.current, undefined, { renderer: "canvas" });
-    chart.current = c;
-    const draw = () => c.setOption(build.current(), true);
-    const resize = new ResizeObserver(() => c.resize());
-    resize.observe(el.current);
-    const scheme = window.matchMedia("(prefers-color-scheme: dark)");
-    const theme = new MutationObserver(draw);
-    theme.observe(document.documentElement, { attributes: true, attributeFilter: ["data-theme", "style"] });
-    scheme.addEventListener("change", draw);
+    let stop = () => {};
+    let gone = false;
+    import("./echarts").then(({ init }) => {
+      if (gone || !el.current) return;
+      const c = init(el.current, undefined, { renderer: "canvas" });
+      chart.current = c;
+      const draw = () => c.setOption(build.current(), true);
+      draw();
+      const resize = new ResizeObserver(() => c.resize());
+      resize.observe(el.current);
+      const scheme = window.matchMedia("(prefers-color-scheme: dark)");
+      const theme = new MutationObserver(draw);
+      theme.observe(document.documentElement, { attributes: true, attributeFilter: ["data-theme", "style"] });
+      scheme.addEventListener("change", draw);
+      stop = () => {
+        resize.disconnect();
+        theme.disconnect();
+        scheme.removeEventListener("change", draw);
+        c.dispose();
+        chart.current = null;
+      };
+    });
     return () => {
-      resize.disconnect();
-      theme.disconnect();
-      scheme.removeEventListener("change", draw);
-      c.dispose();
-      chart.current = null;
+      gone = true;
+      stop();
     };
   }, []);
 

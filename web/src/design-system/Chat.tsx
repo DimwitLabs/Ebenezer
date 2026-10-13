@@ -1,5 +1,6 @@
 import { createContext, useCallback, useContext, useEffect, useLayoutEffect, useRef, useState, type FormEvent, type KeyboardEvent, type ReactNode } from "react";
 
+import { composing } from "./Fields";
 import { still } from "./motion";
 
 const Follow = createContext<() => void>(() => {});
@@ -188,7 +189,7 @@ export default function Chat({ className = "", fresh, started, stage, children, 
   };
 
   const key = (e: KeyboardEvent<HTMLTextAreaElement>) => {
-    if (e.key === "Enter" && !e.shiftKey && !e.nativeEvent.isComposing) send(e);
+    if (e.key === "Enter" && !e.shiftKey && !composing(e)) send(e);
   };
 
   return (

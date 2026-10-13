@@ -14,11 +14,10 @@ import { Stat } from "../design-system/Stat";
 import OpeningNote from "../components/OpeningNote";
 import { Item } from "../design-system/Item";
 import Protected from "../components/Protected";
-import type { NewsItem, Snapshot, Summary } from "../lib/api";
+import { tabOf, type NewsItem, type Snapshot, type Summary } from "../lib/api";
 import { date, money, pct, plainPct, realReturn, short, tone, years } from "../lib/format";
 import { useInterval, useLoad } from "../lib/hooks";
 import { usePortfolio, useSession, useTo } from "../lib/session";
-import { tabOf } from "./PortfolioScreen";
 import Spinner from "../design-system/Spinner";
 import { useCount } from "../design-system/motion";
 

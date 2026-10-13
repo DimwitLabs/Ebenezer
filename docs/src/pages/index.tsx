@@ -2,7 +2,7 @@ import Head from "@docusaurus/Head";
 import Link from "@docusaurus/Link";
 import Layout from "@theme/Layout";
 
-import { Copy, Ghost, Icon, Pic } from "../components/Landing";
+import { Copy, Ghost, Hero, Icon, Pic } from "../components/Landing";
 
 const ACTS = [
   {
@@ -120,12 +120,9 @@ export default function Home() {
               Read the docs
             </Link>
           </div>
-          <figure className="pshot wide">
-            <Pic name="today" alt="Today: net worth, what it is made of, and my note." eager phone={false} />
-          </figure>
-          <figure className="pshot narrow">
-            <Pic name="today-phone" alt="Today on a phone." phone={false} />
-          </figure>
+          <div className="pshot">
+            <Hero alt="Today: net worth, what it is made of, and my note." />
+          </div>
         </section>
 
         <section className="verdict">
@@ -205,7 +202,9 @@ export default function Home() {
           <div className="pmore swipe">
             {MORE.map(([icon, title, text]) => (
               <div key={title}>
-                <span className="item-i ms">{icon}</span>
+                <span className="item-i ms" aria-hidden="true">
+                  {icon}
+                </span>
                 <b>{title}</b>
                 <p>{text}</p>
               </div>

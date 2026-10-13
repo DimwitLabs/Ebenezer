@@ -1,5 +1,4 @@
 import "@fontsource-variable/roboto-flex/wdth.css";
-import "material-symbols/rounded.css";
 import "./design-system/design-system.css";
 import "./styles.css";
 import "./lib/md";

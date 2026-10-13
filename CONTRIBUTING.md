@@ -52,6 +52,8 @@ Elements that sit together as a set, such as options, tiles, chips, buttons or r
 
 Colours live as tokens in `web/src/design-system/tokens.css`, each holding its light and dark value through `light-dark()`; add a colour there rather than inline.
 
+The icon font is cut down to the icons the code names. After using a new icon, run `npm run icons` in `web` to fetch a fresh `web/src/design-system/icons.woff2`; until then it shows as its name in letters.
+
 The price and news sources are unofficial. When you change how one is read, change its health check in `internal/app/health.go` too.
 
 The site at `docs/` is one Docusaurus build: the landing page in `docs/src/pages/index.tsx` at the root, and the docs under `/docs`. The landing page is screenshots of the real app with a little copy in Ebenezer's own voice, styled from the app's tokens and icons in `docs/src/css/landing.css`; on a phone each section becomes a row of swipeable cards. When a screen it shows changes, retake the screenshots: start `cd web && node_modules/.bin/vite --config vite.shots.config.ts`, then run `node web/shots/capture.mjs` (needs `cwebp`). They land in `docs/static/img/shots` with transparent backgrounds. The sample data in `web/shots/` is typed against `web/src/lib/api.ts`, so `npx tsc --noEmit -p shots` from `web` catches drift.

@@ -4,7 +4,8 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc --noEmit && vite build && touch dist/.gitkeep",
-    "test": "vitest run"
+    "test": "vitest run",
+    "icons": "node scripts/icons.mjs"
   },
   "license": "MIT",
   "type": "module",
@@ -14,7 +15,6 @@
     "@material/material-color-utilities": "^0.4.0",
     "@material/web": "^2.5.0",
     "echarts": "^6.1.0",
-    "material-symbols": "^0.47.6",
     "pdfjs-dist": "^6.4.299",
     "react": "^19.3.0",
     "react-dom": "^19.3.0",

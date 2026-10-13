@@ -179,6 +179,9 @@ export interface Section {
   lastImport: string | null;
 }
 
+// A section's tab on the Portfolio screen: its kind, or its id for a custom one, since a portfolio may hold several customs.
+export const tabOf = (s: Section) => (s.kind === "custom" ? s.id : s.kind);
+
 export type RowData = Record<string, string | number | boolean>;
 
 export interface Row {

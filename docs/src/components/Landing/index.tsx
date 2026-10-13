@@ -1,19 +1,34 @@
+import { useEffect, useState } from "react";
+
 import "../../css/landing.css";
 
 // Screenshots with a phone-width capture of the app's own phone layout.
 const PHONE = new Set(["today-past", "today-future", "money-sits", "against-index"]);
 
 // Both themes are in the page and CSS shows the one matching the site's toggle; a hidden lazy image is never fetched.
-export function Pic({ name, alt, eager = false, phone = PHONE.has(name) }: { name: string; alt: string; eager?: boolean; phone?: boolean }) {
+export function Pic({ name, alt, phone = PHONE.has(name) }: { name: string; alt: string; phone?: boolean }) {
   return (
     <>
       {(["light", "dark"] as const).map((t) => (
         <picture key={t} className={`only-${t}`}>
           {phone && <source srcSet={`/img/shots/${name}-phone-${t}.webp`} media="(max-width: 600px)" />}
-          <img src={`/img/shots/${name}-${t}.webp`} alt={alt} loading={eager ? "eager" : "lazy"} />
+          <img src={`/img/shots/${name}-${t}.webp`} alt={alt} loading="lazy" />
         </picture>
       ))}
     </>
+  );
+}
+
+// The hero is the page's largest paint, so it is one picture fetched first; it follows the system theme, which the site's toggle matches unless set by hand.
+export function Hero({ alt }: { alt: string }) {
+  const shot = (name: string) => `/img/shots/${name}.webp`;
+  return (
+    <picture>
+      <source media="(max-width: 600px) and (prefers-color-scheme: dark)" srcSet={shot("today-phone-dark")} width={764} height={902} />
+      <source media="(max-width: 600px)" srcSet={shot("today-phone-light")} width={764} height={902} />
+      <source media="(prefers-color-scheme: dark)" srcSet={shot("today-dark")} width={2296} height={768} />
+      <img src={shot("today-light")} alt={alt} width={2296} height={768} fetchPriority="high" />
+    </picture>
   );
 }
 
@@ -31,16 +46,34 @@ export function Ghost({ when }: { when: keyof typeof EYES }) {
 }
 
 export function Icon({ name }: { name: string }) {
-  return <span className="ms">{name}</span>;
+  return (
+    <span className="ms" aria-hidden="true">
+      {name}
+    </span>
+  );
 }
 
 export function Copy({ text }: { text: string }) {
+  const [said, setSaid] = useState("");
+  const copy = () =>
+    navigator.clipboard.writeText(text).then(
+      () => setSaid("Copied"),
+      () => setSaid("Could not copy. Select the command instead."),
+    );
+  useEffect(() => {
+    if (!said) return;
+    const t = setTimeout(() => setSaid(""), 2000);
+    return () => clearTimeout(t);
+  }, [said]);
   return (
     <div className="cmd">
       <code>{text}</code>
-      <button type="button" aria-label="Copy" onClick={(e) => navigator.clipboard?.writeText(text).then(() => ((e.currentTarget.firstChild as HTMLElement).textContent = "check"))}>
-        <Icon name="content_copy" />
+      <button type="button" aria-label={`Copy ${text}`} onClick={copy}>
+        <Icon name={said === "Copied" ? "check" : "content_copy"} />
       </button>
+      <span className="sr-only" role="status">
+        {said}
+      </span>
     </div>
   );
 }

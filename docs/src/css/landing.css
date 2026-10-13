@@ -1,4 +1,4 @@
-@import "../../../web/node_modules/material-symbols/rounded.css";
+@font-face { font-family: "Material Symbols Rounded"; font-style: normal; font-weight: 400 600; font-display: block; src: url("../../../web/src/design-system/icons.woff2") format("woff2"); }
 .eb { font-size: 17px; line-height: 1.55; }
 .eb p, .eb h1, .eb h2, .eb figure { margin: 0; }
 .eb img { display: block; max-width: 100%; height: auto; }
@@ -27,7 +27,8 @@
 .eb .ctas { margin-top: 32px; }
 .eb .pshot img, .eb .ashot img, .eb .pimg img { filter: drop-shadow(0 1px 2px rgb(0 0 0 / 6%)) drop-shadow(0 18px 40px rgb(0 0 0 / 10%)); }
 .eb .pshot { width: 100%; max-width: var(--wide); margin-top: 64px; }
-.eb .pshot.narrow { display: none; }
+.eb .pshot img { display: block; width: 100%; height: auto; }
+.eb .sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
 .eb .verdict { display: grid; justify-items: center; max-width: 920px; margin: 0 auto; padding: clamp(80px, 10vw, 136px) var(--pad); text-align: center; }
 .eb .vkick { margin-bottom: 16px; font-size: 13px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--text3); }
 .eb .verdict p { font-size: clamp(28px, 3.6vw, 46px); line-height: 1.2; font-weight: 600; letter-spacing: -0.02em; text-wrap: balance; }
@@ -80,8 +81,7 @@
   .eb .pname { margin: 0 var(--pad) 72px; border-radius: 28px; }
   .eb .plede { font-size: 17px; }
   .eb .ctas { grid-template-columns: repeat(2, minmax(0, 1fr)); width: 100%; }
-  .eb .pshot.wide { display: none; }
-  .eb .pshot.narrow { display: block; margin-top: 40px; }
+  .eb .pshot { margin-top: 40px; }
   .eb .verdict small { font-size: 15px; }
   .eb .acopy > p { font-size: 16px; }
   .eb .act { margin: 0 8px 8px; padding: 32px 16px; border-radius: 28px; }

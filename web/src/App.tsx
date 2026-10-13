@@ -1,24 +1,37 @@
-import { useEffect, type ReactElement } from "react";
+import { lazy, Suspense, useEffect, type ComponentType, type ReactElement } from "react";
 import { BrowserRouter, Navigate, Outlet, Route, Routes, useLocation, useParams } from "react-router-dom";
 
 import AppShell from "./components/AppShell";
 import { SnackProvider } from "./design-system/Snack";
 import { portfolioPath, SessionProvider, useSession } from "./lib/session";
-import AskScreen from "./screens/AskScreen";
-import CardsScreen from "./screens/CardsScreen";
-import DataScreen from "./screens/DataScreen";
-import ExpensesScreen from "./screens/ExpensesScreen";
-import ExportScreen from "./screens/ExportScreen";
 import FirstSignInScreen from "./screens/FirstSignInScreen";
-import HealthScreen from "./screens/HealthScreen";
 import LoginScreen from "./screens/LoginScreen";
-import NewsScreen from "./screens/NewsScreen";
 import OnboardingScreen from "./screens/OnboardingScreen";
-import PortfolioScreen from "./screens/PortfolioScreen";
-import AdminScreen from "./screens/AdminScreen";
-import SettingsScreen from "./screens/SettingsScreen";
 import SetupScreen from "./screens/SetupScreen";
-import TodayScreen from "./screens/TodayScreen";
+
+// Each screen is fetched the first time it is opened, so the first load carries only the shell and the screen in front of you.
+function screen(load: () => Promise<{ default: ComponentType }>) {
+  const Screen = lazy(load);
+  return function Loaded() {
+    return (
+      <Suspense fallback={null}>
+        <Screen />
+      </Suspense>
+    );
+  };
+}
+
+const AskScreen = screen(() => import("./screens/AskScreen"));
+const CardsScreen = screen(() => import("./screens/CardsScreen"));
+const DataScreen = screen(() => import("./screens/DataScreen"));
+const ExpensesScreen = screen(() => import("./screens/ExpensesScreen"));
+const ExportScreen = screen(() => import("./screens/ExportScreen"));
+const HealthScreen = screen(() => import("./screens/HealthScreen"));
+const NewsScreen = screen(() => import("./screens/NewsScreen"));
+const PortfolioScreen = screen(() => import("./screens/PortfolioScreen"));
+const AdminScreen = screen(() => import("./screens/AdminScreen"));
+const SettingsScreen = screen(() => import("./screens/SettingsScreen"));
+const TodayScreen = screen(() => import("./screens/TodayScreen"));
 
 // A stale slug (renamed, or no longer shared) falls back to the same screen of the current portfolio.
 function PortfolioRoute() {

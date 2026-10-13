@@ -1,3 +1,6 @@
+/* scripts/icons.mjs cuts this down to the icons in use; rerun it after naming a new one. */
+@font-face { font-family: "Material Symbols Rounded"; font-style: normal; font-weight: 400 600; font-display: block; src: url("./icons.woff2") format("woff2"); }
+
 /* lib/theme.ts writes every --md-sys-color-* role; the tokens below point at those roles. */
 :root {
   color-scheme: light dark;

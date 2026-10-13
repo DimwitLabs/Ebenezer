@@ -37,10 +37,13 @@ const SAMPLES: Record<Exclude<Personality, "custom">, Record<Tone, string>> = {
   plain: { dry: PLAIN, warm: PLAIN, blunt: PLAIN, playful: PLAIN },
 };
 
+const custom = (tone: Tone) => `I'll take on the voice you describe, in a ${tone} tone.`;
+const ALL = [...new Set([...Object.values(SAMPLES).flatMap((t) => Object.values(t)), ...TONES.map(([t]) => custom(t))])];
+
 type Picked = Pick<Voice, "personality" | "custom" | "tone">;
 
 export default function VoicePicker({ value, onChange }: { value: Picked; onChange: (v: Picked) => void }) {
-  const sample = value.personality === "custom" ? `I'll take on the voice you describe, in a ${value.tone} tone.` : SAMPLES[value.personality][value.tone];
+  const sample = value.personality === "custom" ? custom(value.tone) : SAMPLES[value.personality][value.tone];
   return (
     <>
       <div className="pick voices" role="radiogroup" aria-label="Personality">
@@ -67,7 +70,14 @@ export default function VoicePicker({ value, onChange }: { value: Picked; onChan
           <img src="/favicon.svg" alt="" />
           How I'd put it
         </span>
-        <p>{sample}</p>
+        {/* Every line sits in one grid cell, so the box is as tall as the longest and never jumps or gapes between picks. */}
+        <div className="lines">
+          {ALL.map((line) => (
+            <p key={line} aria-hidden={line !== sample} className={line === sample ? "on" : undefined}>
+              {line}
+            </p>
+          ))}
+        </div>
         <span className="s">An example line. My notes will be about your own money.</span>
       </div>
     </>

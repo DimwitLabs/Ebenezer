@@ -686,9 +686,11 @@ a.fold-t { text-decoration: none; color: inherit; }
 .voiceprev { margin-top: 16px; padding: 20px 24px; border-radius: 28px; background: var(--note); color: var(--noteink); }
 .voiceprev .h { display: flex; align-items: center; gap: 10px; font-size: 0.8125rem; font-weight: 600; margin-bottom: 10px; }
 .voiceprev .h img { width: 24px; height: 24px; }
-.voiceprev p { font-size: 1.125rem; line-height: 1.625rem; font-weight: 500; min-height: 78px; }
+.voiceprev .lines { display: grid; }
+.voiceprev p { grid-area: 1 / 1; font-size: 1.125rem; line-height: 1.625rem; font-weight: 500; visibility: hidden; }
+.voiceprev p.on { visibility: visible; }
 .voiceprev .s { display: block; font-size: 0.75rem; margin-top: 10px; color: var(--noteink2); }
 @media (max-width: 37.5em) {
   .pick.voices { grid-template-columns: minmax(0, 1fr); }
-  .voiceprev p { font-size: 1rem; line-height: 1.4375rem; min-height: 92px; }
+  .voiceprev p { font-size: 1rem; line-height: 1.4375rem; }
 }

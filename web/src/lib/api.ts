@@ -152,6 +152,8 @@ export interface Portfolio {
   icon: string;
   color: string;
   people: string[] | null;
+  ownerId: string | null;
+  owner: string;
   currency: string;
   fyStart: number;
   settings: PortfolioSettings;

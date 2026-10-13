@@ -18,6 +18,8 @@ type Portfolio struct {
 	Icon     string            `json:"icon"`
 	Color    string            `json:"color"`
 	People   []string          `json:"people"`
+	OwnerID  *string           `json:"ownerId"`
+	Owner    string            `json:"owner"`
 	Currency string            `json:"currency"`
 	FYStart  int               `json:"fyStart"`
 	Settings PortfolioSettings `json:"settings"`
@@ -95,7 +97,8 @@ func decodePortfolioSettings(raw []byte) PortfolioSettings {
 }
 
 const portfolioColumns = `p.id::text, p.name, p.slug, p.icon, p.color, p.currency, p.fy_start, p.settings,
-	ARRAY(SELECT u.name FROM {s}.portfolio_members pm JOIN {s}.users u ON u.id = pm.user_id WHERE pm.portfolio_id = p.id ORDER BY u.created_at)`
+	ARRAY(SELECT u.name FROM {s}.portfolio_members pm JOIN {s}.users u ON u.id = pm.user_id WHERE pm.portfolio_id = p.id ORDER BY u.created_at),
+	p.owner_id::text, coalesce((SELECT u.name FROM {s}.users u WHERE u.id = p.owner_id), '')`
 
 // Slug turns a name into a link; names that make the same slug cannot coexist, so "Family" and "family!" are one name.
 func Slug(name string) string {
@@ -126,7 +129,7 @@ func conflict(err error) error {
 func scanPortfolio(row interface{ Scan(...any) error }) (*Portfolio, error) {
 	p := &Portfolio{}
 	var raw []byte
-	if err := row.Scan(&p.ID, &p.Name, &p.Slug, &p.Icon, &p.Color, &p.Currency, &p.FYStart, &raw, &p.People); err != nil {
+	if err := row.Scan(&p.ID, &p.Name, &p.Slug, &p.Icon, &p.Color, &p.Currency, &p.FYStart, &raw, &p.People, &p.OwnerID, &p.Owner); err != nil {
 		return nil, notFound(err)
 	}
 	p.Settings = decodePortfolioSettings(raw)
@@ -173,8 +176,9 @@ func (s *Store) Portfolio(ctx context.Context, id, userID string) (*Portfolio, e
 		JOIN {s}.portfolio_members m ON m.portfolio_id = p.id WHERE p.id = $1 AND m.user_id = $2`), id, userID))
 }
 
-func (s *Store) CreatePortfolio(ctx context.Context, userID, name, currency string, fyStart int) (*Portfolio, error) {
-	p := &Portfolio{ID: NewID(), Name: name, Slug: Slug(name), Icon: "account_balance_wallet", Color: DefaultColor, Currency: currency, FYStart: fyStart, Settings: DefaultPortfolioSettings()}
+func (s *Store) CreatePortfolio(ctx context.Context, user *User, name, currency string, fyStart int) (*Portfolio, error) {
+	p := &Portfolio{ID: NewID(), Name: name, Slug: Slug(name), Icon: "account_balance_wallet", Color: DefaultColor, Currency: currency, FYStart: fyStart, Settings: DefaultPortfolioSettings(),
+		People: []string{user.Name}, OwnerID: &user.ID, Owner: user.Name}
 	raw, err := json.Marshal(p.Settings)
 	if err != nil {
 		return nil, err
@@ -184,11 +188,11 @@ func (s *Store) CreatePortfolio(ctx context.Context, userID, name, currency stri
 		return nil, err
 	}
 	defer tx.Rollback(ctx)
-	if _, err := tx.Exec(ctx, s.q(`INSERT INTO {s}.portfolios (id, name, slug, currency, fy_start, settings) VALUES ($1, $2, $3, $4, $5, $6)`),
-		p.ID, name, p.Slug, currency, fyStart, string(raw)); err != nil {
+	if _, err := tx.Exec(ctx, s.q(`INSERT INTO {s}.portfolios (id, name, slug, currency, fy_start, settings, owner_id) VALUES ($1, $2, $3, $4, $5, $6, $7)`),
+		p.ID, name, p.Slug, currency, fyStart, string(raw), user.ID); err != nil {
 		return nil, conflict(err)
 	}
-	if _, err := tx.Exec(ctx, s.q(`INSERT INTO {s}.portfolio_members (portfolio_id, user_id) VALUES ($1, $2)`), p.ID, userID); err != nil {
+	if _, err := tx.Exec(ctx, s.q(`INSERT INTO {s}.portfolio_members (portfolio_id, user_id) VALUES ($1, $2)`), p.ID, user.ID); err != nil {
 		return nil, err
 	}
 	return p, tx.Commit(ctx)

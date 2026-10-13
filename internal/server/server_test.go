@@ -438,6 +438,32 @@ func TestOnlyOwnerShares(t *testing.T) {
 	owner.must(http.StatusOK, "DELETE", "/api/portfolios/"+pid+"/members/"+guestUser.ID, nil, nil)
 }
 
+func TestOnlyAPortfoliosOwnerDeletesIt(t *testing.T) {
+	ts := newTestServer(t)
+	admin, family, _ := setUp(t, ts)
+	var guestUser struct {
+		ID string `json:"id"`
+	}
+	admin.must(http.StatusCreated, "POST", "/api/users", map[string]string{"email": "guest@example.com", "name": "Guest", "password": "another long password"}, &guestUser)
+	admin.must(http.StatusOK, "PUT", "/api/portfolios/"+family+"/members/"+guestUser.ID, nil, nil)
+	guest := newClient(t, ts)
+	guest.firstSignIn("guest@example.com", "another long password")
+	var mine struct {
+		ID      string `json:"id"`
+		OwnerID string `json:"ownerId"`
+		Owner   string `json:"owner"`
+	}
+	guest.must(http.StatusCreated, "POST", "/api/portfolios", map[string]any{"name": "Mine"}, &mine)
+	if mine.OwnerID != guestUser.ID || mine.Owner != "Guest" {
+		t.Fatalf("new portfolio owner = %+v", mine)
+	}
+
+	guest.must(http.StatusForbidden, "DELETE", "/api/portfolios/"+family, nil, nil)
+	admin.must(http.StatusNotFound, "DELETE", "/api/portfolios/"+mine.ID, nil, nil)
+	guest.must(http.StatusOK, "DELETE", "/api/portfolios/"+mine.ID, nil, nil)
+	admin.must(http.StatusOK, "DELETE", "/api/portfolios/"+family, nil, nil)
+}
+
 func TestScripDetailOnlyForHeldScrips(t *testing.T) {
 	ts := newTestServer(t)
 	c, pid, secs := setUp(t, ts)

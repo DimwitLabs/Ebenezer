@@ -50,9 +50,10 @@ const MONTHS = ["January", "February", "March", "April", "May", "June", "July", 
 function PortfolioCard() {
   const [confirm, confirmDialog] = useConfirm();
   const p = usePortfolio();
-  const { replace, refresh } = useSession();
+  const { replace, refresh, user } = useSession();
   const say = useSnack();
   const navigate = useNavigate();
+  const owns = !!user && p.ownerId === user.id;
   const [name, setName] = useState(p.name);
   const [icon, setIcon] = useState(p.icon);
   const [color, setColor] = useState(p.color);
@@ -125,10 +126,13 @@ function PortfolioCard() {
           Save
         </md-filled-button>
         <span className="spacer" />
-        <md-text-button className="danger" onClick={remove}>
-          Delete portfolio
-        </md-text-button>
+        {owns && (
+          <md-text-button className="danger" onClick={remove}>
+            Delete portfolio
+          </md-text-button>
+        )}
       </div>
+      {!owns && <p className="help">{p.owner ? `Only ${p.owner}, who owns ${p.name}, can delete it.` : `Only the owner of ${p.name} can delete it.`}</p>}
       {confirmDialog}
     </Fold>
   );
@@ -377,12 +381,12 @@ export default function SettingsScreen() {
   return (
     <>
       <PageHead title="Settings" status={`How ${p.name} is set up. Your account and this Ebenezer live under your name.`} />
-      <div className="folds">
-        <PortfolioCard key={p.id} />
-        <SharingCard key={p.id} />
-        <VoiceCard key={p.id} />
-        <ReportCard key={p.id} jobs={jobs} smtpReady={smtpReady} />
-        <NewsCard key={p.id} jobs={jobs} />
+      <div className="folds" key={p.id}>
+        <PortfolioCard />
+        <SharingCard />
+        <VoiceCard />
+        <ReportCard jobs={jobs} smtpReady={smtpReady} />
+        <NewsCard jobs={jobs} />
       </div>
     </>
   );

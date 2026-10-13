@@ -75,7 +75,7 @@ func (s *Server) createPortfolio(w http.ResponseWriter, r *http.Request) error {
 	if body.FYStart < 1 || body.FYStart > 12 {
 		body.FYStart = 4
 	}
-	p, err := s.store.CreatePortfolio(r.Context(), u.ID, body.Name, body.Currency, body.FYStart)
+	p, err := s.store.CreatePortfolio(r.Context(), u, body.Name, body.Currency, body.FYStart)
 	if errors.Is(err, store.ErrConflict) {
 		return nameTaken(body.Name)
 	}
@@ -296,9 +296,12 @@ func (s *Server) defaultJudge(w http.ResponseWriter, r *http.Request) error {
 }
 
 func (s *Server) deletePortfolio(w http.ResponseWriter, r *http.Request) error {
-	_, p, err := s.portfolio(r)
+	u, p, err := s.portfolio(r)
 	if err != nil {
 		return err
+	}
+	if p.OwnerID == nil || *p.OwnerID != u.ID {
+		return fail(http.StatusForbidden, "only the portfolio's owner can delete it")
 	}
 	if err := s.store.DeletePortfolio(r.Context(), p.ID); err != nil {
 		return err

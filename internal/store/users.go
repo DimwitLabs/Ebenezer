@@ -151,9 +151,23 @@ func (s *Store) SoleMemberOf(ctx context.Context, userID string) ([]string, erro
 	return names, rows.Err()
 }
 
+// DeleteUser passes the portfolios they owned on by the rule schema.sql uses for portfolios older than owners.
 func (s *Store) DeleteUser(ctx context.Context, id string) error {
-	_, err := s.pool.Exec(ctx, s.q(`DELETE FROM {s}.users WHERE id = $1 AND NOT is_owner`), id)
-	return err
+	tx, err := s.pool.Begin(ctx)
+	if err != nil {
+		return err
+	}
+	defer tx.Rollback(ctx)
+	if _, err := tx.Exec(ctx, s.q(`DELETE FROM {s}.users WHERE id = $1 AND NOT is_owner`), id); err != nil {
+		return err
+	}
+	if _, err := tx.Exec(ctx, s.q(`UPDATE {s}.portfolios p SET owner_id = (
+		SELECT m.user_id FROM {s}.portfolio_members m JOIN {s}.users u ON u.id = m.user_id
+		WHERE m.portfolio_id = p.id ORDER BY u.is_owner DESC, u.created_at LIMIT 1)
+		WHERE p.owner_id IS NULL`)); err != nil {
+		return err
+	}
+	return tx.Commit(ctx)
 }
 
 func (s *Store) CreateSession(ctx context.Context, tokenHash []byte, userID string, ttl time.Duration) error {

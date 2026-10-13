@@ -23,8 +23,6 @@ jobs:
       packages: write
       id-token: write
       attestations: write
-    outputs:
-      digest: ${{ steps.push.outputs.digest }}
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
@@ -82,7 +80,6 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
           TAG: ${{ github.ref_name }}
-          DIGEST: ${{ needs.image.outputs.digest }}
         run: |
           version="${TAG#v}"
           awk -v v="$version" '
@@ -91,7 +88,6 @@ jobs:
             on && /^\[[^]]+\]: / { exit }
             on { print }
           ' CHANGELOG.md > notes.md
-          printf '\n### Image\n\n```\nghcr.io/dimwitlabs/ebenezer:%s@%s\n```\n' "$version" "$DIGEST" >> notes.md
           if gh release view "$TAG" >/dev/null 2>&1; then
             gh release edit "$TAG" --notes-file notes.md
           else

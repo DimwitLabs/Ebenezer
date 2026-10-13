@@ -87,7 +87,7 @@ Both compose files run `ghcr.io/dimwitlabs/ebenezer`, built for `linux/amd64` an
 | `X.Y` | The newest patch of that minor version. |
 | `X` | The newest release of that major version. |
 
-`EBENEZER_VERSION` in `.env` picks the tag; set it to `X.Y` to stay on releases. Each release on GitHub also lists the image with its exact digest. Moving between tags is covered in [Upgrading](/docs/self-hosting/upgrading).
+`EBENEZER_VERSION` in `.env` picks the tag; set it to `X.Y` to stay on releases. Moving between tags is covered in [Upgrading](/docs/self-hosting/upgrading).
 
 ## HTTPS And Reaching Me
 

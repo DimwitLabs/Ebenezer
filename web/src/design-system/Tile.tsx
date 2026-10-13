@@ -24,7 +24,9 @@ export function Tile({
       <md-ripple disabled={disabled} />
       <md-focus-ring />
       {children}
-      <span className="ms big">{icon}</span>
+      <span className="ms big" aria-hidden="true">
+        {icon}
+      </span>
       <b>{title}</b>
       <span className="h">{hint}</span>
     </button>

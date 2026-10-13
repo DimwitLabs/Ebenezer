@@ -24,7 +24,11 @@ export function Badge({
   const cls = `badge${tone ? ` ${tone}` : ""}${className ? ` ${className}` : ""}`;
   const body = (
     <>
-      {icon && <span className="ms">{icon}</span>}
+      {icon && (
+        <span className="ms" aria-hidden="true">
+          {icon}
+        </span>
+      )}
       {children}
     </>
   );

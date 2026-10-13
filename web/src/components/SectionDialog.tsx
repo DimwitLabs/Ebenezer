@@ -185,7 +185,11 @@ export default function SectionDialog({ portfolioId, section, existing = [], onC
         />
       }
     >
-      {error && <p className="error">{error}</p>}
+      {error && (
+        <p className="error" role="alert">
+          {error}
+        </p>
+      )}
       {!editing && !kind && (
         <div className="pick">
           {catalogue?.kinds.map((k) => {

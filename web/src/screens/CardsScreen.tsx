@@ -109,7 +109,12 @@ export default function CardsScreen() {
     if (e && hash) document.getElementById(hash.slice(1))?.scrollIntoView({ behavior: "smooth", block: "center" });
   }, [e, hash]);
 
-  if (error) return <p className="error">{error}</p>;
+  if (error)
+    return (
+      <p className="error" role="alert">
+        {error}
+      </p>
+    );
   if (!e) return <Spinner className="loading" />;
 
   const owed = e.cards.reduce((t, c) => t + c.owed, 0);

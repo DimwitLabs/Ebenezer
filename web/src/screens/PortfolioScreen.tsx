@@ -29,7 +29,12 @@ export default function PortfolioScreen() {
   const say = useSnack();
   const goldName = catalogue?.kinds.find((k) => k.key === "gold")?.name ?? "Bullion";
 
-  if (error) return <p className="error">{error}</p>;
+  if (error)
+    return (
+      <p className="error" role="alert">
+        {error}
+      </p>
+    );
   if (!summary) return <Spinner className="loading" />;
   if (summary.sectionList.length === 0) {
     return (

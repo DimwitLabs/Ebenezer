@@ -43,10 +43,27 @@ export default function FirstSignInScreen() {
           <img src="/favicon.svg" alt="" />
           <h1>Choose your password</h1>
           <p className="lead">You signed in with a first password someone sent you. Pick your own, and that one stops working.</p>
-          {error && <p className="error">{error}</p>}
-          <TextField label="New password" type="password" value={password} onChange={setPassword} autocomplete="new-password" minLength={10} autoFocus required info="At least 10 characters." />
+          {error && (
+            <p className="error" role="alert">
+              {error}
+            </p>
+          )}
+          {/* Tells the password manager whose password this is, so it updates that account's entry. */}
+          <input type="email" name="email" autoComplete="username" value={user?.email ?? ""} readOnly hidden />
+          <TextField
+            label="New password"
+            name="password"
+            type="password"
+            value={password}
+            onChange={setPassword}
+            autocomplete="new-password"
+            minLength={10}
+            autoFocus
+            required
+            info="At least 10 characters."
+          />
           <md-filled-button className="wide" type="submit" disabled={busy}>
-            Continue
+            Save password
           </md-filled-button>
         </form>
       </div>

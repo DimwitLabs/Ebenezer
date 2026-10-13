@@ -6,7 +6,9 @@ export default function OpeningNote({ summary }: { summary: Summary }) {
   if (n === 0) return null;
   return (
     <div className="opening" role="note">
-      <span className="ms">pending</span>
+      <span className="ms" aria-hidden="true">
+        pending
+      </span>
       <p>
         <b>
           {n} holding{n === 1 ? " has" : "s have"} no purchase price.

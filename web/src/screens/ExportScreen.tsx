@@ -46,7 +46,11 @@ export default function ExportScreen() {
   return (
     <>
       <PageHead title="Export your data" status="Every row you put in, as CSV files in one zip. Each file opens in a spreadsheet and comes back in through Import as it is." />
-      {error && <p className="error">{error}</p>}
+      {error && (
+        <p className="error" role="alert">
+          {error}
+        </p>
+      )}
       {!data && !error && <Spinner className="loading" />}
       {data && (
         <div className="xgrid">
@@ -71,12 +75,16 @@ export default function ExportScreen() {
                 {chosen.map((p) => (
                   <div key={p.id}>
                     <div className="dir">
-                      <span className="ms">folder</span>
+                      <span className="ms" aria-hidden="true">
+                        folder
+                      </span>
                       <b>{p.slug}/</b>
                     </div>
                     {p.files.map((f) => (
                       <div key={f.name} className="in">
-                        <span className="ms">description</span>
+                        <span className="ms" aria-hidden="true">
+                          description
+                        </span>
                         {f.name}
                         <span>{count(f.rows, "row")}</span>
                       </div>
@@ -103,17 +111,23 @@ export default function ExportScreen() {
           <div className="card xt">
             <div className="xt-l">
               <div>
-                <span className="ms">block</span>
+                <span className="ms" aria-hidden="true">
+                  block
+                </span>
                 <b>Left out</b>
                 <p>Prices, news and my notes. I fetch or write them again after you bring the rest back in.</p>
               </div>
               <div>
-                <span className="ms">lock</span>
+                <span className="ms" aria-hidden="true">
+                  lock
+                </span>
                 <b>Never in an export</b>
                 <p>Your OpenRouter key, mail server password and anyone's sign-in. Settings like these stay on this Ebenezer.</p>
               </div>
               <div>
-                <span className="ms">move_to_inbox</span>
+                <span className="ms" aria-hidden="true">
+                  move_to_inbox
+                </span>
                 <b>Bringing it back</b>
                 <p>Import each file from Data, the expenses file from Expenses and the cards file from Credit Cards. I know my own columns, so there's nothing to match.</p>
               </div>

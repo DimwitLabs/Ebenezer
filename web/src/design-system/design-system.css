@@ -20,6 +20,7 @@ h1, h2, h3, h4, p { margin: 0; }
 .faint { color: var(--text3); }
 .up { color: var(--gain); }
 .down { color: var(--loss); }
+.sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
 .ms {
   font-family: "Material Symbols Rounded";
   font-weight: normal;

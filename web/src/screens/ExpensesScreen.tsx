@@ -209,7 +209,9 @@ function SpendChat({ e, onChange, onTidy }: { e: Expenses; onChange: (x: Expense
               </div>
               {pending[s.id] ? (
                 <p className="saved">
-                  <span className="ms">check_circle</span>
+                  <span className="ms" aria-hidden="true">
+                    check_circle
+                  </span>
                   {pending[s.id]}
                 </p>
               ) : (
@@ -241,7 +243,9 @@ function SpendChat({ e, onChange, onTidy }: { e: Expenses; onChange: (x: Expense
               <>
                 {res.saved.length > 0 && (
                   <p className="saved">
-                    <span className="ms">{x.undone ? "undo" : "check_circle"}</span>
+                    <span className="ms" aria-hidden="true">
+                      {x.undone ? "undo" : "check_circle"}
+                    </span>
                     {x.undone ? "Removed from the ledger" : [`Saved ${res.saved.length > 1 ? res.saved.length : ""}`.trim(), ...res.effects].join(" · ")}
                     {!x.undone && (
                       <md-text-button
@@ -260,13 +264,17 @@ function SpendChat({ e, onChange, onTidy }: { e: Expenses; onChange: (x: Expense
                 )}
                 {x.paid.map((l) => (
                   <p className="saved" key={l}>
-                    <span className="ms">check_circle</span>
+                    <span className="ms" aria-hidden="true">
+                      check_circle
+                    </span>
                     {l}
                   </p>
                 ))}
                 {x.offer && (
                   <div className="offer">
-                    <span className="ms">auto_fix_high</span>
+                    <span className="ms" aria-hidden="true">
+                      auto_fix_high
+                    </span>
                     <p>
                       <b>
                         {res.newCategories.join(", ")} {res.newCategories.length === 1 ? "is a new category" : "are new categories"}.
@@ -311,7 +319,12 @@ export default function ExpensesScreen() {
   const [importing, setImporting] = useState(false);
   const ledger = useRef<HTMLDivElement>(null);
 
-  if (error) return <p className="error">{error}</p>;
+  if (error)
+    return (
+      <p className="error" role="alert">
+        {error}
+      </p>
+    );
   if (!e) return <Spinner className="loading" />;
 
   const toLedger = (f: LedgerFilter) => {

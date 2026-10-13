@@ -17,7 +17,12 @@ export default function HealthScreen() {
   const job = jobs.data?.find((j) => j.name === "health");
   useFinished(job, health.reload);
 
-  if (health.error) return <p className="error">{health.error}</p>;
+  if (health.error)
+    return (
+      <p className="error" role="alert">
+        {health.error}
+      </p>
+    );
   const checks = health.data?.health.checks ?? [];
 
   return (

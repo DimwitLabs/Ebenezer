@@ -188,7 +188,9 @@ function BringStep({
       {file ? (
         <div className="filerow">
           <input ref={picker} type="file" accept=".csv,text/csv" hidden onChange={choose} />
-          <span className="ms">description</span>
+          <span className="ms" aria-hidden="true">
+            description
+          </span>
           <span>
             <b>{file.name}</b>
             <span className="help">{file.rows.toLocaleString("en-IN")} rows</span>
@@ -218,19 +220,28 @@ function BringStep({
         <div className="tips">
           <div>
             <b>
-              <span className="ms">search</span>Finding the export
+              <span className="ms" aria-hidden="true">
+                search
+              </span>
+              Finding the export
             </b>
             <p>Most money apps keep it under Settings, as Export, Backup or Download data. Choose CSV if it asks.</p>
           </div>
           <div>
             <b>
-              <span className="ms">lock</span>What the AI sees
+              <span className="ms" aria-hidden="true">
+                lock
+              </span>
+              What the AI sees
             </b>
             <p>Only the column names and three sample rows, if the rows need tidying. Every other row is read here.</p>
           </div>
           <div>
             <b>
-              <span className="ms">undo</span>Nothing is final
+              <span className="ms" aria-hidden="true">
+                undo
+              </span>
+              Nothing is final
             </b>
             <p>Every import shows in the ledger's filter, where it can be removed in one go.</p>
           </div>
@@ -665,7 +676,11 @@ export default function ImportDialog({ target, onClose, onDone }: Props) {
 
   return (
     <Dialog title={`Import into ${name}`} icon={section?.icon ?? (target.kind === "cards" ? "credit_card" : "receipt_long")} onClose={onClose} steps={STEPS} step={step} footer={footer}>
-      {error && <p className="error">{error}</p>}
+      {error && (
+        <p className="error" role="alert">
+          {error}
+        </p>
+      )}
       {step === 0 && (
         <BringStep
           kind={target.kind}

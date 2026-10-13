@@ -31,7 +31,9 @@ function Answer({ turn, typing, onTyped, onAsk }: { turn: Turn; typing: boolean;
     <Theirs text={turn.content} typing={typing} onTyped={onTyped} after={onAsk && <FollowUps questions={turn.followUps ?? []} onAsk={onAsk} />}>
       {turn.redacted && (
         <p className="redacted">
-          <span className="ms">visibility_off</span>
+          <span className="ms" aria-hidden="true">
+            visibility_off
+          </span>
           <span>Your OpenRouter account replaced some names with placeholders like [ADDRESS] before the model saw them. Turn off PII redaction for this key on OpenRouter.</span>
         </p>
       )}

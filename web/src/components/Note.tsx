@@ -64,7 +64,9 @@ export function EbenezerNote({
         <ul className="note-list">
           {lines.map((l) => (
             <li key={l.text}>
-              <span className="ms">{l.icon}</span>
+              <span className="ms" aria-hidden="true">
+                {l.icon}
+              </span>
               <span>{l.text}</span>
               <Go action={l.action} />
             </li>

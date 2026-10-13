@@ -39,7 +39,11 @@ function Editor({ e, c, onDone, onSaved }: { e: Expenses; c: SpendCategory; onDo
   if (removing) {
     return (
       <div className="catedit">
-        {error && <p className="error">{error}</p>}
+        {error && (
+          <p className="error" role="alert">
+            {error}
+          </p>
+        )}
         <p>
           Remove <b>{c.name}</b>? Its {count === 1 ? "spend stays" : `${count} spends stay`} in the ledger.
         </p>
@@ -53,7 +57,11 @@ function Editor({ e, c, onDone, onSaved }: { e: Expenses; c: SpendCategory; onDo
 
   return (
     <div className="catedit">
-      {error && <p className="error">{error}</p>}
+      {error && (
+        <p className="error" role="alert">
+          {error}
+        </p>
+      )}
       <TextField
         label="Name"
         value={name}
@@ -112,7 +120,9 @@ export default function CategoryDialog({ e, onClose, onSaved }: { e: Expenses; o
                     {n} {n === 1 ? "spend" : "spends"} · {money(t)}
                   </span>
                 </span>
-                <span className="ms">edit</span>
+                <span className="ms" aria-hidden="true">
+                  edit
+                </span>
               </button>
             );
           })}

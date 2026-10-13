@@ -71,7 +71,11 @@ export default function RowDialog({ section, row, onClose, onDone }: Props) {
       footer={<DialogActions onCancel={onClose} label={row ? "Save" : "Add"} onClick={() => form.current?.requestSubmit()} busy={busy} />}
     >
       <form ref={form} onSubmit={submit}>
-        {error && <p className="error">{error}</p>}
+        {error && (
+          <p className="error" role="alert">
+            {error}
+          </p>
+        )}
         <div className="fields2">
           {section.fields.map((f) => (
             <Input key={f.key} field={f} value={values[f.key] ?? ""} onChange={(v) => setValues((s) => ({ ...s, [f.key]: v }))} />

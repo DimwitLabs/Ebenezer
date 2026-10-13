@@ -27,7 +27,9 @@ export default function SecretField({ label, state, value, onChange, onRemove, d
       <div className="fld">
         <span className="flabel">{label}</span>
         <div className="secret">
-          <span className="ms">key</span>
+          <span className="ms" aria-hidden="true">
+            key
+          </span>
           <span className="v">Saved, hidden</span>
           {!disabled && (
             <>

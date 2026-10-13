@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useRef, useState, type FormEvent } from "react";
 import { useNavigate } from "react-router-dom";
 
 import { TextField } from "../design-system/Fields";
@@ -36,7 +36,10 @@ function Welcome({ name, onNext }: { name: string; onNext: () => void }) {
       </div>
       <div className="onb-f">
         <span className="help onb-note">
-          <span className="ms">schedule</span>Skip anything you like; it'll wait for you on Today.
+          <span className="ms" aria-hidden="true">
+            schedule
+          </span>
+          Skip anything you like; it'll wait for you on Today.
         </span>
         <md-filled-button onClick={onNext}>Let's begin</md-filled-button>
       </div>
@@ -150,6 +153,23 @@ export default function OnboardingScreen() {
     if (pid) setSections(await get<Section[]>(`/portfolios/${pid}/sections`).catch(() => sections));
   };
 
+  // Each step is a form, so Enter moves on and the browser checks the name before it does.
+  const next = (e: FormEvent) => {
+    e.preventDefault();
+    if (step === 0) {
+      if (name.trim()) setStep(1);
+      else setError("Give the portfolio a name.");
+    } else if (step === 1 && picked.length) setStep(2);
+    else if (step === 2) create();
+  };
+
+  // A new step is a new page to a screen reader, so focus moves to its heading. The name field keeps its own autofocus.
+  const heading = useRef<HTMLHeadingElement>(null);
+  useEffect(() => {
+    if (step > 0) heading.current?.focus();
+    setError(null);
+  }, [step]);
+
   const open = (section: Section, action: "import" | "add") => navigate(portfolioPath(slug!, "/data"), { state: { section: section.id, action } });
 
   return (
@@ -177,82 +197,102 @@ export default function OnboardingScreen() {
           <MailStep inst={inst} onBack={() => setAt(1)} onNext={() => setAt(3)} />
         ))}
       {at >= pre && (
-        <div className="onb-b">
-          {error && <p className="error">{error}</p>}
-          {step === 0 && (
-            <>
-              <h1>Name this portfolio</h1>
-              <p className="lead">A portfolio is one set of books. Keep yours and your parents' apart, or put the whole household in one.</p>
-              <TextField label="Name" value={name} onChange={setName} autoFocus maxLength={80} />
-            </>
-          )}
-          {step === 1 && (
-            <>
-              <h1>What do you hold?</h1>
-              <p className="lead">Each one becomes a section. Shares and funds are priced every evening from the exchanges and AMFI. You can add your own kinds later, like a car or a chit fund.</p>
-              <div className="pick">
-                {kinds.map((k) => (
-                  <Tile key={k.key} icon={k.icon} title={k.name} hint={k.hint} pressed={picked.includes(k.key)} onClick={() => toggle(k.key)}>
-                    <span className="chk">
-                      <span className="ms">check</span>
-                    </span>
-                  </Tile>
-                ))}
-              </div>
-            </>
-          )}
-          {step === 2 && (
-            <>
-              <h1>How should I talk to you?</h1>
-              <p className="lead">This is how I'll sound in my notes, the daily report and my answers about {name.trim() || "this portfolio"}. You can change it any time in Settings.</p>
-              <VoicePicker value={voice} onChange={setVoice} />
-            </>
-          )}
-          {step === 3 && (
-            <>
-              <h1>Bring it in</h1>
-              <p className="lead">Start from a statement, then paste from a spreadsheet or a broker export, or type rows in. Each section takes rows from all three.</p>
-              <div className="bring">
-                <Item className="first" icon="description" tone="on" title="Start with a statement" detail="CAMS or KFintech for mutual funds, NSDL or CDSL for everything in demat">
-                  <md-filled-button onClick={() => setUploading(true)} disabled={!pid}>
-                    <md-icon slot="icon">upload_file</md-icon>Upload a statement
-                  </md-filled-button>
-                </Item>
-                {sections.map((s) => (
-                  <Item key={s.id} icon={s.icon} tone="on" title={s.name} detail={catalogue?.kinds.find((k) => k.key === s.kind)?.hint}>
-                    <md-filled-tonal-button onClick={() => open(s, "import")}>
-                      <md-icon slot="icon">upload</md-icon>Import
-                    </md-filled-tonal-button>
-                    <md-text-button onClick={() => open(s, "add")}>Add by hand</md-text-button>
+        <form className="onb-form" onSubmit={next}>
+          <div className="onb-b">
+            {error && (
+              <p className="error" role="alert">
+                {error}
+              </p>
+            )}
+            {step === 0 && (
+              <>
+                <h1 ref={heading} tabIndex={-1}>
+                  Name this portfolio
+                </h1>
+                <p className="lead">A portfolio is one set of books. Keep yours and your parents' apart, or put the whole household in one.</p>
+                <TextField label="Name" name="portfolio" value={name} onChange={setName} autoFocus maxLength={80} required />
+              </>
+            )}
+            {step === 1 && (
+              <>
+                <h1 ref={heading} tabIndex={-1}>
+                  What do you hold?
+                </h1>
+                <p className="lead">Each one becomes a section. Shares and funds are priced every evening from the exchanges and AMFI. You can add your own kinds later, like a car or a chit fund.</p>
+                <div className="pick">
+                  {kinds.map((k) => (
+                    <Tile key={k.key} icon={k.icon} title={k.name} hint={k.hint} pressed={picked.includes(k.key)} onClick={() => toggle(k.key)}>
+                      <span className="chk">
+                        <span className="ms" aria-hidden="true">
+                          check
+                        </span>
+                      </span>
+                    </Tile>
+                  ))}
+                </div>
+              </>
+            )}
+            {step === 2 && (
+              <>
+                <h1 ref={heading} tabIndex={-1}>
+                  How should I talk to you?
+                </h1>
+                <p className="lead">This is how I'll sound in my notes, the daily report and my answers about {name.trim() || "this portfolio"}. You can change it any time in Settings.</p>
+                <VoicePicker value={voice} onChange={setVoice} />
+              </>
+            )}
+            {step === 3 && (
+              <>
+                <h1 ref={heading} tabIndex={-1}>
+                  Bring it in
+                </h1>
+                <p className="lead">Start from a statement, then paste from a spreadsheet or a broker export, or type rows in. Each section takes rows from all three.</p>
+                <div className="bring">
+                  <Item className="first" icon="description" tone="on" title="Start with a statement" detail="CAMS or KFintech for mutual funds, NSDL or CDSL for everything in demat">
+                    <md-filled-button type="button" onClick={() => setUploading(true)} disabled={!pid}>
+                      <md-icon slot="icon">upload_file</md-icon>Upload a statement
+                    </md-filled-button>
                   </Item>
-                ))}
-              </div>
-            </>
-          )}
-        </div>
+                  {sections.map((s) => (
+                    <Item key={s.id} icon={s.icon} tone="on" title={s.name} detail={catalogue?.kinds.find((k) => k.key === s.kind)?.hint}>
+                      <md-filled-tonal-button type="button" onClick={() => open(s, "import")}>
+                        <md-icon slot="icon">upload</md-icon>Import
+                      </md-filled-tonal-button>
+                      <md-text-button type="button" onClick={() => open(s, "add")}>
+                        Add by hand
+                      </md-text-button>
+                    </Item>
+                  ))}
+                </div>
+              </>
+            )}
+          </div>
+          <div className="onb-f">
+            {(step === 1 || step === 2 || (step === 0 && owning)) && (
+              <md-text-button type="button" onClick={() => setAt(at - 1)}>
+                Back
+              </md-text-button>
+            )}
+            {step === 0 && <md-filled-button type="submit">Next</md-filled-button>}
+            {step === 1 && (
+              <md-filled-button type="submit" disabled={picked.length === 0}>
+                Next
+              </md-filled-button>
+            )}
+            {step === 2 && (
+              <md-filled-button type="submit" disabled={busy || (voice.personality === "custom" && !voice.custom.trim())}>
+                Create portfolio
+              </md-filled-button>
+            )}
+            {step === 3 && (
+              <md-filled-button type="button" onClick={() => navigate(slug ? portfolioPath(slug) : "/")}>
+                Done for now
+              </md-filled-button>
+            )}
+          </div>
+        </form>
       )}
       {uploading && pid && <StatementDialog portfolioId={pid} onClose={() => setUploading(false)} onDone={uploaded} />}
-      {at >= pre && (
-        <div className="onb-f">
-          {(step === 1 || step === 2 || (step === 0 && owning)) && <md-text-button onClick={() => setAt(at - 1)}>Back</md-text-button>}
-          {step === 0 && (
-            <md-filled-button disabled={!name.trim()} onClick={() => setStep(1)}>
-              Next
-            </md-filled-button>
-          )}
-          {step === 1 && (
-            <md-filled-button disabled={picked.length === 0} onClick={() => setStep(2)}>
-              Next
-            </md-filled-button>
-          )}
-          {step === 2 && (
-            <md-filled-button disabled={busy || (voice.personality === "custom" && !voice.custom.trim())} onClick={create}>
-              Create portfolio
-            </md-filled-button>
-          )}
-          {step === 3 && <md-filled-button onClick={() => navigate(slug ? portfolioPath(slug) : "/")}>Done for now</md-filled-button>}
-        </div>
-      )}
     </div>
   );
 }

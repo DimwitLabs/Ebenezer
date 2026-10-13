@@ -205,7 +205,7 @@ export default function TidyStep({ pid, fields, columns, mapped, raw, tidy, setT
         </p>
       </div>
       {error && (
-        <p className="error">
+        <p className="error" role="alert">
           {error}{" "}
           {!busy && !tidy && (
             <button type="button" className="linkbtn" onClick={() => void ask()}>

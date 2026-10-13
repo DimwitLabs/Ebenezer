@@ -45,7 +45,9 @@ export function Hero({ icon, title, meta, value, pill, pair, sub, stats = [], fo
           <span className="big num">{value}</span>
           {pill && (
             <span className={`pill${pill.bad ? " neg" : ""}`}>
-              <span className="ms">{pill.icon}</span>
+              <span className="ms" aria-hidden="true">
+                {pill.icon}
+              </span>
               {pill.text}
             </span>
           )}
@@ -54,7 +56,9 @@ export function Hero({ icon, title, meta, value, pill, pair, sub, stats = [], fo
       {sub && <p className="sec-sub">{sub}</p>}
       {stats.length > 0 && <Stats look="box" items={stats} />}
       <p className="sec-foot">
-        <span className="ms">{footIcon}</span>
+        <span className="ms" aria-hidden="true">
+          {footIcon}
+        </span>
         {foot}
       </p>
     </div>

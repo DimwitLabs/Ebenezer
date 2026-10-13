@@ -30,10 +30,14 @@ export default function SetupScreen() {
         <img src="/favicon.svg" alt="" />
         <h1>Set up Ebenezer</h1>
         <p className="lead">You're the first one here, so this Ebenezer is yours to run. You can bring people in later.</p>
-        {error && <p className="error">{error}</p>}
-        <TextField label="Your name" value={name} onChange={setName} autocomplete="name" required />
-        <TextField label="Email" type="email" value={email} onChange={setEmail} autocomplete="email" required />
-        <TextField label="Password" type="password" value={password} onChange={setPassword} autocomplete="new-password" minLength={10} required info="At least 10 characters." />
+        {error && (
+          <p className="error" role="alert">
+            {error}
+          </p>
+        )}
+        <TextField label="Your name" name="name" value={name} onChange={setName} autocomplete="name" required />
+        <TextField label="Email" name="email" type="email" value={email} onChange={setEmail} autocomplete="username" required />
+        <TextField label="Password" name="password" type="password" value={password} onChange={setPassword} autocomplete="new-password" minLength={10} required info="At least 10 characters." />
         <md-filled-button className="wide" type="submit" disabled={busy}>
           Create account
         </md-filled-button>

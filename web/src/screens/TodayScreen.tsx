@@ -168,7 +168,9 @@ function StockGap({ summary }: { summary: Summary }) {
   const behind = s.xirr < s.benchmark;
   return (
     <div className="gapline">
-      <span className="ms">{behind ? "trending_down" : "trending_up"}</span>
+      <span className="ms" aria-hidden="true">
+        {behind ? "trending_down" : "trending_up"}
+      </span>
       {behind ? "Behind" : "Ahead of"} the index by {pts.toFixed(1)} points a year
       {s.days > 0 && <span className="dim"> · held {years(s.days)}</span>}
     </div>
@@ -190,7 +192,12 @@ export default function TodayScreen() {
   const navigate = useNavigate();
   const to = useTo();
 
-  if (error) return <p className="error">{error}</p>;
+  if (error)
+    return (
+      <p className="error" role="alert">
+        {error}
+      </p>
+    );
   if (!summary) return <Spinner className="loading" />;
   // Holdings with no known cost sit outside the comparison, or their whole value would read as gain.
   const gain = summary.assets - summary.unknown - summary.invested;
@@ -213,7 +220,9 @@ export default function TodayScreen() {
           <NetWorth n={summary.netWorth} portfolio={p.id} />
           {summary.invested > 0 && (
             <span className={`delta ${tone(gain)}`}>
-              <span className="ms">{gain < 0 ? "south_east" : "north_east"}</span>
+              <span className="ms" aria-hidden="true">
+                {gain < 0 ? "south_east" : "north_east"}
+              </span>
               <b className="num">
                 <Amount n={gain} sign />
               </b>{" "}

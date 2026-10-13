@@ -22,7 +22,11 @@ export function Segmented<K extends string>({
           <md-focus-ring />
           {l}
           {counts?.[k] !== undefined && <i className="seg-n">{counts[k]}</i>}
-          {value === k && desc !== undefined && <span className="ms">{desc ? "arrow_downward" : "arrow_upward"}</span>}
+          {value === k && desc !== undefined && (
+            <span className="ms" aria-hidden="true">
+              {desc ? "arrow_downward" : "arrow_upward"}
+            </span>
+          )}
         </button>
       ))}
     </div>

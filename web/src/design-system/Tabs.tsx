@@ -44,10 +44,14 @@ export function Tabs({ active, onChange, label, children }: { active: number; on
         {children}
       </md-tabs>
       <button type="button" className="tabs-more prev" tabIndex={-1} aria-hidden="true" onClick={() => nudge(-1)}>
-        <span className="ms">chevron_left</span>
+        <span className="ms" aria-hidden="true">
+          chevron_left
+        </span>
       </button>
       <button type="button" className="tabs-more next" tabIndex={-1} aria-hidden="true" onClick={() => nudge(1)}>
-        <span className="ms">chevron_right</span>
+        <span className="ms" aria-hidden="true">
+          chevron_right
+        </span>
       </button>
     </div>
   );

@@ -34,7 +34,13 @@ export function DropZone({ icon, title, hint, accept, busy, onFile }: { icon: st
       >
         <md-ripple disabled={busy} />
         <md-focus-ring />
-        {busy ? <Spinner size={32} label="Reading" /> : <span className="ms">{icon}</span>}
+        {busy ? (
+          <Spinner size={32} label="Reading" />
+        ) : (
+          <span className="ms" aria-hidden="true">
+            {icon}
+          </span>
+        )}
         <b>{title}</b>
         <span className="help">{hint}</span>
       </button>

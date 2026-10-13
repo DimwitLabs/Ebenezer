@@ -82,7 +82,11 @@ export default function CategoryTidy({ onClose, onDone }: { onClose: () => void;
         />
       }
     >
-      {error && <p className="error">{error}</p>}
+      {error && (
+        <p className="error" role="alert">
+          {error}
+        </p>
+      )}
       {busy && !proposal ? (
         <Wait text="Reading your categories…" />
       ) : (
@@ -105,7 +109,9 @@ export default function CategoryTidy({ onClose, onDone }: { onClose: () => void;
                     <label key={keyOf(c)} className={`trow${off.has(keyOf(c)) ? " skip" : ""}`}>
                       <md-checkbox checked={!off.has(keyOf(c))} onChange={() => flip([keyOf(c)], off.has(keyOf(c)))} />
                       <span>{c.kind === "move" ? `${c.count > 1 ? `${c.count} × ` : ""}${c.item}` : c.from}</span>
-                      <span className="ms">arrow_forward</span>
+                      <span className="ms" aria-hidden="true">
+                        arrow_forward
+                      </span>
                       <span>{c.to}</span>
                       <em>{c.kind === "move" ? `from ${c.from}` : `${c.count} ${c.count === 1 ? "spend" : "spends"}`}</em>
                     </label>

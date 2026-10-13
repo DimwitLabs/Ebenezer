@@ -33,7 +33,13 @@ function stateOf(j: Job | undefined, waiting: boolean): State {
 function Dot({ state, big }: { state: State; big?: boolean }) {
   return (
     <span className={`dot ${state}${big ? " big" : ""}`} aria-hidden="true">
-      {state === "run" ? <span className="step-spin" /> : <span className="ms">{state === "fail" ? "priority_high" : state === "done" ? "check" : "more_horiz"}</span>}
+      {state === "run" ? (
+        <span className="step-spin" />
+      ) : (
+        <span className="ms" aria-hidden="true">
+          {state === "fail" ? "priority_high" : state === "done" ? "check" : "more_horiz"}
+        </span>
+      )}
     </span>
   );
 }

@@ -125,7 +125,9 @@ function HoldingDialog({
           <b className="num">{money(p.value)}</b>
           {known(p) && g !== null && (
             <span className={`pill sm${g < 0 ? " neg" : ""}`}>
-              <span className="ms">{g < 0 ? "south_east" : "north_east"}</span>
+              <span className="ms" aria-hidden="true">
+                {g < 0 ? "south_east" : "north_east"}
+              </span>
               {signed(p.value - p.invested)} · {pct(g)}
             </span>
           )}

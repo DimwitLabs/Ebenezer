@@ -45,7 +45,9 @@ export function TestRow({ result, ok = "Connection works", bad = "Connection fai
   if (!result || result === "busy") return null;
   return (
     <div className={`test ${result.ok ? "ok" : "bad"}`} role="status">
-      <span className="ms">{result.ok ? "check_circle" : "error"}</span>
+      <span className="ms" aria-hidden="true">
+        {result.ok ? "check_circle" : "error"}
+      </span>
       <div>
         <b>{result.ok ? ok : bad}</b>
         {result.detail && <span>{result.detail}</span>}
@@ -141,7 +143,9 @@ export function useAIForm(inst: Inst) {
       </div>
       {!aiReady(view) && (
         <p className="help keyhint">
-          <span className="ms">key</span>
+          <span className="ms" aria-hidden="true">
+            key
+          </span>
           <span>
             No key yet? Make one at{" "}
             <a href="https://openrouter.ai/keys" target="_blank" rel="noreferrer">

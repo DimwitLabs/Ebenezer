@@ -190,7 +190,17 @@ export default function Trends({ spends, categories }: { spends: Spend[]; catego
       <CardHead title="Trends">
         <Segmented
           label="Range"
-          options={RANGES.map(([k, , name]) => [k, k === "all" ? <span className="ms">all_inclusive</span> : k, name])}
+          options={RANGES.map(([k, , name]) => [
+            k,
+            k === "all" ? (
+              <span className="ms" aria-hidden="true">
+                all_inclusive
+              </span>
+            ) : (
+              k
+            ),
+            name,
+          ])}
           value={range}
           onChange={(k) => (setRange(k), setSel(null))}
         />
@@ -216,7 +226,9 @@ export default function Trends({ spends, categories }: { spends: Spend[]; catego
           <b>
             Big
             <Tip text={`${money(t.big)} is your median spend over this range: half your spends were bigger, half smaller. It moves with the range you pick.`} className="inf">
-              <span className="ms">info</span>
+              <span className="ms" aria-hidden="true">
+                info
+              </span>
             </Tip>
           </b>
           <small>over {money(t.big)} a time</small>
@@ -277,7 +289,11 @@ export default function Trends({ spends, categories }: { spends: Spend[]; catego
               <div key={l}>
                 <span>{l}</span>
                 <span>
-                  {f(p)} <span className="ms">arrow_forward</span> <b>{f(v)}</b>
+                  {f(p)}{" "}
+                  <span className="ms" aria-hidden="true">
+                    arrow_forward
+                  </span>{" "}
+                  <b>{f(v)}</b>
                 </span>
               </div>
             ))}
@@ -303,7 +319,9 @@ export default function Trends({ spends, categories }: { spends: Spend[]; catego
               onClick={() => setSel(p.name === sel ? null : p.name)}
             >
               <md-focus-ring />
-              <span className="ms">{iconOf(categories, p.name)}</span>
+              <span className="ms" aria-hidden="true">
+                {iconOf(categories, p.name)}
+              </span>
               <b>{p.name}</b>
               <i>{money(p.t)}</i>
             </button>

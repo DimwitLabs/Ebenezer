@@ -26,14 +26,18 @@ export default function Facts({ title, when, facts }: { title: string; when: str
   return (
     <>
       <button ref={at} type="button" className="ib-sm" popoverTarget={id} aria-label={`Details of ${title}`} title="Details">
-        <span className="ms">info</span>
+        <span className="ms" aria-hidden="true">
+          info
+        </span>
       </button>
       <div ref={box} id={id} popover="auto" className="facts-pop" role="dialog" aria-label={title} onToggle={place}>
         <div className="facts-h">
           <b>{title}</b>
           <span>{when}</span>
           <button type="button" className="ib-sm" popoverTarget={id} popoverTargetAction="hide" aria-label="Close">
-            <span className="ms">close</span>
+            <span className="ms" aria-hidden="true">
+              close
+            </span>
           </button>
         </div>
         <dl className="facts-l">

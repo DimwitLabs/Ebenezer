@@ -36,13 +36,19 @@ export function ColourPicker({ value, onChange, colours }: { value: string; onCh
         >
           <md-ripple />
           <md-focus-ring />
-          {value === c.value && <span className="ms">check</span>}
+          {value === c.value && (
+            <span className="ms" aria-hidden="true">
+              check
+            </span>
+          )}
         </button>
       ))}
       {!colours && (
         <label className={`own${preset ? "" : " on"}`} title="Your own colour" style={preset ? undefined : ({ "--sw": value } as CSSProperties)}>
           <md-ripple />
-          <span className="ms">{preset ? "colorize" : "check"}</span>
+          <span className="ms" aria-hidden="true">
+            {preset ? "colorize" : "check"}
+          </span>
           <input type="color" value={value} onChange={(e) => onChange(e.target.value)} aria-label="Your own colour" />
         </label>
       )}

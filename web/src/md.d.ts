@@ -51,6 +51,7 @@ declare module "react" {
           minLength?: number;
           rows?: number;
           autocomplete?: string;
+          name?: string;
           noAsterisk?: boolean;
           min?: string;
           max?: string;

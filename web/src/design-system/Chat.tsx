@@ -1,9 +1,11 @@
-import { createContext, useCallback, useContext, useEffect, useLayoutEffect, useRef, useState, type FormEvent, type KeyboardEvent, type ReactNode } from "react";
+import { createContext, useCallback, useContext, useEffect, useId, useLayoutEffect, useRef, useState, type FormEvent, type KeyboardEvent, type ReactNode } from "react";
 
 import { composing } from "./Fields";
 import { still } from "./motion";
 
 const Follow = createContext<() => void>(() => {});
+// Hands a whole reply to the screen reader at once, while the bubble types it out letter by letter.
+const Announce = createContext<(text: string) => void>(() => {});
 
 // Models sometimes bold a phrase with **; show that as bold and drop stray asterisks.
 export function Said({ text }: { text: string }) {
@@ -44,7 +46,9 @@ export function Mine({ text }: { text: string }) {
 export function Typed({ text, onDone }: { text: string; onDone?: () => void }) {
   const [n, setN] = useState(() => (still() ? text.length : 0));
   const follow = useContext(Follow);
+  const announce = useContext(Announce);
   const done = useRef(onDone);
+  useEffect(() => announce(text), [text, announce]);
   useEffect(() => {
     done.current = onDone;
   });
@@ -104,7 +108,7 @@ export function Thinking({ label }: { label: string }) {
     <div className="msg eb">
       <img src="/favicon.svg" alt="Ebenezer" />
       <div className="bub thinking">
-        <md-circular-progress indeterminate aria-label={label} />
+        <md-circular-progress indeterminate aria-hidden="true" />
         {label}
       </div>
     </div>
@@ -114,7 +118,9 @@ export function Thinking({ label }: { label: string }) {
 export function ChatError({ text, action }: { text: string; action?: { label: string; onClick: () => void } }) {
   return (
     <div className="chat-err" role="status">
-      <span className="ms">info</span>
+      <span className="ms" aria-hidden="true">
+        info
+      </span>
       <span className="t">{text}</span>
       {action && <md-text-button onClick={action.onClick}>{action.label}</md-text-button>}
     </div>
@@ -138,7 +144,9 @@ export function Stage({ heading, text, starters, onStarter, children }: { headin
           <button key={s.text} type="button" onClick={() => onStarter(s.text)}>
             <md-ripple />
             <md-focus-ring />
-            <span className="ms">{s.icon}</span>
+            <span className="ms" aria-hidden="true">
+              {s.icon}
+            </span>
             {s.text}
           </button>
         ))}
@@ -164,6 +172,8 @@ interface Props {
 export default function Chat({ className = "", fresh, started, stage, children, placeholder, draft, setDraft, onSend, busy, focus }: Props) {
   const box = useRef<HTMLDivElement>(null);
   const field = useRef<HTMLTextAreaElement>(null);
+  const [heard, setHeard] = useState("");
+  const id = useId();
   const stick = useCallback(() => {
     if (box.current) box.current.scrollTop = box.current.scrollHeight;
   }, []);
@@ -196,19 +206,29 @@ export default function Chat({ className = "", fresh, started, stage, children, 
     <div className={`chat ${className}`.trim()}>
       <div className="msgs" ref={box}>
         {started ? (
-          <Follow.Provider value={stick}>{children}</Follow.Provider>
+          <Follow.Provider value={stick}>
+            <Announce.Provider value={setHeard}>{children}</Announce.Provider>
+          </Follow.Provider>
         ) : (
           <>
             <p className="fnote">
-              <span className="ms">history_toggle_off</span>
+              <span className="ms" aria-hidden="true">
+                history_toggle_off
+              </span>
               {fresh}
             </p>
             {stage}
           </>
         )}
       </div>
+      <p className="sr-only" aria-live="polite">
+        {heard}
+      </p>
       <form className={`compose${draft ? " typing" : ""}`} onSubmit={send}>
-        <textarea ref={field} rows={1} value={draft} placeholder={placeholder} aria-label={placeholder} maxLength={1000} onChange={(e) => setDraft(e.target.value)} onKeyDown={key} />
+        <label htmlFor={`${id}-say`} className="sr-only">
+          Message
+        </label>
+        <textarea ref={field} id={`${id}-say`} rows={1} value={draft} placeholder={placeholder} maxLength={1000} onChange={(e) => setDraft(e.target.value)} onKeyDown={key} />
         <span className="kh">
           <kbd>Shift</kbd> + <kbd>Enter</kbd> for a new line
         </span>

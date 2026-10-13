@@ -23,8 +23,12 @@ function Bar({ message, error }: { message: string; error: boolean }) {
     };
   }, [message]);
   return (
-    <div ref={ref} popover="manual" className={`snack${error ? " err" : ""}`} role="status">
-      {error && <span className="ms">error</span>}
+    <div ref={ref} popover="manual" className={`snack${error ? " err" : ""}`} aria-hidden="true">
+      {error && (
+        <span className="ms" aria-hidden="true">
+          error
+        </span>
+      )}
       {message}
     </div>
   );
@@ -42,6 +46,13 @@ export function SnackProvider({ children }: { children: ReactNode }) {
     <SnackContext.Provider value={say}>
       {children}
       {snack && <Bar message={snack.message} error={snack.error} />}
+      {/* Live regions announce changes, not arrivals, so these stay mounted and only their text changes. */}
+      <p className="sr-only" role="status">
+        {snack && !snack.error ? snack.message : ""}
+      </p>
+      <p className="sr-only" role="alert">
+        {snack?.error ? snack.message : ""}
+      </p>
     </SnackContext.Provider>
   );
 }

@@ -101,7 +101,9 @@ export default function AppShell() {
               <span className="ind">
                 <md-ripple htmlFor={n.id} />
                 <md-focus-ring htmlFor={n.id} />
-                <span className="ms">{n.icon}</span>
+                <span className="ms" aria-hidden="true">
+                  {n.icon}
+                </span>
               </span>
               <span className="lbl">{n.label}</span>
             </NavLink>
@@ -112,7 +114,9 @@ export default function AppShell() {
           <span className="ind">
             <md-ripple htmlFor="nav-admin" />
             <md-focus-ring htmlFor="nav-admin" />
-            <span className="ms">{user?.isOwner ? "admin_panel_settings" : "person"}</span>
+            <span className="ms" aria-hidden="true">
+              {user?.isOwner ? "admin_panel_settings" : "person"}
+            </span>
           </span>
           <span className="lbl">{user?.name}</span>
         </NavLink>

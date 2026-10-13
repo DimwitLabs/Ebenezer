@@ -30,7 +30,10 @@ export default function Verdict({ verdict, judge, onJudged }: { verdict: string;
         <>
           <span className="off">Unjudged</span>
           <span className="on">
-            <span className="ms">gavel</span>Judge now
+            <span className="ms" aria-hidden="true">
+              gavel
+            </span>
+            Judge now
           </span>
         </>
       )}

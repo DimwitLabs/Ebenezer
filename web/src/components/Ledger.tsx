@@ -25,7 +25,9 @@ export function Pick({ methods, chosen, onPick }: { methods: Method[]; chosen?: 
         <button key={m.key} type="button" className={chosen === m.key ? "on" : ""} disabled={!!chosen} onClick={() => onPick(m.key)}>
           <md-ripple />
           <md-focus-ring />
-          <span className="ms">{METHOD_ICON[m.kind]}</span>
+          <span className="ms" aria-hidden="true">
+            {METHOD_ICON[m.kind]}
+          </span>
           {m.name}
         </button>
       ))}
@@ -94,7 +96,11 @@ function SpendDialog({ e, spend, onClose, onSaved }: { e: Expenses; spend: Spend
         />
       }
     >
-      {error && <p className="error">{error}</p>}
+      {error && (
+        <p className="error" role="alert">
+          {error}
+        </p>
+      )}
       <div className="fields2">
         <TextField label="What" value={item} onChange={setItem} maxLength={120} autoFocus={!spend} placeholder={spend ? undefined : "Swiggy"} />
         <TextField label="Amount" value={amount} onChange={setAmount} inputMode="decimal" info="A refund is negative." />

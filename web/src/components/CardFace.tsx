@@ -80,7 +80,9 @@ export function CardFace({ color, bank, name, nickname, network, badge }: { colo
       <span className="chipg" />
       {nickname && (
         <span className="nick">
-          <span className="ms">sell</span>
+          <span className="ms" aria-hidden="true">
+            sell
+          </span>
           {nickname}
         </span>
       )}

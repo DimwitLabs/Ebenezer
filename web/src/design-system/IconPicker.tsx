@@ -5,7 +5,9 @@ export function IconPicker({ icons, value, onChange }: { icons: string[]; value:
         <button key={ic} type="button" role="radio" aria-checked={value === ic} aria-pressed={value === ic} onClick={() => onChange(ic)} aria-label={ic.replace(/_/g, " ")}>
           <md-ripple />
           <md-focus-ring />
-          <span className="ms">{ic}</span>
+          <span className="ms" aria-hidden="true">
+            {ic}
+          </span>
         </button>
       ))}
     </div>

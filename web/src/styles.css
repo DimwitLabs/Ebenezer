@@ -139,6 +139,8 @@
 .bring .item-a { flex: 0 1 auto; gap: 6px; flex-wrap: wrap; }
 
 .onb { min-height: 100%; display: flex; flex-direction: column; }
+.onb-form { display: contents; }
+.onb-b h1:focus { outline: none; }
 .onb-top { display: flex; align-items: center; gap: 12px; padding: 16px 20px 16px 28px; font-size: 22px; font-weight: 400; min-height: 72px; }
 .onb-top img { width: 30px; height: 30px; }
 .onb-top md-icon-button { margin-left: auto; }

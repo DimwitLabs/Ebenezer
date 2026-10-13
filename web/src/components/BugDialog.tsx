@@ -48,16 +48,24 @@ export default function BugDialog({ onClose }: { onClose: () => void }) {
         <a {...way(`${ISSUES}?${new URLSearchParams({ title, body })}`)} target="_blank" rel="noreferrer">
           <md-ripple />
           <md-focus-ring />
-          <span className="ms">code</span>
+          <span className="ms" aria-hidden="true">
+            code
+          </span>
           <b>Open a GitHub issue</b>
-          <span className="ms">open_in_new</span>
+          <span className="ms" aria-hidden="true">
+            open_in_new
+          </span>
         </a>
         <a {...way(`mailto:${MAILBOX}?subject=${encodeURIComponent(`Ebenezer: ${title}`)}&body=${encodeURIComponent(body)}`)}>
           <md-ripple />
           <md-focus-ring />
-          <span className="ms">mail</span>
+          <span className="ms" aria-hidden="true">
+            mail
+          </span>
           <b>Email it</b>
-          <span className="ms">open_in_new</span>
+          <span className="ms" aria-hidden="true">
+            open_in_new
+          </span>
         </a>
       </div>
     </Dialog>

@@ -153,7 +153,11 @@ export default function StatementDialog({ portfolioId, onClose, onDone }: Props)
 
   return (
     <Dialog title="Upload a statement" icon="upload_file" onClose={onClose} steps={["Choose the file", "Review"]} step={review ? 1 : 0} footer={footer}>
-      {error && <p className="error">{error}</p>}
+      {error && (
+        <p className="error" role="alert">
+          {error}
+        </p>
+      )}
 
       {!review && (
         <>

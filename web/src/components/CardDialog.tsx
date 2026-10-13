@@ -139,7 +139,11 @@ export default function CardDialog({ card, onClose, onSaved }: { card: Card | nu
         />
       }
     >
-      {error && <p className="error">{error}</p>}
+      {error && (
+        <p className="error" role="alert">
+          {error}
+        </p>
+      )}
       <div className="cardform">
         <div className="full">
           <Segmented
@@ -150,13 +154,19 @@ export default function CardDialog({ card, onClose, onSaved }: { card: Card | nu
               [
                 "credit",
                 <>
-                  <span className="ms">credit_card</span>Credit card
+                  <span className="ms" aria-hidden="true">
+                    credit_card
+                  </span>
+                  Credit card
                 </>,
               ],
               [
                 "charge",
                 <>
-                  <span className="ms">all_inclusive</span>Charge card
+                  <span className="ms" aria-hidden="true">
+                    all_inclusive
+                  </span>
+                  Charge card
                 </>,
               ],
             ]}
@@ -168,7 +178,9 @@ export default function CardDialog({ card, onClose, onSaved }: { card: Card | nu
         <Select label="Network" value={network} onChange={setNetwork} options={NETWORKS.map(([value, label]) => ({ value, label }))} />
         {!terms ? (
           <div className="lookup full">
-            <span className="ms">travel_explore</span>
+            <span className="ms" aria-hidden="true">
+              travel_explore
+            </span>
             <p>
               <b>Not sure of the terms?</b>I can look up {name || "the card"}'s usual interest, fees and due days on the bank's site.
             </p>
@@ -180,7 +192,9 @@ export default function CardDialog({ card, onClose, onSaved }: { card: Card | nu
         ) : terms.found ? (
           <div className="sugg full">
             <div className="sugg-h">
-              <span className="ms">travel_explore</span>
+              <span className="ms" aria-hidden="true">
+                travel_explore
+              </span>
               {name}'s usual terms<small>{terms.source ? `${terms.source}, just now` : "Just now"}</small>
             </div>
             <Stats
@@ -203,7 +217,10 @@ export default function CardDialog({ card, onClose, onSaved }: { card: Card | nu
         ) : (
           <div className="sugg full">
             <div className="sugg-h">
-              <span className="ms">search_off</span>I couldn't find {name}'s terms
+              <span className="ms" aria-hidden="true">
+                search_off
+              </span>
+              I couldn't find {name}'s terms
             </div>
             <div className="row">
               <p>Your statement lists the interest, fees and due days.</p>
@@ -217,7 +234,10 @@ export default function CardDialog({ card, onClose, onSaved }: { card: Card | nu
         {kind === "credit" && <TextField label="Interest, % a month" value={interest} onChange={setInterest} inputMode="decimal" placeholder="Look up or type" />}
         <TextField label="Annual fee" value={fee} onChange={setFee} inputMode="decimal" />
         <p className="sect full">
-          <span className="ms">flag</span>Where it stands today
+          <span className="ms" aria-hidden="true">
+            flag
+          </span>
+          Where it stands today
         </p>
         <TextField label="Last statement balance" value={balance} onChange={setBalance} inputMode="decimal" info="The total on your last statement, before any payment." />
         <TextField label="Paid towards it so far" value={paid} onChange={setPaid} inputMode="decimal" />

@@ -29,9 +29,13 @@ export default function LoginScreen() {
         <img src="/favicon.svg" alt="" />
         <h1>Sign in</h1>
         <p className="lead">I'm Ebenezer, and I keep the books. Sign in to see yours.</p>
-        {error && <p className="error">{error}</p>}
-        <TextField label="Email" type="email" value={email} onChange={setEmail} autocomplete="username" required />
-        <TextField label="Password" type="password" value={password} onChange={setPassword} autocomplete="current-password" required />
+        {error && (
+          <p className="error" role="alert">
+            {error}
+          </p>
+        )}
+        <TextField label="Email" name="email" type="email" value={email} onChange={setEmail} autocomplete="username" required />
+        <TextField label="Password" name="password" type="password" value={password} onChange={setPassword} autocomplete="current-password" required />
         <md-filled-button className="wide" type="submit" disabled={busy}>
           Sign in
         </md-filled-button>

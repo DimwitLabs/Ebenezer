@@ -1,5 +1,5 @@
 .app { display: grid; grid-template-columns: max(80px, 5rem) minmax(0, 1fr); min-height: 100%; }
-.rail { position: sticky; top: 0; height: 100vh; padding: 20px 0 16px; display: flex; flex-direction: column; align-items: center; background: var(--bg); }
+.rail { position: sticky; top: 0; height: 100dvh; padding: 20px 0 16px; display: flex; flex-direction: column; align-items: center; background: var(--bg); }
 .brand { display: flex; align-items: center; gap: 12px; margin-bottom: 36px; }
 .logo { width: 32px; height: 32px; }
 .brand .word { display: none; font-size: 1.375rem; line-height: 1.75rem; font-weight: 650; letter-spacing: -0.3px; }
@@ -176,13 +176,13 @@
   .two { grid-template-columns: minmax(0, 1fr); }
 }
 
-.ask { display: flex; flex-direction: column; min-height: calc(100vh - 136px); }
+.ask { display: flex; flex-direction: column; min-height: calc(100svh - 136px); }
 .bub .redacted { display: flex; gap: 8px; align-items: flex-start; margin-top: 10px; padding-top: 10px; border-top: 1px solid color-mix(in srgb, currentColor 18%, transparent); font-size: 0.8125rem; line-height: 1.45; }
 .bub .redacted .ms { font-size: 1.125rem; }
-.ledger { font: 12.5px/1.65 var(--mono); white-space: pre-wrap; overflow-wrap: anywhere; background: var(--surface); border-radius: 16px; padding: 14px 16px; margin: 12px 0 0; max-height: 60vh; overflow: auto; }
+.ledger { font: 0.7812rem/1.65 var(--mono); white-space: pre-wrap; overflow-wrap: anywhere; background: var(--surface); border-radius: 16px; padding: 14px 16px; margin: 12px 0 0; max-height: 60dvh; overflow: auto; }
 
 @media (max-width: 53.75em) {
-  .ask { min-height: calc(100vh - 200px); }
+  .ask { min-height: calc(100svh - 200px); }
   .nav .ind { width: 52px; }
 }
 
@@ -196,9 +196,9 @@
 .fld.addr { width: 260px; max-width: 100%; }
 .subject { margin-bottom: 12px; font-weight: 500; overflow-wrap: anywhere; }
 .subject .faint { font-weight: 400; margin-right: 6px; }
-.report-frame { display: block; width: 100%; height: min(70vh, 760px); border: 1px solid var(--line); border-radius: 16px; background: var(--md-sys-color-surface-container-lowest); }
+.report-frame { display: block; width: 100%; height: min(70dvh, 760px); border: 1px solid var(--line); border-radius: 16px; background: var(--md-sys-color-surface-container-lowest); }
 @media (max-width: 53.75em) {
-  .report-frame { height: 60vh; }
+  .report-frame { height: 60dvh; }
 }
 
 /* Inline-size containment keeps the panel out of column sizing, so opening it never reflows the table. */
@@ -366,7 +366,7 @@ td.num .fixin { text-align: right; }
 .pend-h b { font-weight: 600; }
 .pendc .paypick, .pendc .saved { margin-left: 48px; }
 
-.exp { display: grid; grid-template-columns: minmax(0, 1fr) 460px; grid-template-rows: auto max(640px, calc(100vh - 48px)) auto; gap: 16px; }
+.exp { display: grid; grid-template-columns: minmax(0, 1fr) 460px; grid-template-rows: auto max(640px, calc(100dvh - 48px)) auto; gap: 16px; }
 .exp > .top2, .exp > .trends { grid-column: 1 / -1; }
 .side { display: flex; flex-direction: column; gap: 16px; min-height: 0; }
 .led { flex: 1; min-height: 300px; display: flex; flex-direction: column; padding: 20px 0 8px; }
@@ -570,7 +570,7 @@ a.fold-t { text-decoration: none; color: inherit; }
 
 @media (max-width: 68.75em) {
   .exp { grid-template-columns: minmax(0, 1fr); grid-template-rows: none; }
-  .chatc { height: 75vh; min-height: 520px; }
+  .chatc { height: 75dvh; min-height: 520px; }
   .side .led { height: 560px; flex: none; }
   .mx { grid-template-columns: 96px 1fr 1fr; }
   .mx > .focus { grid-area: 4 / 1 / 5 / -1; margin: 16px 0 0; }
@@ -653,7 +653,9 @@ a.fold-t { text-decoration: none; color: inherit; }
   .secacts { width: 100%; display: grid; grid-template-columns: auto repeat(2, minmax(0, 1fr)); }
   .stat.tile { min-height: 156px; }
 }
-.newsday { padding: 8px 0; margin-bottom: 16px; }
+.newsday { container-type: inline-size; padding: 8px 0; margin-bottom: 16px; }
+/* Only the first day is in view on arrival; later days skip rendering until scrolled near. */
+.newsday + .newsday { content-visibility: auto; contain-intrinsic-size: auto 400px; }
 .newsday-h { display: flex; justify-content: space-between; align-items: baseline; padding: 14px 24px 8px; }
 .newsday-h b { font-size: 1.125rem; font-weight: 600; }
 .newsday-h span { font-size: 0.75rem; font-weight: 600; color: var(--text3); }
@@ -669,7 +671,8 @@ a.fold-t { text-decoration: none; color: inherit; }
 .nw { grid-area: when; text-align: right; font-size: 0.75rem; line-height: 1rem; font-weight: 500; color: var(--text3); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .nw i { display: block; font-style: normal; font-weight: 400; overflow: hidden; text-overflow: ellipsis; }
 .npdf { grid-area: pdf; justify-self: end; }
-@media (max-width: 37.5em) {
+/* The news rows stack when their card, not the window, gets narrow: 568px, a phone-width card. */
+@container (max-width: 35.5rem) {
   .nrow { grid-template-columns: auto minmax(0, 1fr) auto; grid-template-areas: "tag when pdf" "txt txt txt"; row-gap: 6px; min-height: 104px; padding: 0 18px; align-content: center; }
   .newsday-h { padding: 14px 18px 8px; }
   .nw { text-align: left; }

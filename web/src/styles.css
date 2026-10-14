@@ -237,6 +237,8 @@
 
 .tidy-said { display: flex; gap: 12px; align-items: flex-start; margin: 4px 0 14px; }
 .tidy-said p { margin: 0; padding-top: 4px; }
+.tidy-steps { margin: -6px 0 14px 40px; padding-left: 18px; font-size: 0.875rem; color: var(--text2); }
+.tidy-steps li + li { margin-top: 2px; }
 .tidy-table { max-height: 440px; overflow: auto; }
 .tidy-table td.changed { color: var(--md-sys-color-primary); font-weight: 600; font-style: italic; }
 .tidy-table tr.left-out td:not(:last-child) { color: var(--text3); text-decoration: line-through; }

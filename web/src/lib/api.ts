@@ -315,6 +315,7 @@ export interface TemplatePayload {
   processed: boolean;
   script?: string;
   summary?: string;
+  steps?: string[];
 }
 
 export interface NewsItem {

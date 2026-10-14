@@ -871,7 +871,7 @@ func (s *Server) tidy(w http.ResponseWriter, r *http.Request) error {
 	if err != nil {
 		return fail(http.StatusBadGateway, "%v", err)
 	}
-	writeJSON(w, http.StatusOK, map[string]any{"ai": true, "summary": t.Summary, "code": t.Code})
+	writeJSON(w, http.StatusOK, map[string]any{"ai": true, "summary": t.Summary, "steps": t.Steps, "code": t.Code})
 	return nil
 }
 

@@ -10,6 +10,7 @@ import Spinner from "../design-system/Spinner";
 
 export interface Tidied {
   summary: string;
+  steps?: string[];
   code: string;
 }
 
@@ -17,6 +18,7 @@ interface Props {
   pid: string;
   fields: Field[];
   columns: string[];
+  unused: string[];
   mapped: Record<string, string>[];
   raw: Record<string, string>[];
   tidy: Tidied | null;
@@ -90,7 +92,7 @@ function Cell({ field, value, was, problem, onFix }: { field: Field; value: stri
   );
 }
 
-export default function TidyStep({ pid, fields, columns, mapped, raw, tidy, setTidy, onOutput, onPending }: Props) {
+export default function TidyStep({ pid, fields, columns, unused, mapped, raw, tidy, setTidy, onOutput, onPending }: Props) {
   const [out, setOut] = useState<Row[] | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
@@ -147,19 +149,21 @@ export default function TidyStep({ pid, fields, columns, mapped, raw, tidy, setT
     setBusy(true);
     setError(null);
     try {
-      const sample = [...badAsIs, ...asIs.filter((c) => c.problems.length === 0)].slice(0, 3);
+      const indexed = asIs.map((c, i) => ({ ...c, raw: raw[i] }));
+      const sample = [...indexed.filter((c) => c.problems.length > 0), ...indexed.filter((c) => c.problems.length === 0)].slice(0, 3);
       const r = await post<Reply>(`/portfolios/${pid}/tidy`, {
         fields: fields.map((f) => ({ key: f.key, type: f.type, required: f.required, choices: f.choices })),
         columns,
-        sample: sample.map((c) => ({ row: c.row, problems: c.problems })),
+        unused,
+        sample: sample.map((c) => ({ row: c.row, raw: c.raw, problems: c.problems })),
         previous,
         change: change.trim() || undefined,
       });
       if (!r.ai) {
-        setError("I need an AI model to tidy rows; set one up under Admin. Until then, fix them below.");
+        if (badAsIs.length > 0 || previous !== undefined) setError("I need an AI model to tidy rows; set one up under Admin. Until then, fix them below.");
         return;
       }
-      setTidy({ summary: r.summary, code: r.code });
+      setTidy({ summary: r.summary, steps: r.steps ?? [], code: r.code });
       setChange("");
     } catch (e) {
       setError((e as Error).message);
@@ -169,7 +173,8 @@ export default function TidyStep({ pid, fields, columns, mapped, raw, tidy, setT
   };
 
   useEffect(() => {
-    if (asked.current || tidy || badAsIs.length === 0) return;
+    // Columns left unmatched may hold part of a field, like charges split across brokerage and stamp duty.
+    if (asked.current || tidy || (badAsIs.length === 0 && unused.length === 0)) return;
     asked.current = true;
     void ask();
     // Only on opening the step; later runs come from the person.
@@ -204,6 +209,13 @@ export default function TidyStep({ pid, fields, columns, mapped, raw, tidy, setT
           )}
         </p>
       </div>
+      {!busy && tidy?.steps && tidy.steps.length > 0 && (
+        <ul className="tidy-steps">
+          {tidy.steps.map((st) => (
+            <li key={st}>{st}</li>
+          ))}
+        </ul>
+      )}
       {error && (
         <p className="error" role="alert">
           {error}{" "}

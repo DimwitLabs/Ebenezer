@@ -234,7 +234,7 @@ function BringStep({
               </span>
               What the AI sees
             </b>
-            <p>Only the column names and three sample rows, if the rows need tidying. Every other row is read here.</p>
+            <p>Only the column names and three sample rows, when rows need tidying or some columns go unmatched. Every other row is read here.</p>
           </div>
           <div>
             <b>
@@ -632,7 +632,7 @@ export default function ImportDialog({ target, onClose, onDone }: Props) {
         say(`Added ${imp.added} spend${imp.added === 1 ? "" : "s"}${imp.skipped ? `, ${imp.skipped} already there` : ""}`);
       }
       if (tname) {
-        await put(`/portfolios/${p.id}/templates`, { kind: tkind, name: tname, payload: { mapping, processed: !tidy, script: tidy?.code, summary: tidy?.summary } });
+        await put(`/portfolios/${p.id}/templates`, { kind: tkind, name: tname, payload: { mapping, processed: !tidy, script: tidy?.code, summary: tidy?.summary, steps: tidy?.steps } });
       }
       onDone();
     } catch (e) {
@@ -720,7 +720,7 @@ export default function ImportDialog({ target, onClose, onDone }: Props) {
         />
       )}
       {step === 2 && table && (
-        <TidyStep pid={section?.portfolioId ?? p.id} fields={fields} columns={table.headers} mapped={matched} raw={raw} tidy={tidy} setTidy={setTidy} onOutput={setOutput} onPending={setPending} />
+        <TidyStep pid={section?.portfolioId ?? p.id} fields={fields} columns={table.headers} unused={table.headers.filter((h) => !Object.values(mapping).includes(h))} mapped={matched} raw={raw} tidy={tidy} setTidy={setTidy} onOutput={setOutput} onPending={setPending} />
       )}
       {step === 3 && (
         <CheckStep

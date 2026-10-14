@@ -484,6 +484,20 @@ function CheckStep({
   );
 }
 
+// A saved template fits a file when every column it matched is in the file; the one matching most columns wins.
+function lookalike(templates: Template[], headers: string[]): Template | null {
+  let best: Template | null = null;
+  let most = 1;
+  for (const t of templates) {
+    const used = Object.values(t.payload.mapping).filter(Boolean);
+    if (used.length > most && used.every((h) => headers.includes(h))) {
+      best = t;
+      most = used.length;
+    }
+  }
+  return best;
+}
+
 export default function ImportDialog({ target, onClose, onDone }: Props) {
   const p = usePortfolio();
   const say = useSnack();
@@ -510,6 +524,7 @@ export default function ImportDialog({ target, onClose, onDone }: Props) {
   const [paidAs, setPaidAs] = useState<Record<string, string>>({});
   const [catAs, setCatAs] = useState<Record<string, string>>({});
   const [chosen, setChosen] = useState<Template | null>(null);
+  const [similar, setSimilar] = useState<Template | null>(null);
   const [tidy, setTidy] = useState<Tidied | null>(null);
   const [output, setOutput] = useState<Record<string, string>[] | null>(null);
   const [pending, setPending] = useState(0);
@@ -570,6 +585,7 @@ export default function ImportDialog({ target, onClose, onDone }: Props) {
     if (!t) return;
     setError(null);
     setTable(t);
+    setSimilar(chosen ? null : lookalike(mine, t.headers));
     const kept = chosen ? fromTemplate(chosen, t.headers) : {};
     const used = Object.values(kept);
     const m = {
@@ -602,10 +618,15 @@ export default function ImportDialog({ target, onClose, onDone }: Props) {
     const t = mine.find((x) => x.id === id) ?? null;
     setChosen(t);
     if (!t) return;
-    setTidy(t.payload.script ? { code: t.payload.script, summary: t.payload.summary ?? `Tidied the way “${t.name}” does.` } : null);
+    setTidy(t.payload.script ? { code: t.payload.script, summary: t.payload.summary ?? `Tidied the way “${t.name}” does.`, steps: t.payload.steps } : null);
     setSaveTemplate(true);
     setTemplateName(t.name);
-    if (table) setMapping(fromTemplate(t, table.headers));
+    if (table) {
+      const kept = fromTemplate(t, table.headers);
+      const taken = Object.values(kept);
+      setMapping((m) => ({ ...Object.fromEntries(Object.entries(m).filter(([, h]) => !taken.includes(h))), ...kept }));
+    }
+    setSimilar(null);
     say(`Using “${t.name}”`);
   };
 
@@ -697,6 +718,21 @@ export default function ImportDialog({ target, onClose, onDone }: Props) {
           setText={setText}
           sample={sample}
         />
+      )}
+      {step === 1 && table && similar && (
+        <div className="offer">
+          <span className="ms" aria-hidden="true">
+            bookmark
+          </span>
+          <p>
+            <b>Looks similar to “{similar.name}”. Want me to use the template?</b>
+            {similar.payload.script ? "It matches the columns and tidies the rows the way it did last time." : "It matches the columns the way it did last time."}
+          </p>
+          <div className="oa">
+            <md-filled-tonal-button onClick={() => applyTemplate(similar.id)}>Use it</md-filled-tonal-button>
+            <md-text-button onClick={() => setSimilar(null)}>No thanks</md-text-button>
+          </div>
+        </div>
       )}
       {step === 1 && table && (
         <MatchStep

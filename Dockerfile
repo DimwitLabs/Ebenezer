@@ -1,4 +1,4 @@
-FROM node:26-slim@sha256:3a771f83944bb763050c23c0225c260638c4b7899e7a72485ef75e5e570499e5 AS web
+FROM node:26-slim@sha256:193fe51b64e77981119c98c2002c9e32a70e2f006fb4d25068ce0558998917f0 AS web
 
 WORKDIR /src/web
 COPY web/package.json web/package-lock.json ./
